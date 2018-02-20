@@ -753,7 +753,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS REJECTED (SubmitID,ProcID,Name,UserID,Status,SubmitDate,RejectReason)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS STEPS2COMPS (StepID,CompID)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS SETTINGS (Language,IP,SyncTime,LastSync,DateFormat)');
-		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/ServiceFt.asmx")');
+		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/serviceft.asmx")');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS LANGUAGES (Language,OrderNum)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS FILESDATA (FileID,FileUrl,FileName)');
 		// tx.executeSql('DROP TABLE IF EXISTS MEASUREMENTS');
@@ -2087,7 +2087,12 @@ function successFunctionx() {
 	function errorCBIN(tx, err) {
        //alert("Error processing SQL:: "+err);
 	   //alert("DB Error: "+err.message + "\nCode="+err.code);
-    }
+	}
+	
+	function errorCBMes(tx,err)
+	{
+		alert("DB Error: "+err.message + "\nCode="+err.code);
+	}
 		function errorCBlan(tx, err) {
        //alert(err.code)
 	}
@@ -3125,12 +3130,14 @@ fillevaluationsteps();
 //loogbook 
 $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
 		clearInterval(IntervalMessagesP);
+	//CheckHoursT();
 	IntervalMessagesP="";
 	inPageMes=0;
 	IsSyncMessages=true;
 //fill username name,level and name
 	var userfullname=sessionStorage.fname;
 	var leveluser=sessionStorage.lvlname;
+	var userlocation=sessionStorage.location;
 	var headstring=userfullname+": Level "+leveluser;
 	var monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -3147,6 +3154,7 @@ $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
 	$("#hplogusername").html(headstring);
 	//var namedate=monthname+" "+daynumber+", "+yearnumber;
 	$("#hplogdatez").html(monthname+" "+daynumber+", "+yearnumber);
+	$("#hploglocalt").html(userlocation);
 	//$("#select_Submission").val("All");
 	var reminderSettings = $("#select_Submission");
 	reminderSettings.val("All").attr('selected', true).siblings('option').removeAttr('selected'); 
@@ -3160,6 +3168,7 @@ $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
 	GetOJTOverall();
 	GetRTIOverall();
 	GetSubmissions();
+	updateuserlevel();
 	$( "#onebt" ).addClass("ui-btn-active");
 	$('#table-ojtsummary').on('click','tr', function() {
         $('#body-ojtsummary tr').css({background: 'transparent'});
@@ -3199,6 +3208,7 @@ $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
 		$("#tsubmis").addClass("ui-bar-c");
 	 	$("#table-submissions").table("refresh");
 		$("#table-submissions").trigger('create');	
+		
     });
 });
 
@@ -9493,7 +9503,8 @@ function AddResponses()
 		   }
 		   catch(err)
 		   {
-			   return err.message;
+			   return "";
+			  // return err.message;
 		   }
 		   
 			//alert(d1.toString('MM/dd/yyyy H:mm:ss ')+"next: "+d1.toString('dd/MM/yyyy'));

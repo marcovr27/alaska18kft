@@ -227,6 +227,7 @@ $("#entryonevalue").val("");
 $("#hourentryone").val("");
 $("#minutesentryone").val("");
 TaskSelected();
+GetSubmissions();
  }
 
 function PersonnelO()
@@ -264,14 +265,18 @@ function CheckHoursOJT()
 		}
 		else
 		{
-			SubmitOJT();
+			//SubmitOJT();
+			//alert("primerllamado");
+			CheckHoursT();
 			
 		}
 		
 	}
 	else
 	{
-		SubmitOJT();
+		//SubmitOJT();
+		//alert("segundollamado");
+		CheckHoursT();
 	}
 		
 	}
@@ -285,6 +290,100 @@ function CheckHoursOJT()
 	
 	
 	
+}
+
+function CheckHoursT()
+{
+	//alert("hourst");
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryCheckHoursT, errorCB);
+}
+
+function QueryCheckHoursT(tx)
+{
+//	alert("entro");
+	var now = new Date();
+	var day = ("0" + now.getDate()).slice(-2);
+	var month = ("0" + (now.getMonth() + 1)).slice(-2);
+	var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+	var UseraID=sessionStorage.userid;
+	var query="SELECT SUM(Hours) as Hora, SUM(Mins) as minutos FROM SubmittedHours WHERE UserID='"+UseraID+"' AND SubmitDate BETWEEN DATE('now') AND DATE('now', '+1 day')";
+	//alert(query);
+	tx.executeSql(query, [], QueryCheckHoursTSuccess, errorCBMes);
+}
+
+function QueryCheckHoursTSuccess(tx,results)
+{
+	var len = results.rows.length;
+	var hours="0";
+	var mins="0";
+	var hourstimesuma=$("#hourentryone").val();
+	var minstimesuma=$("#minutesentryone").val();
+	if(hourstimesuma=="")
+	{
+		hourstimesuma=0;
+	}
+	if(minstimesuma=="")
+	{
+		minstimesuma=0;
+	}
+	//alert(len);
+	for (var i=0; i<results.rows.length; i++){
+		//alert(results.rows.item(i).Hora);
+		//alert(results.rows.item(i).SubmitDate);
+		if(results.rows.item(i).Hora!="" || results.rows.item(i).Hora!="null")
+		{
+			hours=results.rows.item(i).Hora;
+		}
+		if(results.rows.item(i).minutos!="" || results.rows.item(i).minutos!="null")
+		{
+			mins=results.rows.item(i).minutos;
+		}
+	}
+	//alert("horas: "+hours+" mins:"+mins);
+	var hourstime=parseFloat(hours);
+	var minstime=parseFloat(mins);
+	hourstime=parseFloat(hourstime)+parseFloat(hourstimesuma);
+	minstime=parseFloat(minstime)+parseFloat(minstimesuma);
+	//alert("tiempo: "+hourstime+":"+minstime);
+	if(hourstime=="")
+	{
+		hourstime=0;
+	}
+	if(minstime=="")
+	{
+		minstime=0;
+	}
+	if(hourstime>0 || minstime>0)
+	{
+			if(hourstime>=11)
+	{
+		//alert("primer if ="+hourstime );
+		
+		if(hourstime>11)
+		{
+			$("#popupmuchtime").popup("open");
+		}
+		else if(hourstime=11 && minstime>=30)
+		{
+			$("#popupmuchtime").popup("open");
+			
+		}
+		else
+		{
+			//alert("guardo");
+			SubmitOJT();
+			
+		}
+		
+	}
+	else
+	{
+		//alert("guardo");
+		SubmitOJT();
+	}
+}
+
 }
 
 function fillitemworked()
@@ -481,25 +580,25 @@ function CheckitemsValues()
 	{
 		//alert("primer if ="+hourstime );
 		
-		if(hourstime>10)
+		if(hourstime>11)
 		{
 			$("#popupmuchtimeC").popup("open");
 		}
-		else if(hourstime=10 && minstime>=30)
+		else if(hourstime=11 && minstime>=30)
 		{
 			$("#popupmuchtimeC").popup("open");
 			
 		}
 		else
 		{
-			SubmitItem();
+			CheckHoursCC();
 			
 		}
 		
 	}
 	else
 	{
-		SubmitItem();
+		CheckHoursCC();
 	}
 		
 	}
@@ -510,6 +609,99 @@ function CheckitemsValues()
 	}
 	//alert("hours"+hourstime+" mins"+minstime);
 	
+}
+function CheckHoursCC()
+{
+	//alert("cc");
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryCheckHoursCC, errorCB);
+}
+
+function QueryCheckHoursCC(tx)
+{
+//	alert("entro");
+	var now = new Date();
+	var day = ("0" + now.getDate()).slice(-2);
+	var month = ("0" + (now.getMonth() + 1)).slice(-2);
+	var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+	var UseraID=sessionStorage.userid;
+	var query="SELECT SUM(Hours) as Hora, SUM(Mins) as minutos FROM SubmittedHours WHERE UserID='"+UseraID+"' AND SubmitDate BETWEEN DATE('now') AND DATE('now', '+1 day')";
+	//alert(query);
+	tx.executeSql(query, [], QueryCheckHoursCSuccess, errorCBMes);
+}
+
+function QueryCheckHoursCSuccess(tx,results)
+{
+	var len = results.rows.length;
+	var hours="0";
+	var mins="0";
+	var hourstimesuma=$("#hourentryone").val();
+	var minstimesuma=$("#minutesentryone").val();
+	if(hourstimesuma=="")
+	{
+		hourstimesuma=0;
+	}
+	if(minstimesuma=="")
+	{
+		minstimesuma=0;
+	}
+	//alert(len);
+	for (var i=0; i<results.rows.length; i++){
+		//alert(results.rows.item(i).Hora);
+		//alert(results.rows.item(i).SubmitDate);
+		if(results.rows.item(i).Hora!="" || results.rows.item(i).Hora!="null")
+		{
+			hours=results.rows.item(i).Hora;
+		}
+		if(results.rows.item(i).minutos!="" || results.rows.item(i).minutos!="null")
+		{
+			mins=results.rows.item(i).minutos;
+		}
+	}
+	//alert("horas: "+hours+" mins:"+mins);
+	var hourstime=parseFloat(hours);
+	var minstime=parseFloat(mins);
+	hourstime=parseFloat(hourstime)+parseFloat(hourstimesuma);
+	minstime=parseFloat(minstime)+parseFloat(minstimesuma);
+	//alert("tiempo: "+hourstime+":"+minstime);
+	if(hourstime=="")
+	{
+		hourstime=0;
+	}
+	if(minstime=="")
+	{
+		minstime=0;
+	}
+	if(hourstime>0 || minstime>0)
+	{
+			if(hourstime>=11)
+	{
+		//alert("primer if ="+hourstime );
+		
+		if(hourstime>11)
+		{
+			$("#popupmuchtime").popup("open");
+		}
+		else if(hourstime=11 && minstime>=30)
+		{
+			$("#popupmuchtime").popup("open");
+			
+		}
+		else
+		{
+			//alert("guardo");
+			SubmitItem();
+			
+		}
+		
+	}
+	else
+	{
+		//alert("guardo");
+		SubmitItem();
+	}
+}
+
 }
 
 function SubmitItem()
@@ -584,7 +776,11 @@ $("#hourentryitemonec").val("");
 $("#minutesentryitemonec").val("");
 $('#one').trigger('click');
 ItemSelected();
+GetSubmissions();
  }
+
+//function CountHours
+
 
 
 ///////<<<<<<<<<<<<=============================END FUNCTION LOGBOOK PAGE  =========================================>>>>>>>>>>>///////
@@ -1470,8 +1666,8 @@ function QuerySubmissionsSuccess(tx,results)
 		{
 			entrytype="RTI";
 		}
-		
-		if(results.rows.item(t).ReviewDate=="null" || results.rows.item(t).ReviewDate=="1900-01-01 00:00:00")
+		//alert
+		if(results.rows.item(t).ReviewDate=="null" || results.rows.item(t).ReviewDate=="1900-01-01 00:00:00" || results.rows.item(t).ReviewDate=="")
 		{
 			refe="";
 		}
@@ -1486,7 +1682,16 @@ function QuerySubmissionsSuccess(tx,results)
 		}
 		else
 		{
-			hoursandmins=results.rows.item(t).Hours+":"+results.rows.item(t).Mins;
+			if(results.rows.item(t).Mins!="")
+			{
+				hoursandmins=results.rows.item(t).Hours+":"+results.rows.item(t).Mins;
+
+			}
+			else
+			{
+				hoursandmins=results.rows.item(t).Hours+":"+"00";
+			}
+			
 
 		}
 	
@@ -1563,11 +1768,20 @@ function infosubmittedrowSuccess(tx,results)
 			hoursandmins=results.rows.item(0).Hours+":"+results.rows.item(0).Mins;
 
 		}
+        var rrreason="";
+		if(results.rows.item(0).RejectReason=="null")
+		{
+			rrreason=""
+
+		}
+		else{
+			rrreason=results.rows.item(0).RejectReason;
+		}
 		//alert("horas y minutos: "+results.rows.item(0).Mins);
 		
 		htmltbo='<tr><td id="rowentrydate">'+ShowFormatDate(results.rows.item(0).EntryDate)+'</td><td id="rowsubmitdate">'+ShowFormatDate(results.rows.item(0).SubmitDate)+'</td><td id="rowtype">'+typeofs+'</td><td id="rowpersonnel"></td></tr>';
 		htmltbt='<tr><td id="rowhrmin">'+hoursandmins+'</td><td id="rowstatus">'+results.rows.item(0).Status+'</td><td id="rowreview">'+refe+'</td><td id="rowsupervisor"></td></tr>';
-		htmltbth='<tr><td id="rowtaskitem">'+itemtask+'</td><td id="rowreason">'+results.rows.item(0).RejectReason+'</td></tr>';
+		htmltbth='<tr><td id="rowtaskitem">'+itemtask+'</td><td id="rowreason">'+rrreason+'</td></tr>';
 		tb.empty().append(htmltbo);
 		$("#my-tableo").table("refresh");
 		$("#my-tableo").trigger('create');
@@ -1652,3 +1866,4 @@ function sendtosupervisor()
 	OpenSendMessage("5");
 	
 }
+

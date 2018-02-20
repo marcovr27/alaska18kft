@@ -1896,7 +1896,52 @@ function Querytoupdatelocal(tx)
 	tx.executeSql("UPDATE SUBMITTEDHOURS SET sync='yes'");
 	tx.executeSql("UPDATE MESSAGES SET sync='yes' WHERE SentFT='0'");
 	tx.executeSql("UPDATE USERS2CERTS SET sync='yes'");
+	updateuserlevel();
 	//alert("All updated");
+}
+
+function loginsync()
+{
+	tt=1;
+	checkifexistdbreg('1');
+}
+
+function updateuserlevel()
+{
+	var idusera=sessionStorage.userid;	
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(updateuserlevelQuery, errorCB);
+}
+
+function updateuserlevelQuery(tx)
+{
+	var UseraID=sessionStorage.userid;
+	tx.executeSql("SELECT * FROM USERS WHERE Username='"+UseraID+"'", [], updateuserlevelQuerySuccess, errorCB);
+}
+
+function  updateuserlevelQuerySuccess(tx,results)
+{
+	var len = results.rows.length;
+	//alert("usuario "+len);
+	if(len==1)
+	{
+				var fname=results.rows.item(0).FirstName;
+				var lname=results.rows.item(0).LastName
+				var fullname=fname+' '+lname;
+				var LevelName="";
+				if(results.rows.item(0).LevelNum!="" && results.rows.item(0).LevelNum!="null")
+				{
+				  LevelName=results.rows.item(0).LevelNum;
+				}
+				else
+				{
+				  LevelName=results.rows.item(0).AltLevel;
+				}
+				 sessionStorage.fname=fullname;
+				 sessionStorage.lvlname=LevelName;
+				 sessionStorage.lvltype=results.rows.item(0).LevelType;
+				 sessionStorage.location=results.rows.item(0).Location;
+	}
 }
 
 ///////=============================<<<<<<<<<<<< END WEB SERVICES >>>>>>>>>>>=========================================///////

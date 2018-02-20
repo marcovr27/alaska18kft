@@ -51,7 +51,7 @@
               &nbsp;&nbsp;FieldTracker</h1>-->
           
           <a href="#" class="ui-btn ui-mini ui-state-disabled" id="versionalv"></a>
-            <a href="javascript:checkifexistdbreg('1');" data-icon="recycle" class="ui-btn-right" id="fsynchome">Sync</a>
+            <a href="javascript:loginsync();" data-icon="recycle" class="ui-btn-right" id="fsynchome">Sync</a>
         </div>
         <div data-role="content" id="logincontent">
 
@@ -92,7 +92,7 @@
                 <h1>Synchronize</h1>
             </div>
             <div role="main" class="ui-content">
-                <h3 class="ui-title" >It's first time running, Do you want synchronize whit fieldtracker server?</h3>
+                <h3 class="ui-title" >This application is being run for the first time. Synchronize with the database now?</h3>
                 <p>This action cannot be undone.</p>
                 <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">No</a>
                 <a href="javascript:checkifexistdbreg('1');" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" >Yes</a>
@@ -1707,7 +1707,8 @@
 	<div data-role="header" data-position="fixed" data-theme="b">
 		<h1><label id="hplogbook"><b>Logbook</b></label>
         <label id="hplogusername">Darien Claxton: Level 3</label>
-        <label id="hplogdatez">September 10, 2017</label> </h1>
+        <label id="hplogdatez">September 10, 2017</label>
+        <label id="hploglocalt"></label> </h1>
          <a href="#menu-panelcc" data-icon="bars" data-iconpos="notext" id="amenu2">Menu</a>
          <a href="javascript:opensyncLogb();" data-icon="recycle" data-iconpos="notext">Sync</a>
 	</div>
@@ -1989,7 +1990,7 @@
    <label id="hpopsubmitprocedure">Submitted Hours</label> </h1>
     </div>
     <div role="main" class="ui-content">
-        <h3 class="ui-title" id="q1submit">You have entered a value greater than the acceptable maximum of 11.5 hours. Submit anyway?</h3>
+        <h3 class="ui-title" id="q1submit">This entry will exceed your daily maximum of 11.5 hours and will be flagged for special review by your supervisor. Submit anyway?</h3>
         <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" id="acancelmuchtime">Cancel</a>
         <a href="javascript:SubmitOJT();" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" id="acontinuemuchtime" data-transition="flow">Continue</a>
     </div>
