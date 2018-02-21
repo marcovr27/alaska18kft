@@ -354,7 +354,7 @@ $(window).bind( 'orientationchange', function(e){
 		//alert("p portrait");
 		//$('#logincontent').empty();
 		//$('#logincontent').append('<div class="ui-grid-a"></div><div class="ui-grid-b"><form id="loginForm" style="margin-left:10%;  margin-right:10%; margin-top:85%;"><div data-role="fieldcontain" class="ui-hide-label"><label for="username">Username:</label><input type="text" name="username" id="username" value="" placeholder="Username" /></div><div data-role="fieldcontain" class="ui-hide-label"><label for="password">Password:</label><input type="password" name="password" id="password" value="" placeholder="Password" /></div><input type="button" class="ui-btn-b"  value="Login" id="LoginButton" onClick="LoginUser()"></form></div>').trigger('create');
-				$('#menucontentd').append('<form  style="margin-left:10%;  margin-right:10%; margin-top:85%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch"id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert" id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></div></form>').trigger('create');
+				$('#menucontentd').append('<form  style="margin-left:10%;  margin-right:10%; margin-top:85%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch"id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert" id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo"><a href="javascript:checkifexistdbreg('+"'1'"+');" id="mbtnsincro" class="ui-btn ui-mini ui-shadow ui-corner-all"><img src="img/sincro.png" height="18" width="18"/>Sync</a></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></div></form>').trigger('create');
         //Do whatever in portrait mode
 
     } else {
@@ -363,7 +363,7 @@ $(window).bind( 'orientationchange', function(e){
 		//$('#logincontent').empty();
 		//$('#logincontent').append(' <div class="ui-grid-a"><div class="ui-block-a"></div><div class="ui-block-b"><form id="loginForm" style="width:70%; margin-left:20%; margin-top:32%;"><div data-role="fieldcontain" class="ui-hide-label"><label for="username">Username:</label><input type="text" name="username" id="username" value="" placeholder="Username" /></div><div data-role="fieldcontain" class="ui-hide-label"><label for="password">Password:</label><input type="password" name="password" id="password" value="" placeholder="Password" /></div><input type="button" class="ui-btn-b"  value="Login" id="LoginButton" onClick="LoginUser()"></form></div></div>').trigger('create');
 					$('#menucontentd').empty();
-			$('#menucontentd').append('<div class="ui-grid-a"><div class="ui-block-a"></div><div class="ui-block-b"><form  style="width:70%; margin-left:20%; margin-top:32%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch" id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert"  id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</a></div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></form></div>').trigger('create');
+			$('#menucontentd').append('<div class="ui-grid-a"><div class="ui-block-a"></div><div class="ui-block-b"><form  style="width:70%; margin-left:20%; margin-top:32%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch" id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert"  id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</a></div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo"><a href="javascript:checkifexistdbreg('+"'1'"+');" id="mbtnsincro" class="ui-btn ui-mini ui-shadow ui-corner-all"><img src="img/sincro.png" height="18" width="18"/>Sync</a></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></form></div>').trigger('create');
 		
 		//$('#menucontentd').empty();
 		//$('#menucontentd').append('LANDSCAPE').trigger('create');
@@ -753,7 +753,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS REJECTED (SubmitID,ProcID,Name,UserID,Status,SubmitDate,RejectReason)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS STEPS2COMPS (StepID,CompID)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS SETTINGS (Language,IP,SyncTime,LastSync,DateFormat)');
-		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/serviceft.asmx")');
+		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker"")');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS LANGUAGES (Language,OrderNum)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS FILESDATA (FileID,FileUrl,FileName)');
 		// tx.executeSql('DROP TABLE IF EXISTS MEASUREMENTS');
@@ -2465,7 +2465,7 @@ $(document).on( 'pagebeforeshow', '#pageMenu',function(){
     //alert("Portrffgait!");
 
 			$('#menucontentd').empty();
-				$('#menucontentd').append('<form  style="margin-left:10%;  margin-right:10%; margin-top:85%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch"id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert"  id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></div></form>').trigger('create');
+				$('#menucontentd').append('<form  style="margin-left:10%;  margin-right:10%; margin-top:85%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch"id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert"  id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo"><a href="javascript:checkifexistdbreg('+"'1'"+');" id="mbtnsincro" class="ui-btn ui-mini ui-shadow ui-corner-all"><img src="img/sincro.png" height="18" width="18"/>Sync</a></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></div></form>').trigger('create');
 	//$('#menucontentd').empty();
 	//$('#menucontentd').append('Portrait').trigger('create');	
 }
@@ -2473,7 +2473,7 @@ else
 {
 	// alert("Landscdfdapet!");
 		$('#menucontentd').empty();
-		$('#menucontentd').append('<div class="ui-grid-a"><div class="ui-block-a"></div><div class="ui-block-b"><form  style="width:70%; margin-left:20%; margin-top:32%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch" id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert"  id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</a></div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></form></div>').trigger('create');
+		$('#menucontentd').append('<div class="ui-grid-a"><div class="ui-block-a"></div><div class="ui-block-b"><form  style="width:70%; margin-left:20%; margin-top:32%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch" id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert"  id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</a></div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo"><a href="javascript:checkifexistdbreg('+"'1'"+');" id="mbtnsincro" class="ui-btn ui-mini ui-shadow ui-corner-all"><img src="img/sincro.png" height="18" width="18"/>Sync</a></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></form></div>').trigger('create');
 		
 		
 		//$('#menucontentd').empty();
@@ -2614,7 +2614,7 @@ $(document).on( 'pagebeforeshow', '#pageProcedureLaunch',function(){
 	
 });
 
-<!---------------------------------------------------------------------------------------------------------------------->
+
 //ON CREATE PROCEDURE STEPS
 $(document).on( 'pagebeforeshow', '#pageProcedure',function(){
 	inPageMes=0;
@@ -2712,7 +2712,6 @@ $("#textarea-editcomments").on("focus", function () {
 
 });
 
-<!---------------------------------------------------------------------------------------------------------------------->
 
 //ON CREATE Gallery Photo TEMP
 $(document).on( 'pagebeforeshow', '#Gallery1',function(){
@@ -2833,7 +2832,7 @@ $(document).on( 'pagebeforeshow', '#pageProcedureHsteps',function(){
 	//fillredlables();
 	
 });
-<!---------------------------------------------------------------------------------------------------------------------->
+
 
 //ON CREATE ISSUE REPORT HISTORY PAGE
 $(document).on( 'pagebeforeshow', '#pageReportHistory',function(){
@@ -2902,7 +2901,7 @@ getissuesh();
 
 });
 
-<!---------------------------------------------------------------------------------------------------------------------->
+
 
 //ON CREATE Gallery Photo
 $(document).on( 'pagebeforeshow', '#Gallery1h',function(){
@@ -2921,8 +2920,7 @@ $(document).on( 'pagebeforeshow', '#Gallery1h',function(){
 			})
 				
 		});
-		
-<!---------------------------------------------------------------------------------------------------------------------->
+
 
 //ON CREATE Gallery Video
 $(document).on( 'pagebeforeshow', '#pagetempvideoh',function(){
@@ -2930,9 +2928,7 @@ $(document).on( 'pagebeforeshow', '#pagetempvideoh',function(){
 	fillgalleryvidtemph();
 	
 	});
-<!---------------------------------------------------------------------------------------------------------------------->
 
-<!---------------------------------------------------------------------------------------------------------------------->
 
 //ON CREATE DataQueries
 $(document).on( 'pagebeforeshow', '#pageDataqueris',function(){
@@ -2949,10 +2945,7 @@ $(document).on( 'pagebeforeshow', '#pageDataqueris',function(){
 	});
 
 
-		
-<!---------------------------------------------------------------------------------------------------------------------->
 
-<!---------------------------------------------------------------------------------------------------------------------->
 
 //ON CREATE DataQueries Results
 $(document).on( 'pagecreate', '#pageResult',function(){
@@ -2979,10 +2972,6 @@ $(document).on( 'pagecreate', '#pageResult',function(){
 });
 
 
-		
-<!---------------------------------------------------------------------------------------------------------------------->
-
-<!---------------------------------------------------------------------------------------------------------------------->
 
 //ON CREATE Page Settings
 $(document).on( 'pagebeforeshow', '#pageSettings',function(){
@@ -3001,8 +2990,6 @@ showsettings();
 });
 
 		
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
 
 		//ON CREATE PAGE REJECTED
 $(document).on( 'pagebeforeshow', '#pageRejected',function(){
@@ -3048,7 +3035,7 @@ fillrejectedlist();
 
 
 });
-<!---------------------------------------------------------------------------------------------------------------------->
+
 //ON CREATE Launch Evaluations
 $(document).on( 'pagebeforeshow', '#pageEvaluationsLaunch',function(){
 	   
@@ -3096,8 +3083,7 @@ $("#textarea-nameeval").on("focus", function () {
 });	
 });
 
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
+
 //ON CREATE PROCEDURE EVALUATIONS STEPS
 $(document).on( 'pagebeforeshow', '#pageEvaluation',function(){
 	DeleteTemporalansers();
@@ -3124,8 +3110,7 @@ fillevaluationsteps();
 
 });
 
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
+
 //ON CREATE 
 //loogbook 
 $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
@@ -3213,11 +3198,10 @@ $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
 });
 
 
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
 //ON CREATE 
 //Certifications
 $(document).on( 'pagebeforeshow', '#pageCert',function(){
+	opensynccertSilence();
 var userfullname=sessionStorage.fname;
 var leveluser=sessionStorage.lvlname;
 var headstring=userfullname;
@@ -3253,10 +3237,7 @@ $('#table-Certifications').on('click','tr', function() {
 });
 
 
-<!---------------------------------------------------------------------------------------------------------------------->
 
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
 //ON CREATE 
 $(document).on( 'pagebeforeshow', '#pageMessages',function(){
 //fill username name,level and name
@@ -3310,9 +3291,6 @@ $(document).on( 'pagebeforeshow', '#pageMessages',function(){
 });
 
 
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
 //ON CREATE 
 $(document).on( 'pagebeforeshow', '#pageRead',function(){
 		clearInterval(IntervalMessagesP);
@@ -3324,8 +3302,6 @@ $(document).on( 'pagebeforeshow', '#pageRead',function(){
 });
 
 
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
 //ON CREATE 
 $(document).on( 'pagebeforeshow', '#pageSMessage',function(){
 	clearInterval(IntervalMessagesP);
@@ -3347,8 +3323,7 @@ $(document).on( 'pagebeforeshow', '#pageSMessage',function(){
 });
 
 
-<!---------------------------------------------------------------------------------------------------------------------->
-<!---------------------------------------------------------------------------------------------------------------------->
+
 //ON CREATE 
 $(document).on( 'pagebeforeshow', '#pageLibrary',function(){
 	clearInterval(IntervalMessagesP);
@@ -3378,7 +3353,6 @@ $(document).on( 'pagebeforeshow', '#pageLibrary',function(){
 });
 
 
-<!---------------------------------------------------------------------------------------------------------------------->
 
 ///////=============================<<<<<<<<<<<< END ON LOAD PAGES >>>>>>>>>>>=========================================///////
 

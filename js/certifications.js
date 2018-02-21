@@ -698,7 +698,170 @@ function QuerytDatabaseCertsLogModal(tx)
 			pbar.setValue(50);
 		 
 	 }
-	 	 
+}
 
+//function Sync Silence
+function opensynccertSilence()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(Getopensynccertsilence, errorCB);	
+}
+
+function Getopensynccertsilence(tx)
+{
+	var querytosend="SELECT * FROM SETTINGS";
+	tx.executeSql(querytosend, [], function(tx,results){ nsynccertsilenceSuccess(tx,results) }, errorCB);
+}
+
+function nsynccertsilenceSuccess(tx,results)
+{
+
+	var len = results.rows.length;
+	if(len>0)
+	{
+		$("#ipsync").val(results.rows.item(0).IP);
+		StartSynccertaSylence();
+	}
+}
+function StartSynccertaSylence()
+{
+	var ipserver=$("#ipsync").val();
+	sendAloneCertifications="";
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QuerySylenceccerti, errorCB);	
+}
+
+function QuerySylenceccerti(tx)
+{
+
+	var querytosend="SELECT * FROM USERS2CERTS WHERE Sync='no'";
+	tx.executeSql(querytosend, [], QuerySylcencccertiSuccess, errorCB);
+}
+
+function QuerySylcencccertiSuccess(tx,results)
+{
+     
+     try
+     {
+        var len = results.rows.length;
+        var array = [];
+        for (var i=0; i<results.rows.length; i++){
+         row = results.rows.item(i);
+         array.push(JSON.stringify(row));
+        }	
+        sendAloneCertifications=array;
+        //alert("bien en array");
+        ExecutePostCertiSylencc();        
+     }
+     catch(err)
+     {
+         alert(err);
+     }
+}
+
+function  ExecutePostCertiSylencc()
+{
+    try
+    {
+        var ipserver=$("#ipsync").val();
+        var obj = {};
+        obj['CertificationsUpdate'] =JSON.stringify(sendAloneCertifications);  
+        pbar.setValue(30);
+             $.ajax({
+                        type: 'POST',
+                        url: ipserver+'//SetCertifications',
+                        data: JSON.stringify(obj),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            if(response.d=="success")
+                            {
+                                pbar.setValue(100);
+                                UpdateCertisilenccSync();
+                            }                        
+                        },
+                        error: function (xmlHttpRequest, textStatus, errorThrown) {                       
+                        console.log(xmlHttpRequest.responseXML);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    }
+                    });
+    }
+    catch(error)
+    {
+        alert(error);
+    }
+   
 
 }
+
+function UpdateCertisilenccSync()
+{
+    var ipserver=$("#ipsync").val();
+    var obj = {};
+    //alert(ipserver);
+    $.ajax({
+        type: 'POST',
+        url:ipserver+'//GetCertificationsData',
+        data: JSON.stringify(obj),
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8',
+        success: function (response) {
+            InsertDatabaseCertssylencec(response.d);
+        },
+                        error: function (xmlHttpRequest, textStatus, errorThrown) {
+                            console.log(xmlHttpRequest.responseXML);
+                            console.log(textStatus);
+                            console.log(errorThrown);
+    }
+    });
+
+}
+
+function InsertDatabaseCertssylencec(newdatabase)
+{
+	newcertsdatatoinsert=newdatabase;
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QuerytDatabaseSylenceM, errorCB);
+	
+}
+
+function QuerytDatabaseSylenceM(tx)
+{
+		tx.executeSql("DELETE FROM CERTIFICATIONS");
+		tx.executeSql("DELETE FROM USERS2CERTS");
+	var query;
+    var obj = jQuery.parseJSON(newcertsdatatoinsert.Certifications);
+    var cuantos=obj.length;
+	var itemcount=0;
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		query='INSERT INTO CERTIFICATIONS (ID,Title,Desc,Type,ReqAllUsers,Expires,Months,Years,Days) VALUES ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.Title)+'", "'+escapeDoubleQuotes(value.Desc)+'", "'+escapeDoubleQuotes(value.Type)+'", "'+value.ReqAllUsers+'", "'+escapeDoubleQuotes(value.Expires)+'", "'+value.Months+'", "'+value.Years+'","'+value.Days+'")';
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	 }
+	 catch(error)
+	 {
+		console.log(error);
+	 }
+	 itemcount=0;
+     obj=jQuery.parseJSON(newcertsdatatoinsert.Users2Certs);
+     cuantos=obj.length;
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		query='INSERT INTO USERS2CERTS (FTID,UserID,ID,Date,Expiration,AlertSent,CertFile,AssesorID,PrintID) VALUES ("'+"ft"+itemcount+'","'+escapeDoubleQuotes(value.UserID)+'", "'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.Date)+'", "'+escapeDoubleQuotes(value.Expiration)+'", "'+value.AlertSent+'", "'+value.CertFile+'", "'+value.AssesorID+'","'+value.PrintID+'")';
+		tx.executeSql(query);
+        itemcount++;
+     });
+	 }
+	 catch(error)
+	 {
+		console.log(error);
+     }
+    // alert("termino sincronizacion automatica");
+}
+
