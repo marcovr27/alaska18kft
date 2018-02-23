@@ -414,7 +414,8 @@ function Queryitemworked(tx)
 {
 	var leveluser=sessionStorage.lvlname;
 	var currentuserlocation=sessionStorage.location;
-  tx.executeSql('SELECT * FROM LEVELS2ITEMS WHERE LevelNum="'+leveluser+'" AND Location="'+currentuserlocation+'" ORDER BY ID', [], QueryitemworkedSuccess, errorCB);
+	var query='SELECT Levels2Items.ID,Levels2Items.Location,Items.CourseID FROM LEVELS2ITEMS INNER JOIN Items ON Levels2Items.ID=Items.ID WHERE Levels2Items.LevelNum="'+leveluser+'" AND Levels2Items.Location="'+currentuserlocation+'" ORDER BY Levels2Items.ID';
+  tx.executeSql(query, [], QueryitemworkedSuccess, errorCB);
 }
 
 function QueryitemworkedSuccess(tx, results)
@@ -425,7 +426,11 @@ function QueryitemworkedSuccess(tx, results)
 	if(len>0)
 	{
 		for (var i=0; i<len; i++){
-			 selecthtml+='<option value="'+results.rows.item(i).ID+'">'+results.rows.item(i).ID+'</option>';
+			if(results.rows.item(i).CourseID==null || results.rows.item(i).CourseID=="")
+			{
+				selecthtml+='<option value="'+results.rows.item(i).ID+'">'+results.rows.item(i).ID+'</option>';
+			}
+			 
              }
 		 $("#select_itemsworkedon").html(selecthtml);	 
 	}
@@ -1703,25 +1708,51 @@ function QueryRTIOverall(tx)
 
 function QueryRTIOverallSuccess(tx,results)
 {
-	QuerySubRTI(results);
+	//QuerySubRTI(results);
+	Overalltrackingcourse(results);
 }
 
-function QuerySubRTI(resultados)
+//Search in Timetracking
+function Overalltrackingcourse(resultlevels)
 {
 	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
-    db.transaction(function(tx){ RQuerySubRTI(tx,resultados)}, errorCB);
-}
-function RQuerySubRTI(tx,resultados)
-{
-	var idusera=sessionStorage.userid;
-	var query="SELECT SubmittedHours.LevelNum, SUM(SubmittedHours.Hours) as hours, Sum(SubmittedHours.Mins) as mins FROM SubmittedHours WHERE SubmittedHours.Type='C' AND UserID='"+idusera+"' GROUP BY LevelNum";
-	tx.executeSql(query, [],function(tx,results){ RQuerySubRTISuccess(tx,results,resultados) }, errorCB);	
+    db.transaction(function(tx){ QueryOveralltracking(tx,resultlevels)}, errorCB);	
+
 }
 
-function RQuerySubRTISuccess(tx,results,resultados)
+function QueryOveralltracking(tx,resultlevels)
+{
+	var ItemSelected=$("#select_itemsworkedon").val();
+	var iduser=sessionStorage.userid;
+	var leveluser=sessionStorage.lvlname;
+	var query="SELECT TimeTracking.TotalTime, Items.Item,Levels2Items.LevelNum FROM Items INNER JOIN TimeTracking on Items.CourseID=TimeTracking.ContentID INNER JOIN Levels2Items on Items.Item=Levels2Items.ID WHERE TimeTracking.UserID='"+iduser+"'";
+	tx.executeSql(query, [],function(tx,results){ QueryOveralltrackingSuccess(tx,results,resultlevels) }, errorCB);	
+}
+
+function QueryOveralltrackingSuccess(tx,results,resultlevels)
+{
+	QuerySubRTI(resultlevels,results)
+}
+
+
+function QuerySubRTI(resultlevels,resultstime)
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ RQuerySubRTI(tx,resultlevels,resultstime)}, errorCB);
+}
+function RQuerySubRTI(tx,resultlevels,resultstime)
+{
+	var idusera=sessionStorage.userid;
+	var query="SELECT SubmittedHours.LevelNum,SubmittedHours.Item,SUM(SubmittedHours.Hours) as hours, Sum(SubmittedHours.Mins) as mins FROM SubmittedHours WHERE SubmittedHours.Type='C' AND UserID='"+idusera+"' GROUP BY LevelNum";
+	tx.executeSql(query, [],function(tx,results){ RQuerySubRTISuccess(tx,results,resultlevels,resultstime) }, errorCB);	
+}
+
+function RQuerySubRTISuccess(tx,results,resultados,resultres)
 {
 	var len= results.rows.length;
 	var lentwo= resultados.rows.length;
+	var lenthree=resultres.rows.length;
+	//alert(len+" "+lentwo+" "+lenthree);
 	var sumahrs=0;
 	var minshrs=0;
 	var totalminsh=0;
@@ -1730,6 +1761,7 @@ function RQuerySubRTISuccess(tx,results,resultados)
 	var perresult =0;
 	var tb = $('#body-classsummary');
 	var tablehtml="";
+	var coursehrs=0;
 	try
 	{
 		for (var i=0; i<lentwo; i++){
@@ -1737,20 +1769,37 @@ function RQuerySubRTISuccess(tx,results,resultados)
 			minshrs=0;
 			totalminsh=0;
 			togo=0;
+			coursehrs=0;
 			for (var t=0; t<len; t++){
 			  if(results.rows.item(t).LevelNum==resultados.rows.item(i).LevelNum)
 			  {
-				
+				//alert(results.rows.item(t).LevelNum+" "+results.rows.item(t).hours+":"+results.rows.item(t).mins+"item = "+results.rows.item(t).Item);
 				  sumahrs+=results.rows.item(t).hours;
 				  minshrs+=results.rows.item(t).mins;
 			  }
 			}
+			for (var w=0; w<lenthree; w++){
+				//alert(resultres.rows.item(w).LevelNum+"es igual a"+resultados.rows.item(i).LevelNum);
+				if(resultres.rows.item(w).LevelNum==resultados.rows.item(i).LevelNum)
+				{
+					//alert(resultres.rows.item(w).TotalTime);
+					coursehrs=parseFloat(coursehrs)+parseFloat(resultres.rows.item(w).TotalTime);
+					
+				}
+
+			}
+		
+		    //alert(coursehrs);
+			coursehrs=parseFloat(coursehrs)/3600;
+			//alert(coursehrs);
 			if(minshrs>0)
 			{
 		 	 totalminsh=parseFloat(minshrs)*(1/60);
 			}
-			totalfix=parseFloat(sumahrs)+parseFloat(totalminsh);
+			totalfix=parseFloat(sumahrs)+parseFloat(totalminsh)+parseFloat(coursehrs);
+			totalfix=parseFloat(totalfix).toFixed(2);
 			togo=parseFloat(resultados.rows.item(i).ReqHrsRTI)-parseFloat(totalfix);
+			togo=parseFloat(togo).toFixed(2);
 			perresult = (parseFloat(totalfix) / parseFloat(resultados.rows.item(i).ReqHrsRTI)) * 100;
 			if(perresult==100)
 			{
@@ -1767,7 +1816,7 @@ function RQuerySubRTISuccess(tx,results,resultados)
 			$("#table-classsummary").table("refresh");
 			$("#table-classsummary").trigger('create');
 			
-	}
+		}
 
 	}
 	catch(error)
@@ -1779,39 +1828,63 @@ function RQuerySubRTISuccess(tx,results,resultados)
 function GetRTIOverallModal()
 {
 	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
-    db.transaction(QueryRTIOverallModal, errorCB);	
+    db.transaction(QueryRTIOverallModalx, errorCB);	
 }
 
-function QueryRTIOverallModal(tx)
+function QueryRTIOverallModalx(tx)
 {
 	var classid=$("#idclassselected").val();
 	var currentuserlocation=sessionStorage.location;
-	var querytosend="SELECT Levels.LevelNum,Levels.ReqHrsRTI FROM Levels WHERE LevelNum='"+classid+"' AND Levels.Location='"+currentuserlocation+"'";
-	tx.executeSql(querytosend, [], QueryRTIOverallSuccessModal, errorCB);	
+	var querytosend="SELECT LevelNum,ID,Location FROM Levels2Items WHERE  Levels2Items.LevelNum='"+classid+"' AND Levels2Items.Location='"+currentuserlocation+"'";
+	tx.executeSql(querytosend, [], QueryRTIOverallSuccessModalx, errorCB);	
 }
-
-function QueryRTIOverallSuccessModal(tx,results)
+function QueryRTIOverallSuccessModalx(tx,results)
 {
-	QuerySubRTIModal(results);
+	QuerySubRTITIMEModalx(results);
 }
-
-function QuerySubRTIModal(resultados)
+function QuerySubRTITIMEModalx(resultlevels)
 {
 	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
-    db.transaction(function(tx){ RQuerySubRTIModal(tx,resultados)}, errorCB);
+    db.transaction(function(tx){ QueryOverallTIMEMODal(tx,resultlevels)}, errorCB);	
+
 }
-function RQuerySubRTIModal(tx,resultados)
+
+function QueryOverallTIMEMODal(tx,resultlevels)
+{
+	var iduser=sessionStorage.userid;
+	var leveluser=sessionStorage.lvlname;
+	var query="SELECT TimeTracking.TotalTime, Items.Item,Levels2Items.LevelNum FROM Items INNER JOIN TimeTracking on Items.CourseID=TimeTracking.ContentID INNER JOIN Levels2Items on Items.Item=Levels2Items.ID WHERE TimeTracking.UserID='"+iduser+"'";
+	tx.executeSql(query, [],function(tx,results){ QueryOveralltrackingSuccessModalx(tx,results,resultlevels) }, errorCB);
+}
+
+function QueryOveralltrackingSuccessModalx(tx,results,resultlevels)
+{
+	QuerySubRTIModalx(resultlevels,results)
+}
+
+
+function QuerySubRTIModalx(resultlevels,resultstime)
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ RQuerySubRTIxModal(tx,resultlevels,resultstime)}, errorCB);
+}
+
+function RQuerySubRTIxModal(tx,resultlevels,resultstime)
 {
 	var idusera=sessionStorage.userid;
 	var classid=$("#idclassselected").val();
 	var query="SELECT SubmittedHours.LevelNum, SubmittedHours.Hours as hours, SubmittedHours.Mins as mins, SubmittedHours.Item FROM SubmittedHours WHERE SubmittedHours.Type='C' AND UserID='"+idusera+"'";
-	tx.executeSql(query, [],function(tx,results){ RQuerySubRTISuccessModal(tx,results,resultados) }, errorCB);	
+	tx.executeSql(query, [],function(tx,results){ RQuerySubRTISuccessModalx(tx,results,resultlevels,resultstime) }, errorCB);
 }
 
-function RQuerySubRTISuccessModal(tx,results,resultados)
+
+
+function RQuerySubRTISuccessModalx(tx,results,resultados,resultatres)
 {
-	var len= results.rows.length;
-	var lentwo= resultados.rows.length;
+	var len= results.rows.length; //submittedhours
+	var lentwo= resultados.rows.length;// Levelitems
+	var lenthree=resultatres.rows.length;
+	//alert(len+" "+lentwo+" "+lenthree);
 	var sumahrs=0;
 	var minshrs=0;
 	var totalminsh=0;
@@ -1821,6 +1894,7 @@ function RQuerySubRTISuccessModal(tx,results,resultados)
 	var tb = $('#body-classdetail');
 	var tablehtml="";
 	var namesx="";
+	var coursehrs=0;
 	try
 	{
 		for (var i=0; i<lentwo; i++){
@@ -1828,21 +1902,37 @@ function RQuerySubRTISuccessModal(tx,results,resultados)
 			minshrs=0;
 			totalminsh=0;
 			togo=0;
+			coursehrs=0;
 			namesx="";
 			for (var t=0; t<len; t++){
-			  if(results.rows.item(t).LevelNum==resultados.rows.item(i).LevelNum)
+			  if(results.rows.item(t).Item==resultados.rows.item(i).ID)
 			  {
 				
 				  sumahrs+=results.rows.item(t).hours;
 				  minshrs+=results.rows.item(t).mins;
-				  namesx=results.rows.item(t).Item;
+				  
 			  }
 			}
+
+			namesx=resultados.rows.item(i).ID;
+			for (var w=0; w<lenthree; w++){
+				//alert(resultres.rows.item(w).LevelNum+"es igual a"+resultados.rows.item(i).LevelNum);
+				if(resultatres.rows.item(w).Item==resultados.rows.item(i).ID)
+				{
+					//alert(resultres.rows.item(w).TotalTime);
+					coursehrs=parseFloat(coursehrs)+parseFloat(resultatres.rows.item(w).TotalTime);
+					
+				}
+
+			}
+			coursehrs=parseFloat(coursehrs)/3600;
+			
 			if(minshrs>0)
 			{
 		 	 totalminsh=parseFloat(minshrs)*(1/60);
 			}
-			totalfix=parseFloat(sumahrs)+parseFloat(totalminsh);
+			totalfix=parseFloat(sumahrs)+parseFloat(totalminsh)+parseFloat(coursehrs);
+			totalfix=parseFloat(totalfix).toFixed(2);
 			tablehtml+='<tr><td class="colorrojo" align="center">'+ namesx+'</td><td class="colorrojo" align="center">'+totalfix+'</td></tr>';	
 			tb.empty().append(tablehtml);
 			$("#table-classdetail").table("refresh");
