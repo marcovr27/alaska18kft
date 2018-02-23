@@ -2,6 +2,7 @@
 ///////<<<<<<<<<<<<============================= GLOBAL VARIABLES =========================================>>>>>>>>>>>///////
 var newdatabasetoinsert;//Variable to get all tables from web service and insert on device db;
 var newtasksdatatoinsert;
+var newtimetrackingtoinsert;
 var newgroupsdatatoinsert;
 var newcoursesdatatoinsert;
 var newhoursdatatoinsert;
@@ -738,6 +739,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 //
 		 //alert("checadb");
 		 //New Tables febraury 2017
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS TIMETRACKING (UserID,ContentID,TotalTime,Date,ClassID)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS CERTIFICATIONS (ID,Title,Desc,Type,ReqAllUsers,Expires,Months,Years,Days)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS USERS2CERTS (FTID,UserID,ID,Date,Expiration,AlertSent,CertFile,AssesorID,PrintID,Sync)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS (AuditID,StepID,Text,SubPart)');
@@ -753,7 +755,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS REJECTED (SubmitID,ProcID,Name,UserID,Status,SubmitDate,RejectReason)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS STEPS2COMPS (StepID,CompID)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS SETTINGS (Language,IP,SyncTime,LastSync,DateFormat)');
-		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker"")');
+		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/")');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS LANGUAGES (Language,OrderNum)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS FILESDATA (FileID,FileUrl,FileName)');
 		// tx.executeSql('DROP TABLE IF EXISTS MEASUREMENTS');

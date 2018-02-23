@@ -114,7 +114,7 @@ function QueryCalculateOJTHours(tx)
 {
 	var iduser=sessionStorage.userid;	
 	//alert("SELECT * FROM SUBMITTEDHOURS WHERE UserID='"+iduser+"' AND Task='"+taskSelectedlog+"'");
-	tx.executeSql("SELECT * FROM SUBMITTEDHOURS WHERE UserID='"+iduser+"' AND Task='"+taskSelectedlog+"' AND Status='Approved'", [], QueryCalculateOJTHoursSuccess, errorCB);
+	tx.executeSql("SELECT * FROM SUBMITTEDHOURS WHERE UserID='"+iduser+"' AND Task='"+taskSelectedlog+"' AND (Status='Modified' OR Status='Approved')", [], QueryCalculateOJTHoursSuccess, errorCB);
 }
 
 function QueryCalculateOJTHoursSuccess(tx,results)
@@ -134,12 +134,12 @@ function QueryCalculateOJTHoursSuccess(tx,results)
 		//alert("hours="+totalhours+ "mins="+totalmins);
 		if(totalmins>0)
 		{
-		  totalminsh=parseFloat(totalmins)*(1/60);
+			totalmins=parseFloat(totalmins)*(1/60);
 			
 		}
 		//alert("hours on minutes="+totalminsh);
 		
-		var totalfix=parseFloat(totalhours)+parseFloat(totalminsh);
+		var totalfix=parseFloat(totalhours)+parseFloat(totalmins);
 		totalfix=totalfix.toFixed(2)
 		//alert("total hours completed"+totalfix);
 		var completedH=totalfix;
@@ -314,75 +314,92 @@ function QueryCheckHoursT(tx)
 
 function QueryCheckHoursTSuccess(tx,results)
 {
-	var len = results.rows.length;
-	var hours="0";
-	var mins="0";
-	var hourstimesuma=$("#hourentryone").val();
-	var minstimesuma=$("#minutesentryone").val();
-	if(hourstimesuma=="")
+	try
 	{
-		hourstimesuma=0;
-	}
-	if(minstimesuma=="")
-	{
-		minstimesuma=0;
-	}
-	//alert(len);
-	for (var i=0; i<results.rows.length; i++){
-		//alert(results.rows.item(i).Hora);
-		//alert(results.rows.item(i).SubmitDate);
-		if(results.rows.item(i).Hora!="" || results.rows.item(i).Hora!="null")
+		var len = results.rows.length;
+		var hours="0";
+		var mins="0";
+		var hourstimesuma=$("#hourentryone").val();
+		var minstimesuma=$("#minutesentryone").val();
+		if(hourstimesuma=="")
 		{
-			hours=results.rows.item(i).Hora;
+			hourstimesuma=0;
 		}
-		if(results.rows.item(i).minutos!="" || results.rows.item(i).minutos!="null")
+		if(minstimesuma=="")
 		{
-			mins=results.rows.item(i).minutos;
+			minstimesuma=0;
 		}
-	}
-	//alert("horas: "+hours+" mins:"+mins);
-	var hourstime=parseFloat(hours);
-	var minstime=parseFloat(mins);
-	hourstime=parseFloat(hourstime)+parseFloat(hourstimesuma);
-	minstime=parseFloat(minstime)+parseFloat(minstimesuma);
-	//alert("tiempo: "+hourstime+":"+minstime);
-	if(hourstime=="")
-	{
-		hourstime=0;
-	}
-	if(minstime=="")
-	{
-		minstime=0;
-	}
-	if(hourstime>0 || minstime>0)
-	{
-			if(hourstime>=11)
-	{
-		//alert("primer if ="+hourstime );
-		
-		if(hourstime>11)
-		{
-			$("#popupmuchtime").popup("open");
+	  // alert("aki vamos"+len);
+		for (var i=0; i<results.rows.length; i++){
+			//alert(results.rows.item(i).Hora);
+			//alert(results.rows.item(i).SubmitDate);
+			if(results.rows.item(i).Hora!="" || results.rows.item(i).Hora!="null")
+			{
+				hours=results.rows.item(i).Hora;
+			}
+			if(results.rows.item(i).minutos!="" || results.rows.item(i).minutos!="null")
+			{
+				mins=results.rows.item(i).minutos;
+			}
 		}
-		else if(hourstime=11 && minstime>=30)
+		if(hours==null)
 		{
-			$("#popupmuchtime").popup("open");
+			hours=0;
+		}
+		if(mins==null)
+		{
+			mins=0;
+		}
+		//alert("horas: "+hours+" mins:"+mins);
+		var hourstime=parseFloat(hours);
+		var minstime=parseFloat(mins);
+		hourstime=parseFloat(hourstime)+parseFloat(hourstimesuma);
+		minstime=parseFloat(minstime)+parseFloat(minstimesuma);
+		//alert("tiempo: "+hourstime+":"+minstime);
+		if(hourstime=="")
+		{
+			hourstime=0;
+		}
+		if(minstime=="")
+		{
+			minstime=0;
+		}
+		if(hourstime>0 || minstime>0)
+		{
+				if(hourstime>=11)
+		{
+			//alert("primer if ="+hourstime );
+			
+			if(hourstime>11)
+			{
+				$("#popupmuchtime").popup("open");
+			}
+			else if(hourstime=11 && minstime>=30)
+			{
+				$("#popupmuchtime").popup("open");
+				
+			}
+			else
+			{
+				//alert("guardo");
+				SubmitOJT();
+				
+			}
 			
 		}
 		else
 		{
 			//alert("guardo");
 			SubmitOJT();
-			
 		}
-		
 	}
-	else
+
+	}
+	catch(error)
 	{
-		//alert("guardo");
-		SubmitOJT();
+		alert(error);
 	}
-}
+
 
 }
 
@@ -397,7 +414,7 @@ function Queryitemworked(tx)
 {
 	var leveluser=sessionStorage.lvlname;
 	var currentuserlocation=sessionStorage.location;
-  tx.executeSql('SELECT * FROM LEVELS2ITEMS WHERE Location="'+currentuserlocation+'" ORDER BY ID', [], QueryitemworkedSuccess, errorCB);
+  tx.executeSql('SELECT * FROM LEVELS2ITEMS WHERE LevelNum="'+leveluser+'" AND Location="'+currentuserlocation+'" ORDER BY ID', [], QueryitemworkedSuccess, errorCB);
 }
 
 function QueryitemworkedSuccess(tx, results)
@@ -450,10 +467,62 @@ function QueryInfoLevelSuccess(tx,results)
 
 function ItemSelected()
 {
-	var taskID=$("#select_taskworked").val();
-	taskSelectedlog=taskID;
+	SearchTimeintrackingcourse();
+	//var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    //db.transaction(QueryInfoItem, errorCB);
+}
+
+function SearchTimeintrackingcourse()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryInfosearchtime, errorCB);
+
+}
+
+function QueryInfosearchtime(tx)
+{
+	var ItemSelected=$("#select_itemsworkedon").val();
+	var iduser=sessionStorage.userid;
+	var leveluser=sessionStorage.lvlname;
+	$("#minscoursesh").val('0');
+	var query="SELECT SUM(TimeTracking.TotalTime) as secs FROM Items INNER JOIN TimeTracking on Items.CourseID=TimeTracking.ContentID WHERE TimeTracking.UserID='"+iduser+"' AND Items.ID='"+ItemSelected+"'";
+	//alert(query);
+	tx.executeSql(query, [],  QueryInfosearchtimeSuccess, errorCB);
+    //tx.executeSql("SELECT * FROM TimeTracking", [],  QueryInfosearchtimeSuccess, errorCB);
+}
+
+function QueryInfosearchtimeSuccess(tx,results)
+{
+	var len = results.rows.length;
+	if(len>0)
+	{
+		//alert(results.rows.item(0).secs)
+		if(results.rows.item(0).secs==null)
+		{
+			$("#minscoursesh").val('0');
+
+		}
+		else
+		{
+			$("#minscoursesh").val(results.rows.item(0).secs);
+		}
+		//var segundoide=$("#minscoursesh").val();
+		//alert("segundos= "+segundoide);
+		newinfoitemss();
+
+	}
+	else
+	{
+		$("#minscoursesh").val('0');
+		newinfoitemss();
+	}
+}
+
+function newinfoitemss()
+{
 	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
     db.transaction(QueryInfoItem, errorCB);
+
 }
 
 function QueryInfoItem(tx)
@@ -463,7 +532,7 @@ function QueryInfoItem(tx)
 	var ItemSelected=$("#select_itemsworkedon").val();
 	var iduser=sessionStorage.userid;
 	var leveluser=sessionStorage.lvlname;
-	tx.executeSql("SELECT * FROM SUBMITTEDHOURS WHERE UserID='"+iduser+"' AND Item='"+ItemSelected+"' AND LevelNum='"+leveluser+"' AND Status='Approved'", [], QueryInfoItemSuccess, errorCB);
+	tx.executeSql("SELECT * FROM SUBMITTEDHOURS WHERE UserID='"+iduser+"' AND Item='"+ItemSelected+"' AND LevelNum='"+leveluser+"' AND (Status='Modified' OR Status='Approved')", [], QueryInfoItemSuccess, errorCB);
 	
 }
 
@@ -475,27 +544,37 @@ function QueryInfoItemSuccess(tx, results)
 	var hoursTogoClass=0;
 	var totalhours=0;
 	var totalmins=0;
+	var otherhours=0;
+	var segundoide=$("#minscoursesh").val();
+	//alert(segundoide);
+	otherhours=parseFloat(segundoide)/3600;
 	//LevelReqHRSRTI Hours To complete
 	$("#revalueitemtd").html(LevelReqHRSRTI);
+	//alert(len);
 	//alert("task worked"+len);
 	if(len>0)
 	{
+
 			for (var i=0; i<len; i++){	
+				//alert(results.rows.item(i).Hours+":"+results.rows.item(i).Mins);
 		totalhours+= parseFloat(results.rows.item(i).Hours);
 		totalmins+= parseFloat(results.rows.item(i).Mins);
 		}
 				if(totalmins>0)
 		{
-		  totalminsh=parseFloat(totalmins)*(1/60);
+			totalmins=parseFloat(totalmins)*(1/60);
 			
 		}
-		//alert("hours on minutes="+totalminsh);
+		//alert(totalhours);
+		//alert("hours on minutes="+totalmins);
 		
-		var totalfix=parseFloat(totalhours)+parseFloat(totalminsh);
-		totalfix=totalfix.toFixed(2)
+		var totalfix=parseFloat(totalhours)+parseFloat(totalmins)+parseFloat(otherhours);
+		totalfix=parseFloat(totalfix).toFixed(2);
+		//alert(totalfix);
 		//alert("total hours completed"+totalfix);
-		completedHoursClass=totalfix;
+		completedHoursClass=parseFloat(totalfix);
 		hoursTogoClass=parseFloat(LevelReqHRSRTI)-parseFloat(completedHoursClass);
+		//alert("completed:"+completedHoursClass+"togo:"+hoursTogoClass);
 		var Done=parseFloat(completedHoursClass)/parseFloat(LevelReqHRSRTI)*100;
 		Doneclasshours=parseFloat(Done).toFixed(0);
 		//alert(results.rows.item(5).ReqHrsOJT);
@@ -504,6 +583,21 @@ function QueryInfoItemSuccess(tx, results)
 
 		 
 	}
+	else
+	{
+		
+		if(otherhours>0)
+		{
+			var totalfix=parseFloat(totalhours)+parseFloat(totalmins)+parseFloat(otherhours);
+		totalfix=parseFloat(totalfix).toFixed(2);
+			completedHoursClass=parseFloat(totalfix);
+		hoursTogoClass=parseFloat(LevelReqHRSRTI)-parseFloat(completedHoursClass);
+		//alert("completed:"+completedHoursClass+"togo:"+hoursTogoClass);
+		var Done=parseFloat(completedHoursClass)/parseFloat(LevelReqHRSRTI)*100;
+		Doneclasshours=parseFloat(Done).toFixed(0);
+		}
+	}
+
 	$("#completedvalueitemtd").html(completedHoursClass);
 	$("#hourstogovalueitemtd").html(hoursTogoClass);
 	$("#donevalueitemtd").html(Doneclasshours+"%");
@@ -657,6 +751,14 @@ function QueryCheckHoursCSuccess(tx,results)
 		{
 			mins=results.rows.item(i).minutos;
 		}
+	}
+	if(hours==null)
+	{
+		hours=0;
+	}
+	if(mins==null)
+	{
+		mins=0;
 	}
 	//alert("horas: "+hours+" mins:"+mins);
 	var hourstime=parseFloat(hours);
@@ -1025,7 +1127,8 @@ function QuerytoinsertSubmitHoursLog(tx)
 		itemcount++;		
 		if(itemcount==cuantos)
 		{
-			filltaskworked();
+			//filltaskworked();
+			ExcuteSylenceTimeTracking();
 		}
      });
 	 }
@@ -1034,6 +1137,55 @@ function QuerytoinsertSubmitHoursLog(tx)
 		 alert(error);
 	 }
 
+}
+function ExcuteSylenceTimeTracking()
+{	
+	var ipserver=$("#ipsync").val();
+	                $.ajax({
+                    type: 'POST',
+				    url:ipserver+'//GetTimeTracking',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+						InsertDatabaseTimeTrackingSylencPM(response.d);
+                    },
+            error: function (xmlHttpRequest, textStatus, errorThrown) {
+					IsSyncMessages=false;		
+                    console.log(xmlHttpRequest.responseXML);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+                });
+}
+
+function InsertDatabaseTimeTrackingSylencPM(newdatabase)
+{
+
+		newtimetrackingtoinsert=newdatabase;
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      db.transaction(QuerytoinsertTimeTrackingPMSS, errorCB);
+	
+}
+
+function QuerytoinsertTimeTrackingPMSS(tx)
+{
+	tx.executeSql("DELETE FROM TIMETRACKING");
+	var query;
+	var obj = jQuery.parseJSON(newtimetrackingtoinsert.TimeTracking);
+	var itemcount=0;
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		query='INSERT INTO TIMETRACKING  (UserID,ContentID,TotalTime,Date,ClassID) VALUES ("'+escapeDoubleQuotes(value.UserID)+'", "'+escapeDoubleQuotes(value.ContentID)+'", "'+value.TotalTime+'", "'+value.Date+'", "'+escapeDoubleQuotes(value.ClassID)+'")';
+		tx.executeSql(query);
+		itemcount++;
+     });
+	 }
+	 catch(error)
+	 {
+		 alert(error);		 
+	 }
+	 filltaskworked();
 }
 
 
@@ -1104,7 +1256,106 @@ function QueryModalLogbookSuccess(tx,results)
  	array.push(JSON.stringify(row));
 	}	
 	sendHoursalone=array;
-	ExecutePostLogModal();
+	ExcutePostModalTimeTracking();
+}
+
+function ExcutePostModalTimeTracking()
+{	
+	var ipserver=$("#ipsync").val();
+	//alert("Get Courses");
+    //alert("Get Data from:"+ipserver);
+	//alert("Post To GetCoursesdata");
+$("#progressheader").html(" ");
+	//progressheader
+	$("#progressheader").html("Downloading data...");
+		$("#progressMessage").html("Post To GetTimeTracking");
+		pbar.setValue(0);
+		//alert("listo para el post: "+ipserver+'//GetStructureData');
+	                $.ajax({
+                    type: 'POST',
+				    url:ipserver+'//GetTimeTracking',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+						//alert(response.d);
+						//alert("WEb service works");
+						InsertDatabaseTimeTrackingPM(response.d);
+                        //alert(response.d.users);
+                       // var obj = jQuery.parseJSON(response.d.users);
+                       // $.each(obj, function (key, value) {
+                         //   alert(value.Username);//inserts users
+                        //});
+                       // $('#lblData').html(JSON.stringify());
+                    },
+            error: function (xmlHttpRequest, textStatus, errorThrown) {
+							$("#progressheader").html("Can not connect to server");
+							$("#progressMessage").html("Error Getting data Timetracking:" +xmlHttpRequest.responseXML+" Status: "+textStatus+"==>"+xmlHttpRequest.statusText+" thrown: "+errorThrown);
+					IsSyncMessages=false;		
+					setTimeout( function(){ $("#generic-dialog").dialog("close"); }, 6000 );
+                    console.log(xmlHttpRequest.responseXML);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                   // alert("Error");
+                }
+                });
+				//alert("primer post ejecutado");
+}
+
+function InsertDatabaseTimeTrackingPM(newdatabase)
+{
+
+	$("#progressMessage").html("Successful connection");
+		pbar.setValue(1);
+		newtimetrackingtoinsert=newdatabase;
+	//alert(newdatabase);
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      db.transaction(QuerytoinsertTimeTrackingPM, errorCB);
+	
+}
+
+function QuerytoinsertTimeTrackingPM(tx)
+{
+	//alert("deleteoldrecords");
+	$("#progressMessage").html("Deleting old records");
+		pbar.setValue(2);
+	tx.executeSql("DELETE FROM TIMETRACKING");
+	//ready to insert new records
+	//alert("Insert new data GetCoursesdata");
+	$("#progressMessage").html("Ready to insert new records");
+	var query;
+	var obj = jQuery.parseJSON(newtimetrackingtoinsert.TimeTracking);
+	//alert("Items "+obj.length);
+	var itemcount=0;
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
+		query='INSERT INTO TIMETRACKING  (UserID,ContentID,TotalTime,Date,ClassID) VALUES ("'+escapeDoubleQuotes(value.UserID)+'", "'+escapeDoubleQuotes(value.ContentID)+'", "'+value.TotalTime+'", "'+value.Date+'", "'+escapeDoubleQuotes(value.ClassID)+'")';
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	// alert("totalGroups2content: "+itemcount);
+	 
+	 	$("#progressMessage").html("TimeTracking updated");
+	pbar.setValue(10);
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating TimeTracking "+error);
+			pbar.setValue(30);
+		 
+	 }
+	 
+	
+		 
+	 $("#progressMessage").html("TimeTracking updated");
+		pbar.setValue(100);
+
+	$("#progressMessage").html("");
+		pbar.setValue(100);
+		ExecutePostLogModal();
 }
 
 function ExecutePostLogModal()
@@ -1278,7 +1529,7 @@ function QuerySubOjt(resultados)
 function RQuerySubOjt(tx,resultados)
 {
 	var idusera=sessionStorage.userid;
-	var query="SELECT DUTIES2TASKS.Duty,SUM(SUBMITTEDHOURS.Hours) as suma, SUM(SUBMITTEDHOURS.Mins) as smins FROM SUBMITTEDHOURS  INNER JOIN DUTIES2TASKS ON SUBMITTEDHOURS.Task=DUTIES2TASKS.TaskID WHERE SUBMITTEDHOURS.Type='O' AND SUBMITTEDHOURS.UserID='"+idusera+"' AND SUBMITTEDHOURS.Status='Approved' GROUP BY Duty ORDER By DUTIES2TASKS.Duty";
+	var query="SELECT DUTIES2TASKS.Duty,SUM(SUBMITTEDHOURS.Hours) as suma, SUM(SUBMITTEDHOURS.Mins) as smins FROM SUBMITTEDHOURS  INNER JOIN DUTIES2TASKS ON SUBMITTEDHOURS.Task=DUTIES2TASKS.TaskID WHERE SUBMITTEDHOURS.Type='O' AND SUBMITTEDHOURS.UserID='"+idusera+"' AND (SUBMITTEDHOURS.Status='Modified' OR SUBMITTEDHOURS.Status='Approved')  GROUP BY Duty ORDER By DUTIES2TASKS.Duty";
 	tx.executeSql(query,[],function(tx,results){ RQuerySubOjtSuccess(tx,results,resultados) }, errorCB);	
 }
 
@@ -1368,7 +1619,7 @@ function RQuerySubOjtModal(tx,resultados)
 {
 	var idusera=sessionStorage.userid;
 	var ojtvar=$("#idojtselected").val();
-	var query="SELECT DUTIES2TASKS.Duty,SUBMITTEDHOURS.Task, SUBMITTEDHOURS.Hours, SUBMITTEDHOURS.Mins FROM SUBMITTEDHOURS  INNER JOIN DUTIES2TASKS ON SUBMITTEDHOURS.Task=DUTIES2TASKS.TaskID WHERE SUBMITTEDHOURS.Type='O' AND SUBMITTEDHOURS.UserID='"+idusera+"' AND SUBMITTEDHOURS.Status='Approved' AND DUTIES2TASKS.Duty='"+ojtvar+"' ORDER By DUTIES2TASKS.Duty";
+	var query="SELECT DUTIES2TASKS.Duty,SUBMITTEDHOURS.Task, SUBMITTEDHOURS.Hours, SUBMITTEDHOURS.Mins FROM SUBMITTEDHOURS  INNER JOIN DUTIES2TASKS ON SUBMITTEDHOURS.Task=DUTIES2TASKS.TaskID WHERE SUBMITTEDHOURS.Type='O' AND SUBMITTEDHOURS.UserID='"+idusera+"' AND  (SUBMITTEDHOURS.Status='Modified' OR SUBMITTEDHOURS.Status='Approved') AND DUTIES2TASKS.Duty='"+ojtvar+"' ORDER By DUTIES2TASKS.Duty";
 	tx.executeSql(query,[],function(tx,results){ RQuerySubOjtSuccessModal(tx,results,resultados) }, errorCB);	
 }
 

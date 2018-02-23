@@ -59,7 +59,7 @@ function Querytablecert(tx)
     var idusera=$("#select_usercertifications").val();
     $("#hinfocerts").html("");
     //alert(idusera);
-    tx.executeSql("SELECT  Users2Certs.FTID,Users2Certs.ID,Certifications.[Desc], Users2Certs.Date, Users2Certs.Expiration, Expires, Title, Months, Days, Years FROM Users2Certs INNER JOIN Certifications ON Users2Certs.ID = Certifications.ID WHERE Users2Certs.UserID ='"+idusera+"'", [], FillQuerytablecert, errorCert);
+    tx.executeSql("SELECT DISTINCT Users2Certs.FTID,Users2Certs.ID,Certifications.[Desc], Users2Certs.Date, Users2Certs.Expiration, Expires, Title, Months, Days, Years FROM Users2Certs INNER JOIN Certifications ON Users2Certs.ID = Certifications.ID WHERE Users2Certs.UserID ='"+idusera+"' ORDER BY Certifications.[Desc], Users2Certs.Date DESC", [], FillQuerytablecert, errorCert);
     
 }
 function FillQuerytablecert(tx,results)

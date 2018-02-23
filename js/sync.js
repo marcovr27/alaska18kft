@@ -585,6 +585,104 @@ function QuerytoinsertCourses(tx)
 	GetservicedataSubmitHours(0);
 	//Getservicedata();	
 }
+function GetservicedataTimeTracking()
+{	
+	var ipserver=$("#ipsync").val();
+	//alert("Get Courses");
+    //alert("Get Data from:"+ipserver);
+	//alert("Post To GetCoursesdata");
+$("#progressheader").html(" ");
+	//progressheader
+	$("#progressheader").html("Downloading data...");
+		$("#progressMessage").html("Post To GetTimeTracking");
+		pbar.setValue(0);
+		//alert("listo para el post: "+ipserver+'//GetStructureData');
+	                $.ajax({
+                    type: 'POST',
+				    url:ipserver+'//GetTimeTracking',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+						//alert(response.d);
+						//alert("WEb service works");
+						InsertDatabaseTimeTracking(response.d);
+                        //alert(response.d.users);
+                       // var obj = jQuery.parseJSON(response.d.users);
+                       // $.each(obj, function (key, value) {
+                         //   alert(value.Username);//inserts users
+                        //});
+                       // $('#lblData').html(JSON.stringify());
+                    },
+            error: function (xmlHttpRequest, textStatus, errorThrown) {
+							$("#progressheader").html("Can not connect to server");
+							$("#progressMessage").html("Error Getting data Timetracking:" +xmlHttpRequest.responseXML+" Status: "+textStatus+"==>"+xmlHttpRequest.statusText+" thrown: "+errorThrown);
+					IsSyncMessages=false;		
+					setTimeout( function(){ $("#generic-dialog").dialog("close"); }, 6000 );
+                    console.log(xmlHttpRequest.responseXML);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                   // alert("Error");
+                }
+                });
+				//alert("primer post ejecutado");
+}
+
+function InsertDatabaseTimeTracking(newdatabase)
+{
+
+	$("#progressMessage").html("Successful connection");
+		pbar.setValue(1);
+		newtimetrackingtoinsert=newdatabase;
+	//alert(newdatabase);
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      db.transaction(QuerytoinsertTimeTracking, errorCB);
+	
+}
+
+function QuerytoinsertTimeTracking(tx)
+{
+	//alert("deleteoldrecords");
+	$("#progressMessage").html("Deleting old records");
+		pbar.setValue(2);
+	tx.executeSql("DELETE FROM TIMETRACKING");
+	//ready to insert new records
+	//alert("Insert new data GetCoursesdata");
+	$("#progressMessage").html("Ready to insert new records");
+	var query;
+	var obj = jQuery.parseJSON(newtimetrackingtoinsert.TimeTracking);
+	//alert("Items "+obj.length);
+	var itemcount=0;
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
+		query='INSERT INTO TIMETRACKING  (UserID,ContentID,TotalTime,Date,ClassID) VALUES ("'+escapeDoubleQuotes(value.UserID)+'", "'+escapeDoubleQuotes(value.ContentID)+'", "'+value.TotalTime+'", "'+value.Date+'", "'+escapeDoubleQuotes(value.ClassID)+'")';
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	// alert("totalGroups2content: "+itemcount);
+	 
+	 	$("#progressMessage").html("TimeTracking updated");
+	pbar.setValue(10);
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating TimeTracking "+error);
+			pbar.setValue(30);
+		 
+	 }
+	 
+	
+		 
+	 $("#progressMessage").html("TimeTracking updated");
+		pbar.setValue(100);
+
+	$("#progressMessage").html("");
+		pbar.setValue(100);
+		GetservicedataCourses();
+}
 //GET DATA FROM SERVER
 
 function GetservicedataGroups()
@@ -749,7 +847,7 @@ function QuerytoinsertGroups(tx)
 
 	$("#progressMessage").html("");
 		pbar.setValue(100);
-    GetservicedataCourses();
+		GetservicedataTimeTracking();
    //sendprocedures();	
 }
 
