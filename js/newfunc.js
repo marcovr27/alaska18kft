@@ -1789,7 +1789,8 @@ function RQuerySubRTISuccess(tx,results,resultados,resultres)
 
 			}
 		
-		    //alert(coursehrs);
+		//	alert(coursehrs);
+			//alert(sumahrs);
 			coursehrs=parseFloat(coursehrs)/3600;
 			//alert(coursehrs);
 			if(minshrs>0)

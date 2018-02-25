@@ -755,7 +755,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS REJECTED (SubmitID,ProcID,Name,UserID,Status,SubmitDate,RejectReason)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS STEPS2COMPS (StepID,CompID)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS SETTINGS (Language,IP,SyncTime,LastSync,DateFormat)');
-		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/")');
+		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/serviceft.asmx")');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS LANGUAGES (Language,OrderNum)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS FILESDATA (FileID,FileUrl,FileName)');
 		// tx.executeSql('DROP TABLE IF EXISTS MEASUREMENTS');
@@ -3157,6 +3157,12 @@ $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
 	GetSubmissions();
 	updateuserlevel();
 	$( "#onebt" ).addClass("ui-btn-active");
+	$( "#tabs" ).on( "tabsactivate", function( event, ui ) {
+		var reminderSettingsx = $("#select_Submission");
+	reminderSettingsx.val("All").attr('selected', true).siblings('option').removeAttr('selected'); 
+	reminderSettingsx.selectmenu("refresh", true);
+	GetSubmissions();
+	} );
 	$('#table-ojtsummary').on('click','tr', function() {
         $('#body-ojtsummary tr').css({background: 'transparent'});
 		$('#body-ojtsummary tr').css({color: 'black'});
