@@ -8491,10 +8491,10 @@ function QueryshowsettingsSuccess(tx,results)
 	//alert(results.rows.item(0).Language);
 	if(len>0)
 	{
-      $("#ipsetting").val(results.rows.item(0).IP);
+	  $("#ipsetting").val(results.rows.item(0).IP);
+	  $("#ipsettinginit").val(results.rows.item(0).IP);
 	  $("#select-lang").val(results.rows.item(0).Language);
 	  $("#select-lang").selectmenu("refresh");	
-	  $("#ipsettinginit").val(results.rows.item(0).IP);
 	  $("#select-langinit").val(results.rows.item(0).Language);
 	  $("#select-langinit").selectmenu("refresh");		
 	}
