@@ -226,6 +226,15 @@ $( "#onebt" ).addClass("ui-btn-active");
 $("#entryonevalue").val("");	 
 $("#hourentryone").val("");
 $("#minutesentryone").val("");
+var reminderSettings = $("#select_Submission");
+reminderSettings.val("All").attr('selected', true).siblings('option').removeAttr('selected'); 
+reminderSettings.selectmenu("refresh", true);
+var reminderSettingsxsz = $("#select_personnelworked");
+reminderSettingsxsz.val("0").attr('selected', true).siblings('option').removeAttr('selected'); 
+reminderSettingsxsz.selectmenu("refresh", true);
+var reminderSettingsxs = $("#select_taskworked");
+	reminderSettingsxs.val("0").attr('selected', true).siblings('option').removeAttr('selected'); 
+	reminderSettingsxs.selectmenu("refresh", true);
 TaskSelected();
 GetSubmissions();
  }
@@ -879,6 +888,9 @@ function QuerySubmitItem(tx)
 	 catch(error){}
 $( "#twobt" ).addClass("ui-btn-active");	 
 //$('#two').trigger('click');	 
+var reminderSettingsxszy = $("#select_itemsworkedon");
+	reminderSettingsxszy.val("0").attr('selected', true).siblings('option').removeAttr('selected'); 
+	reminderSettingsxszy.selectmenu("refresh", true);
 $("#entryoneitemvalue").val("");	 
 $("#hourentryitemonec").val("");
 $("#minutesentryitemonec").val("");
