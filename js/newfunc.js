@@ -267,7 +267,7 @@ function CheckHoursOJT()
 		{
 			$("#popupmuchtime").popup("open");
 		}
-		else if(hourstime=11 && minstime>=30)
+		else if(hourstime=11 && minstime>30)
 		{
 			$("#popupmuchtime").popup("open");
 			
@@ -310,13 +310,15 @@ function CheckHoursT()
 
 function QueryCheckHoursT(tx)
 {
-//	alert("entro");
+
 	var now = new Date();
 	var day = ("0" + now.getDate()).slice(-2);
 	var month = ("0" + (now.getMonth() + 1)).slice(-2);
 	var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 	var UseraID=sessionStorage.userid;
-	var query="SELECT SUM(Hours) as Hora, SUM(Mins) as minutos FROM SubmittedHours WHERE UserID='"+UseraID+"' AND SubmitDate BETWEEN DATE('now') AND DATE('now', '+1 day')";
+	var entrydatesone=$("#entryonevalue").val();
+	entrydatesone=InsertFormatDate(entrydatesone);
+	var query="SELECT SUM(Hours) as Hora, SUM(Mins) as minutos FROM SubmittedHours WHERE UserID='"+UseraID+"' AND EntryDate BETWEEN DATE('"+entrydatesone+"') AND DATE('"+entrydatesone+"', '+1 day')";
 	//alert(query);
 	tx.executeSql(query, [], QueryCheckHoursTSuccess, errorCBMes);
 }
@@ -340,7 +342,7 @@ function QueryCheckHoursTSuccess(tx,results)
 		}
 	  // alert("aki vamos"+len);
 		for (var i=0; i<results.rows.length; i++){
-			//alert(results.rows.item(i).Hora);
+			//alert(results.rows.item(i).Hora+":"+results.rows.item(i).minutos);
 			//alert(results.rows.item(i).SubmitDate);
 			if(results.rows.item(i).Hora!="" && results.rows.item(i).Hora!=null)
 			{
@@ -383,7 +385,7 @@ function QueryCheckHoursTSuccess(tx,results)
 			{
 				$("#popupmuchtime").popup("open");
 			}
-			else if(hourstime=11 && minstime>=30)
+			else if(hourstime=11 && minstime>30)
 			{
 				$("#popupmuchtime").popup("open");
 				
@@ -693,7 +695,7 @@ function CheckitemsValues()
 		{
 			$("#popupmuchtimeC").popup("open");
 		}
-		else if(hourstime=11 && minstime>=30)
+		else if(hourstime=11 && minstime>30)
 		{
 			$("#popupmuchtimeC").popup("open");
 			
@@ -734,7 +736,9 @@ function QueryCheckHoursCC(tx)
 	var month = ("0" + (now.getMonth() + 1)).slice(-2);
 	var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 	var UseraID=sessionStorage.userid;
-	var query="SELECT SUM(Hours) as Hora, SUM(Mins) as minutos FROM SubmittedHours WHERE UserID='"+UseraID+"' AND SubmitDate BETWEEN DATE('now') AND DATE('now', '+1 day')";
+	var entrydatesone=$("#entryonevalue").val();
+	entrydatesone=InsertFormatDate(entrydatesone);
+	var query="SELECT SUM(Hours) as Hora, SUM(Mins) as minutos FROM SubmittedHours WHERE UserID='"+UseraID+"' AND EntryDate BETWEEN DATE('"+entrydatesone+"') AND DATE('"+entrydatesone+"', '+1 day')";
 	//alert(query);
 	tx.executeSql(query, [], QueryCheckHoursCSuccess, errorCBMes);
 }
@@ -797,11 +801,11 @@ function QueryCheckHoursCSuccess(tx,results)
 		
 		if(hourstime>11)
 		{
-			$("#popupmuchtime").popup("open");
+			$("#popupmuchtimeC").popup("open");
 		}
-		else if(hourstime=11 && minstime>=30)
+		else if(hourstime=11 && minstime>30)
 		{
-			$("#popupmuchtime").popup("open");
+			$("#popupmuchtimeC").popup("open");
 			
 		}
 		else
@@ -894,7 +898,6 @@ var reminderSettingsxszy = $("#select_itemsworkedon");
 $("#entryoneitemvalue").val("");	 
 $("#hourentryitemonec").val("");
 $("#minutesentryitemonec").val("");
-$('#one').trigger('click');
 ItemSelected();
 GetSubmissions();
  }
