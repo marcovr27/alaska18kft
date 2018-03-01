@@ -736,7 +736,7 @@ function QueryCheckHoursCC(tx)
 	var month = ("0" + (now.getMonth() + 1)).slice(-2);
 	var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
 	var UseraID=sessionStorage.userid;
-	var entrydatesone=$("#entryonevalue").val();
+	var entrydatesone=$("#entryoneitemvalue").val();
 	entrydatesone=InsertFormatDate(entrydatesone);
 	var query="SELECT SUM(Hours) as Hora, SUM(Mins) as minutos FROM SubmittedHours WHERE UserID='"+UseraID+"' AND EntryDate BETWEEN DATE('"+entrydatesone+"') AND DATE('"+entrydatesone+"', '+1 day')";
 	//alert(query);
