@@ -96,10 +96,10 @@ function QueryInfoTaskSuccess(tx, results)
 		CalculateOJTHours();
 		 
 	}
-	else
-	{
-	  navigator.notification.alert("Task not found", null, 'FieldTracker', 'Accept'); 
-	}
+	//else
+	//{
+	 // navigator.notification.alert("Task not found", null, 'FieldTracker', 'Accept'); 
+	//}
 	
 	
 }
@@ -333,11 +333,11 @@ function QueryCheckHoursTSuccess(tx,results)
 		for (var i=0; i<results.rows.length; i++){
 			//alert(results.rows.item(i).Hora);
 			//alert(results.rows.item(i).SubmitDate);
-			if(results.rows.item(i).Hora!="" || results.rows.item(i).Hora!="null")
+			if(results.rows.item(i).Hora!="" && results.rows.item(i).Hora!=null)
 			{
 				hours=results.rows.item(i).Hora;
 			}
-			if(results.rows.item(i).minutos!="" || results.rows.item(i).minutos!="null")
+			if(results.rows.item(i).minutos!="" && results.rows.item(i).minutos!=null)
 			{
 				mins=results.rows.item(i).minutos;
 			}
@@ -635,9 +635,10 @@ function QueryCalculateItemsSuccess(tx,results)
 {
 	var len = results.rows.length;
 	itemsonlevel=len;
-    var leveluser=sessionStorage.lvlname;
+	var leveluser=sessionStorage.lvlname;
+	var idusera=sessionStorage.userid;
 	//alert("Leves2items level"+len);
-	tx.executeSql("SELECT DISTINCT(Item) FROM SubmittedHours WHERE LevelNum='"+leveluser+"'  AND Type='C'", [], QueryCalSubSuccess, errorCB);
+	tx.executeSql("SELECT DISTINCT(Item) FROM SubmittedHours WHERE UserID='"+idusera+"'  AND Type='C' AND (Status='Modified' OR Status='Approved') ", [], QueryCalSubSuccess, errorCB);
 	
 
 }
@@ -732,10 +733,10 @@ function QueryCheckHoursCC(tx)
 function QueryCheckHoursCSuccess(tx,results)
 {
 	var len = results.rows.length;
-	var hours="0";
-	var mins="0";
-	var hourstimesuma=$("#hourentryone").val();
-	var minstimesuma=$("#minutesentryone").val();
+	var hours=0;
+	var mins=0;
+	var hourstimesuma=$("#hourentryitemonec").val();
+	var minstimesuma=$("#minutesentryitemonec").val();
 	if(hourstimesuma=="")
 	{
 		hourstimesuma=0;
@@ -747,14 +748,14 @@ function QueryCheckHoursCSuccess(tx,results)
 	//alert(len);
 	for (var i=0; i<results.rows.length; i++){
 		//alert(results.rows.item(i).Hora);
-		//alert(results.rows.item(i).SubmitDate);
-		if(results.rows.item(i).Hora!="" || results.rows.item(i).Hora!="null")
+		//alert(results.rows.item(i).minutos);
+		if(results.rows.item(i).Hora!="" && results.rows.item(i).Hora!=null)
 		{
-			hours=results.rows.item(i).Hora;
+			hours=parseFloat(results.rows.item(i).Hora);
 		}
-		if(results.rows.item(i).minutos!="" || results.rows.item(i).minutos!="null")
+		if(results.rows.item(i).minutos!="" && results.rows.item(i).minutos!=null)
 		{
-			mins=results.rows.item(i).minutos;
+			mins=parseFloat(results.rows.item(i).minutos);
 		}
 	}
 	if(hours==null)
@@ -820,7 +821,7 @@ function QuerySubmitItem(tx)
 {
 		var EntryDates=$("#entryoneitemvalue").val();
 			var ItemSelected=$("#select_itemsworkedon").val();
-	//alert("task="+taskSelectedlog+" Personnel="+personnelOJT);
+	//alert("EntryDates="+EntryDates+" ItemSelected="+ItemSelected);
 	
 	if(ItemSelected!="0")
 	{
@@ -1571,6 +1572,8 @@ function RQuerySubOjtSuccess(tx,results,resultados)
 			}
 			totalfix=parseFloat(sumahrs)+parseFloat(totalminsh);
 			togo=parseFloat(resultados.rows.item(i).Suma)-parseFloat(totalfix);
+			totalfix=parseFloat(totalfix).toFixed(2);
+			togo=parseFloat(togo).toFixed(2);
 			perresult = (parseFloat(totalfix) / parseFloat(resultados.rows.item(i).Suma)) * 100;
 			if(perresult==100)
 			{
@@ -1664,6 +1667,8 @@ function RQuerySubOjtSuccessModal(tx,results,resultados)
 			taskname=resultados.rows.item(i).Name;
 			totalfix=parseFloat(sumahrs)+parseFloat(totalminsh);
 			togo=parseFloat(resultados.rows.item(i).ReqHrsOJT)-parseFloat(totalfix);
+			totalfix=parseFloat(totalfix).toFixed(2);
+			togo=parseFloat(togo).toFixed(2);
 			perresult = (parseFloat(totalfix) / parseFloat(resultados.rows.item(i).ReqHrsOJT)) * 100;
 			if(perresult==100)
 			{

@@ -3146,6 +3146,14 @@ $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
 	var reminderSettings = $("#select_Submission");
 	reminderSettings.val("All").attr('selected', true).siblings('option').removeAttr('selected'); 
 	reminderSettings.selectmenu("refresh", true);
+	$("#select_taskworked").val("0");
+	$("#select_personnelworked").val("0");
+	$("#entryonevalue").val("");
+	$("#hourentryone").val("");
+	$("#minutesentryone").val("");	
+	$("#entryoneitemvalue").val("");
+	$("#hourentryitemonec").val("");
+	$("#minutesentryitemonec").val("");
 	//filltaskworked();
 	StartInsertDirectX();
 	FillPersonnel();
@@ -3157,11 +3165,29 @@ $(document).on( 'pagebeforeshow', '#pageLogbook',function(){
 	GetSubmissions();
 	updateuserlevel();
 	$( "#onebt" ).addClass("ui-btn-active");
+	$('#onebt').trigger('click');
 	$( "#tabs" ).on( "tabsactivate", function( event, ui ) {
 		var reminderSettingsx = $("#select_Submission");
 	reminderSettingsx.val("All").attr('selected', true).siblings('option').removeAttr('selected'); 
 	reminderSettingsx.selectmenu("refresh", true);
 	GetSubmissions();
+	var reminderSettingsxs = $("#select_taskworked");
+	reminderSettingsxs.val("0").attr('selected', true).siblings('option').removeAttr('selected'); 
+	reminderSettingsxs.selectmenu("refresh", true);
+	var reminderSettingsxsz = $("#select_personnelworked");
+	reminderSettingsxsz.val("0").attr('selected', true).siblings('option').removeAttr('selected'); 
+	reminderSettingsxsz.selectmenu("refresh", true);
+	var reminderSettingsxszy = $("#select_itemsworkedon");
+	reminderSettingsxszy.val("0").attr('selected', true).siblings('option').removeAttr('selected'); 
+	reminderSettingsxszy.selectmenu("refresh", true);
+	TaskSelected();
+	ItemSelected()
+	$("#entryonevalue").val("");
+	$("#hourentryone").val("");
+	$("#minutesentryone").val("");	
+	$("#entryoneitemvalue").val("");
+	$("#hourentryitemonec").val("");
+	$("#minutesentryitemonec").val("");
 	} );
 	$('#table-ojtsummary').on('click','tr', function() {
         $('#body-ojtsummary tr').css({background: 'transparent'});
@@ -8488,7 +8514,7 @@ function Queryshowsettings (tx)
 function QueryshowsettingsSuccess(tx,results)
 {
 	var len = results.rows.length;
-	//alert(results.rows.item(0).Language);
+	//alert(results.rows.item(0).IP);
 	if(len>0)
 	{
 	  $("#ipsetting").val(results.rows.item(0).IP);
