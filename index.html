@@ -457,7 +457,7 @@
       </tr>
     </thead>
     <tbody id="stepsbody">
-
+      
       
 
     </tbody>
@@ -1300,18 +1300,12 @@
      <label for="date-to">Submission Date Range TO:</label>
      <input type="text" data-clear-btn="true" name="date-to" id="date-to" value="">
                
-               
-               </div>
-                              
-       
-                
-           
+    </div>
+    </div>
               
-                </div>
-              
-                <div data-role="footer" data-position="fixed">
-                <div data-role="navbar">
-             <ul>
+    <div data-role="footer" data-position="fixed">
+       <div data-role="navbar">
+    <ul>
         <li><a href="javascript:navbyapp('menu');" data-icon="back" data-iconpos="left" >Back</a></li>
         <li><a href="javascript:nextquery();" class="ui-btn-b" data-icon="arrow-r" data-iconpos="right">Next</a></li>
     </ul>
@@ -2304,7 +2298,7 @@
                     <input id="filterTable-certifications" data-type="search">
                     <div class="ui-grid-solo halfwidth">
                   
-                       <table data-role="table" data-filter="false" id="table-Certifications" data-input="#filterTable-certifications"  class="ui-body-a ui-shadow table-stripe ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a">
+                       <table data-role="table" data-filter="true" id="table-Certifications" data-input="#filterTable-certifications"  class="ui-body-a ui-shadow table-stripe ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a">
                               <thead id="tcertifications">
                                    <tr class="ui-bar-a">
                                       <th data-priority="1" style="text-align: center">Description</th>
@@ -2369,22 +2363,238 @@
    <div data-role="page" id="pageAudits" class="normal">
         <div data-role="header" data-position="fixed" data-theme="b">
                 <h1>
-                    <img src="img/graphs/Logo_Small.png" style="height: 2em" />
-                    <label>Audits</label> 
-                </h1>
-        </div>
-        <div data-role="content">
-    
-        </div>
-        <div data-role="footer" data-position="fixed">
-                <div data-role="navbar">
-                        <ul>
-                <li><a href="javascript:navbyapp('menu');" class="ui-btn-c" data-icon="back" data-iconpos="left">Back</a></li></ul>
-                </div>   
-        </div>
+                <img src="img/graphs/Logo_Small.png" style="height: 2em" />
+               <label id="havaprocedures">Available Audits</label> </h1>
+                  <a href="#menu-panelproAudit" data-icon="bars" data-iconpos="notext">Menu</a>
+                  <a href="#filter-formproaudits" data-icon="search" data-iconpos="notext">Filters</a>
+            </div>
+            <div data-role="content">
+                <form>
+                    <input type="hidden" value="0" id="auditIDL" name="auditIDL"/>
+                    <input type="hidden" value="0" id="auditNameH" name="auditNameH"/>
+            <input id="filterTable-inputproAudits" data-type="search">
+        </form>
+        
+                   <table data-role="table" data-filter="true" id="table-LAudits" data-input="#filterTable-inputproAudits"  class="ui-body-c ui-shadow table-stripe ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a">
+            <thead>
+              <tr id="headtableaudit" class="ui-bar-c">
+                <th data-priority="1" style="text-align: center" id="htable2Audit">Name &nbsp;</th>
+                <th data-priority="2" style="text-align: center" id="htable2lastaudit">Last Performed &nbsp;</th>
+             </tr>
+             </thead>
+             <tbody id="auditbodytable">
+        
+        
+            </tbody>
+          </table>	
+            </div>
+            <div data-role="footer" data-position="fixed">
+              <div data-role="navbar">
+                                  <ul>
+                <li><a href="javascript:navbyapp('menu');" data-icon="back" data-iconpos="left" id="abackaudit" >Back</a></li>
+                <li><a href="javascript:launchaudit()" class="ui-btn-c"  data-icon="action" data-iconpos="right" id="alaunch1audit">Launch</a></li>
+            </ul>
+              
+              </div>
+        
+            </div>
+            
+                     <div data-role="panel" data-position-fixed="true" data-display="push" data-theme="a"  id="menu-panelproAudit">
+              
+             
+                <ul data-role="listview">
+                        <li data-icon="home"><a href="javascript:navbyapp('menu');" id="amenuaudit">Menu</a></li>
+                        <li data-icon="info"><a href="#" id="ahelp4">Help</a></li>
+                        
+                </ul>
+                <br>
+                <button class="ui-btn ui-btn-b ui-mini" data-rel="close" id="acloseb4" >Close Menu</button>
+            </div><!-- /panel -->
+            <div data-role="panel" data-position="right" data-display="reveal" data-theme="a" id="filter-formproaudits">
+                    <form class="userform">
+                        <h4 id="hfilters3">Filters</h4>
+                     
+            <fieldset data-role="controlgroup">
+                     <label for="select_groupAudit" id="lblfgr1">Group:</label>
+                <select name="select_groupAudit" id="select_groupAudit" onChange="fillauditstolaunch()">
+                        <option value="0">All</option>
+                </select>
+            </fieldset>
+                        <div class="ui-grid-a">
+                            <div class="ui-block-a"><a href="#" data-rel="close" class="ui-btn ui-shadow ui-corner-all ui-btn-b ui-mini" id="aback10">Back</a></div>
+                           
+                        </div>
+                    </form>
+                </div><!-- /panel -->
+
     </div>
 
    <!--Page Audits--> 
+
+       <!--Page Audits--> 
+
+       <div data-role="page" id="pageDrawAudit" class="normal">
+            <div data-role="header" data-position="fixed" data-theme="b">
+                    <h1>
+                    <img src="img/graphs/Logo_Small.png" style="height: 2em" />
+                   <label id="hauditsdraw">Audits</label></h1>
+                      <a href="#menu-panelproAuditDraw" data-icon="bars" data-iconpos="notext">Menu</a>
+                </div>
+                <div data-role="content">
+                        <input type="hidden" id="Hidstepaudit" name="Hidstepaudit" value="0"/>
+                        <input type="hidden" id="tempidaud" name="tempidaud" value="0"/>
+                        <table data-role="table" id="table-resultAudits" class="ui-body-a  ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a" style="width:100% !important;">
+                                <thead>
+                                  <tr class="ui-bar-c">
+                                    <th style="text-align:center; font-size:18px;" data-priority="1" id="headtoaudito"></th>
+                                  </tr>
+                                </thead>
+                                <tbody id="AuditsbodyDraw">
+                          
+
+                                </tbody>
+                              </table>
+                </div>
+                <div data-role="popup" id="popupriskaudit" data-history="false" data-overlay-theme="b" data-theme="b" data-dismissible="true" style="max-width:800px; min-width:700px;">
+                    <div data-role="header" data-theme="a">
+                    <h1 id="riskheader">
+                    Add Certification</h1>
+                    </div>
+                    <div role="main" class="ui-content">
+                            <label><Strong>Enter a description for the issue(s) found:</Strong></label>
+                            <textarea name="sabecomment"  id="sabecomment"></textarea>
+                            <div class="ui-grid-a">
+                                    <div class="ui-block-a" style="width:20%;" style="text-align:right; vertical-align:bottom !important;"><div style="text-align:right; vertical-align:bottom !important; align-items:center; margin: 0 auto !important;"><strong>Pictures:&nbsp;&nbsp;&nbsp;</strong></div></div>
+                                    <div class="ui-block-b" style="width:50%"><div><a href="javascript:TakePhotoAudit();" class="ui-btn ui-btn-inline ui-btn-a">New Picture</a></div></div>
+                                </div><!-- /grid-a -->   
+                                <div class="ui-grid-solo">
+                                        <input type="hidden" value="0" id="deleteriski" name="deleteriski"/>
+                                        <table data-role="table"  class="ui-body-a  ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a" id="solosemeam"><thead><tr><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody id="photosdrawau"></tbody></table>
+                                </div>                         
+                            <br>
+                            <br>
+                            <div class="ui-grid-a">
+                                 <div class="ui-block-a" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-rel="back">Cancel</a></div>
+                                <div class="ui-block-b" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-transition="flow" onclick="SaveTempText()">OK</a></div>
+                            </div>
+                        
+                          
+                    </div>
+                </div>
+                <div data-role="popup" id="popupFinishAudit" data-history="false" data-overlay-theme="b" data-theme="b" data-dismissible="true" style="max-width:800px; min-width:700px;">
+                    <div data-role="header" data-theme="a">
+                    <h1>Submit Audit</h1>
+                    </div>
+                    <div role="main" class="ui-content">
+                            <label id="AreaSA"></label>
+                            <br>
+                            <label id="AreaScore"></label>
+                            <br>
+                            <div class="ui-grid-solo">
+                                <div class="ui-block-a">
+                                    <label from="inownerss">&nbsp;&nbsp;&nbsp;Area Owner(s):</label>
+                                    <input type="text" name="inownerss" id="inownerss" value="" onClick="OpenOwnersModalAudit()" readonly></div>
+                                </div>
+                           
+                            <br>
+                            <div class="ui-grid-solo">
+                                <div class="ui-block-a">
+                                    <label from="inInspections">&nbsp;&nbsp;&nbsp;Inspector(s):</label>
+                                    <input type="text" name="inInspections" id="inInspections" value="" onClick="OpenInspectionModalAudit()" readonly>
+                                </div>
+                            </div>
+                                <div class="ui-grid-a">
+                                     <div class="ui-block-a" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-rel="back">Cancel</a></div>
+                                    <div class="ui-block-b" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-transition="flow" onclick="SubmitAuditNow()">OK</a></div>
+                                </div>
+                            </div>
+                            </div>
+                                   <!--Modal Name-->
+    <div data-role="popup" id="popupToOwnersAudit" data-history="false" data-overlay-theme="a" data-theme="a" data-dismissible="true" style="max-width:800px;">
+        <div data-role="header" data-theme="b">
+        <h1>Select Owner(s):</h1>
+        </div>
+        <div role="main" class="ui-content">
+        <input id="filterTable-userspopowneraudit" data-type="search">
+        <div style="width: 100%; height: 500px; overflow: auto">
+           <table data-role="table" data-filter="true" data-input="#filterTable-userspopowneraudit" id="table-recipientsOwnersAudit" class="ui-body-a  ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a">
+        <thead>
+          <tr class="ui-bar-c">
+            <th data-priority="1"></th>
+            <th data-priority="2"></th>
+        
+          </tr>
+        </thead>
+        <tbody id="recipientsbodyOwnerAudit">
+    
+          
+    
+        </tbody>
+      </table>
+      </div>
+             <a href="javascript:CheckAllusersOA();" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b">All</a>
+            <a href="javascript:UncheckAllusersOA();" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b">None</a>
+             <a href="javascript:CloseOwnersModalAudit();" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b">Ok</a>
+            &nbsp;<label id="lblquanttousersOA" data-theme="c" style="margin-right:5px; margin-left:5px;">0 selected</label>
+            
+        </div>
+    </div>
+     <!--Modal Name END-->    
+                                     <!--Modal Name-->
+    <div data-role="popup" id="popupToInspectAudit" data-history="false" data-overlay-theme="a" data-theme="a" data-dismissible="true" style="max-width:800px;">
+        <div data-role="header" data-theme="b">
+        <h1>Select Inspector(s):</h1>
+        </div>
+        <div role="main" class="ui-content">
+        <input id="filterTable-userspopInspectAudit" data-type="search">
+        <div style="width: 100%; height: 500px; overflow: auto">
+           <table data-role="table" data-filter="true" data-input="#filterTable-userspopInspectAudit" id="table-recipientsInspectAudit" class="ui-body-a  ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a">
+        <thead>
+          <tr class="ui-bar-c">
+            <th data-priority="1"></th>
+            <th data-priority="2"></th>
+        
+          </tr>
+        </thead>
+        <tbody id="recipientsbodyInspectAudit">
+    
+          
+    
+        </tbody>
+      </table>
+      </div>
+             <a href="javascript:CheckAllusersIA();" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b">All</a>
+            <a href="javascript:UncheckAllusersIA();" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b">None</a>
+             <a href="javascript:CloseInspectionModalAudit();" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b">Ok</a>
+            &nbsp;<label id="lblquanttousersIA" data-theme="c" style="margin-right:5px; margin-left:5px;">0 selected</label>
+            
+        </div>
+    </div>
+     <!--Modal Name END-->  
+                <div data-role="footer" data-position="fixed">
+                  <div data-role="navbar">
+                     <ul>
+                        <li><a href="#pageAudits" data-icon="back" data-iconpos="left" id="abackauditzsaaa" >Back</a></li>
+                        <li><a href="javascript:ShowModalAuditFinish();" class="ui-btn-c"  data-icon="action" data-iconpos="right" id="alaunch1auditzsaaa">Submit</a></li>
+                        </ul>
+                  </div>            
+                </div>
+                
+                         <div data-role="panel" data-position-fixed="true" data-display="push" data-theme="a"  id="menu-panelproAuditDraw">
+                  
+                 
+                    <ul data-role="listview">
+                            <li data-icon="home"><a href="javascript:navbyapp('menu');" id="amenuaudit">Menu</a></li>
+                            <li data-icon="info"><a href="#" id="ahelp4">Help</a></li>
+                            
+                    </ul>
+                    <br>
+                    <button class="ui-btn ui-btn-b ui-mini" data-rel="close" id="acloseb4" >Close Menu</button>
+                </div><!-- /panel -->
+    
+        </div>
+    
+       <!--Page Audits--> 
 
        <!--Page Inspections--> 
 
@@ -2392,7 +2602,7 @@
             <div data-role="header" data-position="fixed" data-theme="b">
                     <h1>
                         <img src="img/graphs/Logo_Small.png" style="height: 2em" />
-                        <label>Inspections</label> 
+                        <label></label> 
                     </h1>
             </div>
             <div data-role="content">
@@ -2508,7 +2718,7 @@
     </div><!-- /panel -->
 </div>
 
-<!--Page Message Launch-->        
+<!--Page Message Launch-->     
         <script type="text/javascript" src="cordova.js"></script>
 		<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
         <script type="text/javascript" src="js/jquery.mobile-1.4.3.min.js"></script>
@@ -2519,6 +2729,7 @@
         <script type="text/javascript" src="js/messages.js"></script>
         <script type="text/javascript" src="js/library.js"></script>
         <script type="text/javascript" src="js/certifications.js"></script>
+        <script type="text/javascript" src="js/audits.js"></script>
         <script type="text/javascript" src="js/xdate.js"></script>
   		<script type="text/javascript" src="js/xdate.i18n.js"></script>
 		<script type="text/javascript" src="js/mobipick.js"></script>

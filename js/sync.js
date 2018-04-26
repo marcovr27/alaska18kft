@@ -207,7 +207,271 @@ function QuerytoinsertCerts(tx)
 
 	$("#progressMessage").html("");
 		pbar.setValue(100);
-		Getservicedata();		
+		SendMediaAudit();
+			
+		
+  //sendprocedures();	
+}
+
+function GetserviceAudits()
+{
+	var ipserver=$("#ipsync").val();
+	var obj = {};
+
+	$("#progressheader").html(" ");
+	//progressheader
+	$("#progressheader").html("Downloading data...");
+		$("#progressMessage").html("Post To GetAudits");
+		pbar.setValue(0);
+		//alert("listo para el post: "+ipserver+'//GetStructureData');
+	                $.ajax({
+                    type: 'POST',
+				    url:ipserver+'//GetAudits',
+					data: JSON.stringify(obj),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+						InsertDatabaseAudits(response.d);
+                    },
+            error: function (xmlHttpRequest, textStatus, errorThrown) {
+							$("#progressheader").html("Can not connect to server");
+							$("#progressMessage").html("Error sending data:" +xmlHttpRequest.responseXML+" Status: "+textStatus+"==>"+xmlHttpRequest.statusText+" thrown: "+errorThrown);
+					IsSyncMessages=false;		
+					setTimeout( function(){ $("#generic-dialog").dialog("close"); }, 10000 );
+                    console.log(xmlHttpRequest.responseXML);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                   // alert("Error");
+                }
+                });
+	
+	
+}
+
+function InsertDatabaseAudits(newdatabase)
+{
+
+	$("#progressMessage").html("Successful connection");
+		pbar.setValue(1);
+		newauditsdatatoinsert=newdatabase;
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      	db.transaction(QuerytoinsertAudits, errorCB);
+	
+}
+
+function QuerytoinsertAudits(tx)
+{
+	//alert("deleteoldrecords");
+	//alert("Insert new data GetMessages");
+	$("#progressMessage").html("Deleting old records");
+		pbar.setValue(2);
+		//alert("Deleting "+idusera);
+		tx.executeSql("DELETE FROM AUDITS");
+		tx.executeSql("DELETE FROM AUDITSUBPARTS");
+		tx.executeSql("DELETE FROM GROUPS2AUDITS");
+		//tx.executeSql("DELETE FROM SUBMITTEDAUDITS");
+		tx.executeSql("DELETE FROM AUDITQUESTS");
+		//tx.executeSql("DELETE FROM AUDITS2OWNERS");
+		//tx.executeSql("DELETE FROM AUDITS2INSPECTORS");
+		tx.executeSql("DELETE FROM AUDITS2SUBPARTS");
+
+
+	$("#progressMessage").html("Ready to insert new records");
+	var query;
+	var obj = jQuery.parseJSON(newauditsdatatoinsert.Audits);
+	//alert("Items "+obj.length);
+	var itemcount=0;
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		query='INSERT INTO AUDITS (ID,Name) VALUES ("'+escapeDoubleQuotes(value.ID)+'","'+escapeDoubleQuotes(value.Name)+'")';
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	 //alert("Certifications: "+itemcount);
+	 
+	 	$("#progressMessage").html("Audits updated");
+	pbar.setValue(12);
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating Audits"+error);
+			pbar.setValue(15);
+		 
+	 }
+	 
+
+	 itemcount=0;
+	 try
+	 {
+	  if(newauditsdatatoinsert.AuditSubParts!="")
+	  {
+		obj=jQuery.parseJSON(newauditsdatatoinsert.AuditSubParts);
+		$.each(obj, function (key, value) {
+			query='INSERT INTO AUDITSUBPARTS (Name) VALUES ("'+escapeDoubleQuotes(value.Name)+'")';
+			tx.executeSql(query);
+			itemcount++;
+		 });
+		 //("USERS2CERTS:4 "+itemcount);
+		 
+			 $("#progressMessage").html("AUDITSUBPARTS updated");
+		pbar.setValue(35);
+
+	  }	 
+
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating AUDITSUBPARTS"+error);
+			pbar.setValue(30);
+		 
+	 }
+
+	 itemcount=0;
+
+	 try
+	 {
+		 if(newauditsdatatoinsert.Groups2Audits!="")
+		 {
+			obj=jQuery.parseJSON(newauditsdatatoinsert.Groups2Audits);
+			$.each(obj, function (key, value) {
+				query='INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord) VALUES ("'+escapeDoubleQuotes(value.GroupID)+'", "'+escapeDoubleQuotes(value.ID)+'", "'+value.Ord+'")';
+				tx.executeSql(query);
+				itemcount++;
+			 });
+			 //("USERS2CERTS: "+itemcount);
+			 
+				 $("#progressMessage").html("GROUPS2AUDITS updated");
+			pbar.setValue(50);
+
+		 }
+
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating GROUPS2AUDITS"+error);
+			pbar.setValue(30);
+		 
+	 }
+
+
+	 itemcount=0;
+	 
+	 try
+	 {
+		 if(newauditsdatatoinsert.AuditsQuests!="")
+		 {
+			obj=jQuery.parseJSON(newauditsdatatoinsert.AuditsQuests);
+			$.each(obj, function (key, value) {
+				query='INSERT INTO AUDITQUESTS (AuditID,StepID,Text,SubPart,OrdNum) VALUES ("'+escapeDoubleQuotes(value.AuditID)+'", "'+escapeDoubleQuotes(value.StepID)+'", "'+escapeDoubleQuotes(value.Text)+'", "'+escapeDoubleQuotes(value.SubPart)+'", "'+value.OrdNum+'")';
+				//alert(query);
+				tx.executeSql(query);
+				itemcount++;
+			 });
+			 //("USERS2CERTS: "+itemcount);
+			 
+				 $("#progressMessage").html("AUDITQUESTS updated");
+			pbar.setValue(85);
+
+		 }
+
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating AUDITQUESTS"+error);
+			pbar.setValue(30);
+		 
+	 }
+
+	// itemcount=0;
+	 
+	// try
+	// {
+	//	 if(newauditsdatatoinsert.Audits2Owners!="")
+	//	 {
+	//		obj=jQuery.parseJSON(newauditsdatatoinsert.Audits2Owners);
+	//		$.each(obj, function (key, value) {
+	//			query='INSERT INTO AUDITS2OWNERS (ID,UserID) ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.UserID)+'")';
+	//			tx.executeSql(query);
+	//			itemcount++;
+	//		 });
+			 //("USERS2CERTS: "+itemcount);
+			 
+	//			 $("#progressMessage").html("AUDITS2OWNERS updated");
+	//		pbar.setValue(10);
+
+	//	 }
+
+	// }
+	// catch(error)
+	// {
+	//	 alert(error);
+	//	 $("#progressMessage").html("Error updating AUDITS2OWNERS"+error);
+	//		pbar.setValue(30);
+		 
+	// }
+
+	// itemcount=0;
+	 
+	// try
+	// {
+	//	 if(newauditsdatatoinsert.Audits2Inspectors!="")
+	//	 {
+	//		obj=jQuery.parseJSON(newauditsdatatoinsert.Audits2Inspectors);
+	//		$.each(obj, function (key, value) {
+	//			query='INSERT INTO AUDITS2INSPECTORS (ID,UserID) ("'+value.ID+'", "'+value.UserID+'")';
+	//			tx.executeSql(query);
+	//			itemcount++;
+	//		 });		 
+	//			 $("#progressMessage").html("AUDITS2OWNERS updated");
+	//		pbar.setValue(10);
+
+	//	 }
+
+	// }
+	// catch(error)
+	// {
+	//	 alert(error);
+	//	 $("#progressMessage").html("Error updating AUDITS2OWNERS"+error);
+	//		pbar.setValue(30);	 
+	// }
+
+	 itemcount=0;
+	 
+	 try
+	 {
+		 if(newauditsdatatoinsert.Audits2SubParts!="")
+		 {
+			obj=jQuery.parseJSON(newauditsdatatoinsert.Audits2SubParts);
+			$.each(obj, function (key, value) {
+				query='INSERT INTO AUDITS2SUBPARTS (ID,SubPart) ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.SubPart)+'")';
+				tx.executeSql(query);
+				itemcount++;
+			 });
+				 $("#progressMessage").html("AUDITS2SUBPARTS updated");
+			pbar.setValue(10);
+
+		 }
+
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating AUDITS2SUBPARTS"+error);
+			pbar.setValue(30);
+		 
+	 }
+	 $("#progressMessage").html("Audits completed updated");
+		pbar.setValue(100);
+
+	$("#progressMessage").html("");
+		pbar.setValue(100);
+		GetserviceCertifications();		
 		
   //sendprocedures();	
 }
@@ -334,7 +598,7 @@ function QuerytoinsertMessages(tx)
 	$("#progressMessage").html("");
 		pbar.setValue(100);
 
-	    GetserviceCertifications();		
+	    GetserviceAudits();	
 
 		
 
@@ -1719,7 +1983,107 @@ for (var i=0; i<results.rows.length; i++){
 sendsubmittedhours=array;
 	$("#progressMessage").html("Submitted Hours ready to send");
 		pbar.setValue(50);
-sendCertRows();
+		sendAuditsRows();
+
+	
+}
+function sendAuditsRows()
+{
+	//alert("submittedhours");
+	sendAuditsarray="";
+	 var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      db.transaction(QuerytosendAudits, errorCB);
+	
+}
+
+function QuerytosendAudits(tx)
+{
+	var querytosend="SELECT * FROM SUBMITTEDAUDITS WHERE Sync='no'";
+	tx.executeSql(querytosend, [], QuerytosendAuditsSuccess, errorCB);
+}
+
+function QuerytosendAuditsSuccess(tx,results)
+{
+	
+	var len = results.rows.length;
+	//alert("SubmittedHours="+len);
+	var array = [];
+	
+	//alert(len);
+for (var i=0; i<results.rows.length; i++){
+ row = results.rows.item(i);
+ // alert(row.Title);
+ array.push(JSON.stringify(row));
+}
+
+sendAuditsarray=array;
+	$("#progressMessage").html("Audits ready to send");
+		pbar.setValue(50);
+		sendAuditsOwnersRows();
+
+	
+}
+
+function sendAuditsOwnersRows()
+{
+	//alert("submittedhours");
+	sendAOwnersarray="";
+	 var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      db.transaction(QuerytosendAuditsOwners, errorCB);
+	
+}
+
+function QuerytosendAuditsOwners(tx)
+{
+	var querytosend="SELECT * FROM AUDITS2OWNERS WHERE Sync='no'";
+	tx.executeSql(querytosend, [], QuerytosendAuditsOwnersSuccess, errorCB);
+}
+
+function QuerytosendAuditsOwnersSuccess(tx,results)
+{	
+	var len = results.rows.length;
+	var array = [];
+	for (var i=0; i<results.rows.length; i++){
+ 	row = results.rows.item(i);
+ 	array.push(JSON.stringify(row));
+}
+
+sendAOwnersarray=array;
+	$("#progressMessage").html("AuditsOwners ready to send");
+		pbar.setValue(50);
+		sendAuditsInspectorsRows();
+
+	
+}
+
+function sendAuditsInspectorsRows()
+{
+	//alert("submittedhours");
+	sendAInspectorsarray="";
+	 var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      db.transaction(QuerytosendAuditsInspectors, errorCB);
+	
+}
+
+function QuerytosendAuditsInspectors(tx)
+{
+	var querytosend="SELECT * FROM AUDITS2INSPECTORS WHERE Sync='no'";
+	tx.executeSql(querytosend, [], QuerytosendAuditsInspectorsSuccess, errorCB);
+}
+
+function QuerytosendAuditsInspectorsSuccess(tx,results)
+{	
+	var len = results.rows.length;
+	var array = [];
+	for (var i=0; i<results.rows.length; i++){
+ 	row = results.rows.item(i);
+ 	array.push(JSON.stringify(row));
+}
+
+sendAInspectorsarray=array;
+	$("#progressMessage").html("AuditsOwners ready to send");
+		pbar.setValue(50);
+		sendCertRows();
 
 	
 }
@@ -1781,13 +2145,15 @@ function sendDataToServer()
  obj['Messages'] =JSON.stringify(sendmessages); 
  obj['SubmittedHours'] =JSON.stringify(sendsubmittedhours); 
  obj['CertificationsUpdate'] =JSON.stringify(sendCertificationsarray); 
+ obj['AuditsUpdate'] =JSON.stringify(sendAuditsarray); 
+ obj['Audits2Owners'] =JSON.stringify(sendAOwnersarray); 
+ obj['Audits2Inspectors'] =JSON.stringify(sendAInspectorsarray); 
  $("#progressMessage").html("Connecting to "+ipserver);
  //var kaka=obj['procedures'];
  //alert("enviar datos"+ipserver+'//SetDeviceDataarray');
  //alert(kaka);
   $.ajax({
                     type: 'POST',
-                   // url: 'http://192.168.1.129/test/serviceFt.asmx//SetDeviceDataarray',
 				    url: ipserver+'//SetDeviceDataarray',
                     data: JSON.stringify(obj),
                     dataType: 'json',
@@ -1808,23 +2174,50 @@ function sendDataToServer()
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
-                });
-				
-					
-		
-		//setTimeout( function(){ 
-		//
-		// }, 1000 );
-		
- 
-	
+                });	
 }
 
+function SendMediaAudit()
+{
+	//alert("SendmediaAudit");
+	$("#progressheader").html("Uploading Media Audits...");
+	$("#progressMessage").html("Preparing data to send");
+	pbar.setValue(0);
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QuerytosendAuditMedia, errorCB);
+}
 
+function QuerytosendAuditMedia(tx)
+{
+	var querytosend="SELECT * FROM AUDITMEDIA WHERE Sync='no'";
+	tx.executeSql(querytosend, [], QuerytosendAuditMediaSuccess, errorCB);
+}
+
+function QuerytosendAuditMediaSuccess(tx,results)
+{
+	var  len = results.rows.length;
+	//alert("Media ="+ len);
+	if(len>0)
+	{
+		pptoshow=100/parseFloat(len, 10);
+		ppinitial=0;
+		var tosend=0;
+		for (var i=0; i<results.rows.length; i++){
+			tosend++;
+			uploadPhotoServerAudit(results.rows.item(i).Path,results.rows.item(i).SubmitID,results.rows.item(i).StepID);
+		}
+	}
+	else
+	{
+		$("#progressMessage").html("No Media found");
+		pbar.setValue(100);
+		Getservicedata();
+		//llamar metodo
+	}
+}
 
  function sendmediaobj()
 {
-	    
 		$("#progressheader").html("Uploading Media...");
 		$("#progressMessage").html("Preparing data to send");
 		pbar.setValue(0);
@@ -1845,9 +2238,7 @@ function Querytosendmediaobj(tx)
 
 function QuerytosendmediaobjSuccess(tx,results)
 {
-		var  len = results.rows.length;
-	//var array = [];
-	//alert("media "+len);
+	var  len = results.rows.length;
 	if(len>0)
 	{
 pptoshow=100/parseFloat(len, 10);
@@ -1856,8 +2247,6 @@ var tosend=0;
 //alert(pptoshow+ppinitial);
 for (var i=0; i<results.rows.length; i++){
 tosend++;
-
-
  if(results.rows.item(i).FileType=="image")
  {
 	 uploadPhotoServer(results.rows.item(i).Path,results.rows.item(i).SubmitID,results.rows.item(i).StepID,results.rows.item(i).FileType,results.rows.item(i).SubmitDate);
@@ -1866,33 +2255,14 @@ tosend++;
   {
 	 uploadVideoServer(results.rows.item(i).Path,results.rows.item(i).SubmitID,results.rows.item(i).StepID,results.rows.item(i).FileType,results.rows.item(i).SubmitDate);
    }
-   
-   //if(tosend==len)
-   //{
-	   //alert("termino archivos");
-
-	//}
- //array.push(JSON.stringify(row));
-
-
-}
-
-
-		
+}		
 	}
 	else
 	{
 		$("#progressMessage").html("No Media found");
 		pbar.setValue(100);
-		GetservicedataTasks();
-		
-		
-	}
-
-
-		
-
-	
+		GetservicedataTasks();		
+	}	
 }
 
 
@@ -1974,7 +2344,41 @@ function winftp(r) {
 
         function failftp(error) {
             alert("An error has occurred uploading file: Code = " + error.code);
+		}
+		
+		function uploadPhotoServerAudit(imageURI,SubmitID,StepID) {
+			//alert("akaimage"+imageURI+"---->"+SubmitID+"---->"+StepID);
+					var ipserver=$("#ipsync").val();
+					var dt = new Date();
+					var SubmitDate=dt.toYMDhrs();
+					var options = new FileUploadOptions();
+					options.chunkedMode = true;
+					options.fileKey="recFile";
+					var imagefilename = Number(new Date())+".jpg";
+					options.fileName=imagefilename;
+					options.mimeType="image/jpeg";
+					var params = new Object();
+					params.submitid = SubmitID;
+					params.stepid = StepID;
+					options.params = params;
+					var ft = new FileTransfer();
+				   ft.upload(imageURI, ipserver+"/UploadFileAudit", winftpAudit,failftpAudit,options);
+		}
+
+		function winftpAudit(r) {
+			ppinitial= parseFloat(ppinitial, 10)+parseFloat(pptoshow, 10);
+			$("#progressMessage").html("Sent = " + r.bytesSent+" Response ="+r.response);
+			pbar.setValue(parseInt(ppinitial, 10));
+			if(parseInt(ppinitial, 10)==100)
+			{
+				Getservicedata();	
+				//funcion a llamar
+			}
         }
+
+        function failftpAudit(error) {
+            alert("An error has occurred uploading file: Code = " + error.code);
+		}
 
 
 //function to update local database
@@ -1989,9 +2393,13 @@ function Querytoupdatelocal(tx)
 {
 	tx.executeSql("UPDATE USERS2CHECKLISTS SET sync='yes'");
 	tx.executeSql("UPDATE MEDIA SET sync='yes'");
+	tx.executeSql("UPDATE AUDITMEDIA SET sync='yes'");
 	tx.executeSql("UPDATE SUBMITTEDPROCS SET sync='yes'");
 	tx.executeSql("UPDATE SUBMITTEDSTEPS SET sync='yes'");
 	tx.executeSql("UPDATE SUBMITTEDHOURS SET sync='yes'");
+	tx.executeSql("UPDATE SUBMITTEDAUDITS SET sync='yes'");
+	tx.executeSql("UPDATE AUDITS2OWNERS SET sync='yes'");
+	tx.executeSql("UPDATE AUDITS2INSPECTORS SET sync='yes'");
 	tx.executeSql("UPDATE MESSAGES SET sync='yes' WHERE SentFT='0'");
 	tx.executeSql("UPDATE USERS2CERTS SET sync='yes'");
 	updateuserlevel();

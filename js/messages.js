@@ -710,8 +710,8 @@ function UncheckAllusers()
 	$(this).prop('checked', false).checkboxradio('refresh');
 	});
 	$("#inmessageto").val("");
-	utolist_array = new Array();
-	 utolist_arrayNames = new Array();
+	utolist_array= new Array();
+	utolist_arrayNames = new Array();
 	 var quantusersids= utolist_array.length;
 	 $("#lblquanttousers").html(quantusersids+" selected");
 	 //$('#table-recipients').find('input:checkbox').prop('checked', false);

@@ -10,6 +10,7 @@ var newmessagesdatatoinsert;
 var newcertsdatatoinsert;
 var newlibrarydatatoinsert;
 var newfilesdatatoinsert;
+var newauditsdatatoinsert;
 var sendCertificationsarray;
 var sendAloneCertifications;
 var sendproceduresarray; //Sync Variables
@@ -17,11 +18,20 @@ var sendstepsarray; //Sync Variables
 var sendchecklistarray;//Sync Variables
 var sendmessages;//Sync Variables
 var sendsubmittedhours;//Sync Variables
+var sendAuditsarray;//Sync Variables
+var sendAOwnersarray;//Sync Variables
+var sendAInspectorsarray;//Sync Variables
 var sendMessagealone;//Sync Variables
 var sendLibraryalone;
 var sendHoursalone;
 var synchours;
 var syncmessages;
+var commentsriskarray;
+var utolistOA_array = new Array();
+var utolistOA_arrayNames = new Array();
+var utolistIA_array = new Array();
+var utolistIA_arrayNames = new Array();
+var photosonarray;
 var pictureSource;   // picture source
 var destinationType; // sets the format of returned value
 var capture; // The global capture object
@@ -739,17 +749,22 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 //
 		 //alert("checadb");
 		 //New Tables febraury 2017
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPRISKTEXT (IDStep,Text)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPAUDITPHOTO (ID INTEGER PRIMARY KEY,IDStep,Path)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TIMETRACKING (UserID,ContentID,TotalTime,Date,ClassID)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS CERTIFICATIONS (ID,Title,Desc,Type,ReqAllUsers,Expires,Months,Years,Days)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS USERS2CERTS (FTID,UserID,ID,Date,Expiration,AlertSent,CertFile,AssesorID,PrintID,Sync)');
-		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS (AuditID,StepID,Text,SubPart)');
-		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITMEDIA (SubmitID,StepID,FileName,FileSize,Path)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS (ID,Name)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITMEDIA (SubmitID,StepID,Path,Sync)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITSUBPARTS (Name)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS GROUPS2AUDITS (GroupID,ID,Ord)');
-		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Status,NumFiles)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,NumFiles,Date DATETIME,UserID,Sync)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITQUESTS (AuditID,StepID,Text,SubPart,OrdNum)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS2OWNERS (ID,UserID,Sync)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS2INSPECTORS (ID,UserID,Sync)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS2SUBPARTS (ID,SubPart)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS GROUPS2LOCATIONS (ID,Location)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS DUTIES (Duty,Location)');
-		 //alert("pasaron todas");
 		 //End New Tables
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS UserSettings (UserID,ClientName,DateFormat,InterfaceLang,ShowCertAlerts,TabletLang)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS REJECTED (SubmitID,ProcID,Name,UserID,Status,SubmitDate,RejectReason)');
@@ -778,7 +793,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		// tx.executeSql('INSERT INTO COMP2MEAS (CompID,MeasID)  VALUES ("HMOTOR","TEMP")');
 		// tx.executeSql('INSERT INTO COMP2MEAS (CompID,MeasID)  VALUES ("HMOTOR","EXTRACOMP")');
 		// tx.executeSql('INSERT INTO COMP2MEAS (CompID,MeasID)  VALUES ("HMOTOR","EXTRASELECT")');
-		  tx.executeSql('DROP TABLE IF EXISTS MEASDATA');
+		  //tx.executeSql('DROP TABLE IF EXISTS MEASDATA');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS MEASDATA (MeasID,DropDownData)');
 		// tx.executeSql('INSERT INTO MEASDATA (MeasID,DropDownData) VALUES ("ALARM","C15")');
 		// tx.executeSql('INSERT INTO MEASDATA (MeasID,DropDownData) VALUES ("ALARM","D101")');
@@ -2095,6 +2110,14 @@ function successFunctionx() {
 	{
 		alert("DB Error: "+err.message + "\nCode="+err.code);
 	}
+	function errorCBPA(tx,err)
+	{
+		alert("DB Error: "+err.message + "\nCode="+err.code);
+	}
+	function errorCBPAudits(tx,err)
+	{
+		alert("DB Error: "+err.message + "\nCode="+err.code);
+	}
 		function errorCBlan(tx, err) {
        //alert(err.code)
 	}
@@ -2467,7 +2490,7 @@ $(document).on( 'pagebeforeshow', '#pageMenu',function(){
     //alert("Portrffgait!");
 
 			$('#menucontentd').empty();
-				$('#menucontentd').append('<form  style="margin-left:10%;  margin-right:10%; margin-top:85%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch"id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert"  id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo"><a href="javascript:checkifexistdbreg('+"'1'"+');" id="mbtnsincro" class="ui-btn ui-mini ui-shadow ui-corner-all"><img src="img/sincro.png" height="18" width="18"/>Sync</a></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></div></form>').trigger('create');
+			$('#menucontentd').append('<form  style="margin-left:10%;  margin-right:10%; margin-top:85%;"><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageLogbook" id="mbtnlogbook" class="ui-btn ui-shadow ui-corner-all"><img src="img/logbook.png" height="36" width="36"/><br>Logbook</a></div><div class="ui-block-b"><a href="#pageProcedureLaunch"id="mbtnprocedures" class="ui-btn ui-shadow ui-corner-all"><img src="img/procedures.png" height="36" width="36"/><br>Procedures</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'library'"+');" id="mbtnlibrary" class="ui-btn ui-shadow ui-corner-all"><img src="img/library.png" height="36" width="36"/><br>Library</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="#pageAudits" id="mbtnaudit" class="ui-btn ui-shadow ui-corner-all"><img src="img/Audits.png" height="36" width="36"/><br>Audits</a></div><div class="ui-block-b"><a href="#pageInspections" id="mbtninspection" class="ui-btn ui-shadow ui-corner-all"><img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections</a></div><div class="ui-block-c"><a href="#pageCert"  id="mbtndatacertifications" class="ui-btn ui-shadow ui-corner-all"><img src="img/certificationstwo.png" height="36" width="36"/><br>Certifications</a></div></div><div class="ui-grid-b ui-responsive"><div class="ui-block-a"><a href="javascript:navbyapp('+"'messages'"+');" id="mbtnmessages" class="ui-btn ui-shadow ui-corner-all"><img src="img/messages.png" height="36" width="36"/><br>Messages ('+messagesNum+')</div><div class="ui-block-b"><a href="javascript:navbyapp('+"'checklist'"+');" id="mbtnchecklists" class="ui-btn ui-shadow ui-corner-all"><img src="img/certifications.png" height="36" width="36"/><br>Checklists</a></div><div class="ui-block-c"><a href="javascript:navbyapp('+"'dataqueris'"+');" id="mbtndataqueris" class="ui-btn ui-shadow ui-corner-all"><img src="img/query.png" height="36" width="36"/><br>Data Queries</a></div></div><div class="ui-grid-solo"><a href="javascript:checkifexistdbreg('+"'1'"+');" id="mbtnsincro" class="ui-btn ui-mini ui-shadow ui-corner-all"><img src="img/sincro.png" height="18" width="18"/>Sync</a></div><div class="ui-grid-solo">'+rejbtn+'</div><input type="hidden" value="yes" id="hs" name="hs"><div id="Syncready" class="blink"><p class="event received">Database is not synchronized</p></div></div></form>').trigger('create');
 	//$('#menucontentd').empty();
 	//$('#menucontentd').append('Portrait').trigger('create');	
 }
@@ -2636,6 +2659,70 @@ $(document).on( 'pagebeforeshow', '#pageProcedureLaunch',function(){
     });
 	
 });
+
+//ON CREATE Pageaudits
+$(document).on( 'pagebeforeshow', '#pageAudits',function(){
+	AuditSilenceStartSync();
+	IsSyncMessages=true;
+	inPageMes=0;
+	$("#auditIDL").val(0);
+	groupsfilters();
+	//fillauditstolaunch();
+	//checkdbprocedures();
+     //fillprocedurestolaunch();
+	// fillGroupsSelecttwo();
+    $('#table-LAudits').on('click','tr', function() {
+        $('#auditbodytable tr').css({background: 'transparent'});
+		$('#auditbodytable tr').css({color: 'black'});
+        $(this).css({background: 'blue'});
+		$(this).css({color: 'white'});
+		var idrow=$(this).attr('data-name');
+		$("#auditIDL").val(idrow);
+		//alert(idrow);
+		searchareaid();
+		//$("#chnamep").val('');
+		//$("#chpro").val(idrow);
+		//searchnameprocedure();
+		$("#headtableaudit").addClass("ui-bar-c");
+		//alert(idrow);
+		//var text=$(this).text();
+	//	text=text.replace('Procedure Name','');
+		//text=$.trim(text);
+		//sessionStorage.loadsteps="true";
+	 $("#table-LAudits").table("refresh");
+	 $("#table-LAudits").trigger('create');
+	
+    });
+	
+});
+
+
+//PAge audits
+//ON CREATE Pageaudits
+$(document).on( 'pagebeforeshow', '#pageDrawAudit',function(){
+	commentsriskarray= new Array();
+	photosonarray=new Array();
+	IsSyncMessages=true;
+	inPageMes=0;
+	utolistOA_array = new Array();
+    utolistOA_arrayNames = new Array();
+    utolistIA_array = new Array();
+    utolistIA_arrayNames = new Array();
+	fillrecipientsAO();
+	fillrecipientsAI();
+	var nameci=$("#auditNameH").val();
+	var htmlnames="<strong>"+nameci+"</strong>";
+	$("#headtoaudito").html(htmlnames);
+	var nuevohstmls="<strong>Area: "+nameci+"</strong>";
+	$("#AreaSA").html(nuevohstmls);
+	fillstepsaudits();
+	deletetempinforisk();
+
+	
+});
+
+
+//PAge audits
 
 
 //ON CREATE PROCEDURE STEPS
@@ -3673,17 +3760,12 @@ function QuerytoGroupsSelect(tx)
 			 listview_el = new Object();
 			    listview_el.id=$(this).attr('id');
             listview_el.name=$(this).text();
-            listview_array.push(listview_el) 
-
-			
-		}
-          
-        
+            listview_array.push(listview_el) 	
+		}     
         });
         var stringifyObject = JSON.stringify(listview_array);
 		if(listview_array.length==1)
 		{
-			
 			$("#mult").val('0'); 
 			$("#userch").val(listview_array[0].id); 
 			sessionStorage.userchoose=listview_array[0].id;
@@ -9473,6 +9555,1140 @@ function AddResponses()
 
 ///////=============================<<<<<<<<<<<< END EVALUATIONS STEPS PAGE  >>>>>>>>>>>=========================================///////
 
+///////<<<<<<<<<<<<============================= AUDITS PAGE   =========================================>>>>>>>>>>>///////
+function groupsfilters()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(function(tx){ Querygroupsfilters(tx) },errorCBPAudits);
+	
+}
+
+function Querygroupsfilters(tx)
+{
+	var UseraID=sessionStorage.userid;
+	var newquery ="SELECT UserID,ID,Description FROM Users2Groups INNER JOIN Groups ON Users2Groups.ID=Groups.GroupID WHERE UserID='"+UseraID+"' ORDER BY Description";
+    //alert(newquery);
+	tx.executeSql(newquery, [], QuerygroupsfiltersSuccess,errorCBPAudits);
+	
+}
+
+function QuerygroupsfiltersSuccess(tx,results)
+{
+	var len=results.rows.length;
+	var selecthtml='<option value="0">All</option>';
+	if(len>0)
+ 	{
+	    for (var i=0; i<len; i++){
+			selecthtml+='<option value="'+results.rows.item(i).ID+'">'+results.rows.item(i).Description+'</option>';
+			}	
+				
+	  }
+	$("#select_groupAudit").html(selecthtml);
+	fillauditstolaunch();
+}
+
+function fillauditstolaunch()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(Querytoauditstolaunch,errorCBPAudits);
+
+}
+
+function Querytoauditstolaunch(tx)
+{
+	showModal();
+	var UseraID=sessionStorage.userid;
+	var newquery="SELECT Users2Groups.ID FROM Users2Groups INNER JOIN Groups2Audits ON Users2Groups.ID=Groups2Audits.GroupID WHERE Users2Groups.UserID='"+UseraID+"' Group by Users2Groups.ID";
+	//var newquery ="SELECT Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits  ON Groups2Audits.ID=Audits.ID  WHERE GroupID='Assay Lab-01'";
+	tx.executeSql(newquery, [], QuerytoauditstolaunchSuccess,errorCBPAudits);
+
+}
+
+function QuerytoauditstolaunchSuccess(tx,results)
+{
+	Filltableaudits(results);
+		
+}
+
+function Filltableaudits(results)
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(function(tx){ QueryFilltableaudits(tx,results) },errorCBPAudits);
+}
+
+function QueryFilltableaudits(tx,resultados)
+{
+	var UseraID=sessionStorage.userid;
+	var len=resultados.rows.length;
+	var optionss=$("#select_groupAudit").val();
+	var newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as Date FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY Date DESC LIMIT 1) AS lastp, Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID ";
+	//alert(len+" cantidad "+ " opcion="+optionss);
+	if(optionss=="0")
+	{
+		if(len>0)
+		{
+			for (var i=0; i<resultados.rows.length; i++){
+				//alert("el valor de i:" +i)
+				if(i==0)
+				{
+					newquery+=" WHERE GroupID='"+resultados.rows.item(i).ID+"'";
+	
+				}
+				else
+				{
+					newquery+=" OR GroupID='"+resultados.rows.item(i).ID+"'";
+				}
+				
+			}
+			newquery+=" Group by Groups2Audits.ID";
+	
+		}
+		else
+		{
+		  newquery="SELECT Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID WHERE GroupID='"+optionss+"'";
+		}
+
+	}
+	else
+	{
+		newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as Date  FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY Date DESC LIMIT 1) AS lastp,Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID WHERE GroupID='"+optionss+"'";
+	}
+	tx.executeSql(newquery, [],  function(tx,results){  QueryFilltableauditsSuccess(tx,results,resultados) },errorCBPAudits);
+}
+
+function QueryFilltableauditsSuccess(tx,results,resultados)
+{
+		var len=results.rows.length;
+		//alert(len+" este es el len del query principal");
+	 	 var tb = $('#auditbodytable');
+	 	 var tablehtml="";
+		  var sbdate="";
+		  var laspt="";
+	 	for (var i=0; i<results.rows.length; i++){
+		 //alert(resultadoss.rows.item(i).ProcID);	
+		 lastp=results.rows.item(i).lastp;
+		 if(lastp==null)
+		 {
+			 lastp="";
+		 }		
+		 //alert(lastp);
+   		tablehtml+='<tr data-name="'+results.rows.item(i).ID+'"><td>'+results.rows.item(i).Name+'</td><td>'+lastp+'</td></tr>';		 
+	 	}
+	 	tb.empty().append(tablehtml);
+	 	$("#table-LAudits").table("refresh");
+	 	$("#table-LAudits").trigger('create');
+	 	hideModal();
+}
+
+function searchareaid()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(function(tx){ Querysearchareaid(tx) },errorCBPAudits);
+
+}
+
+function Querysearchareaid(tx)
+{
+	var idaut=$("#auditIDL").val();
+	var newquery="SELECT Name FROM Audits WHERE ID='"+idaut+"'";
+	//alert(newquery);
+	tx.executeSql(newquery, [], QuerysearchareaidSuccess,errorCBPAudits);
+
+}
+
+function QuerysearchareaidSuccess(tx,results)
+{
+	var len=results.rows.length;
+	//alert(len);
+	if(len>0)
+	{
+		var name=results.rows.item(0).Name;
+		//alert(name);
+		$("#auditNameH").val(name);
+	}
+
+}
+
+function launchaudit()
+{
+	var idAudit=$("#auditIDL").val();
+	if(idAudit!=0)
+	{
+		$(':mobile-pagecontainer').pagecontainer('change', '#pageDrawAudit', {
+			transition: 'slidedown',
+			changeHash: false,
+			reverse: true,
+			showLoadMsg: true
+		});
+
+	}
+	else
+	{
+		navigator.notification.alert("Please select an Audit", null, 'FieldTracker', 'Accept');
+	}
+
+
+}
+
+
+
+
+///////<<<<<<<<<<<<============================= AUDITS PAGE   =========================================>>>>>>>>>>>///////
+
+///////<<<<<<<<<<<<============================= AUDITS DRAW PAGE   =========================================>>>>>>>>>>>///////
+
+
+function fillstepsaudits()
+{
+	var idAudit=$("#auditIDL").val();
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ Queryfillstepsaudits(tx) }, errorCBPAudits);
+}
+
+function Queryfillstepsaudits(tx)
+{
+	var idaut=$("#auditIDL").val();
+	var newquery="SELECT SubPart FROM AuditQuests WHERE AuditID='"+idaut+"' GROUP BY SubPart";
+	tx.executeSql(newquery, [], QueryfillstepsauditsSuccess,errorCBPAudits);
+
+}
+
+function QueryfillstepsauditsSuccess(tx,results)
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(function(tx){ QueryFillauditsparttwo(tx,results) },errorCBPAudits);
+
+}
+
+function QueryFillauditsparttwo(tx,resultados)
+{
+	var idaut=$("#auditIDL").val();
+	var newquery="SELECT * FROM AuditQuests WHERE AuditID='"+idaut+"' ORDER BY OrdNum";
+	tx.executeSql(newquery, [],  function(tx,results){  QueryFillauditsparttwoSuccess(tx,results,resultados) },errorCBPAudits);
+
+}
+
+function QueryFillauditsparttwoSuccess(tx,results,resultados)
+{
+	var lensubaparts=resultados.rows.length;
+	var lenquests=results.rows.length;
+	var htmltotal="";
+	var tb = $('#AuditsbodyDraw');
+	for (var i=0; i<resultados.rows.length; i++){
+		htmltotal+='<tr style="background-color:#214e86; color:#FFF;"><td style="font-size:14px !important;">'+resultados.rows.item(i).SubPart+'</td></tr>';
+		for (var y=0; y<results.rows.length; y++){
+			if(resultados.rows.item(i).SubPart==results.rows.item(y).SubPart)
+			{
+				htmltotal+='<tr><td width="100%"><table style="width:100% !important;"><tr><td width="60%"><strong>'+results.rows.item(y).Text+'</strong></td><td width="40%"><div class="ui-grid-a"><div class="ui-block-a"><div><a data-role="button" id="btnS'+results.rows.item(y).StepID+'" onclick="safeclick('+"'"+results.rows.item(y).StepID+"'"+')">Safe</a></div></div><div class="ui-block-b"><div><a data-role="button" id="btnR'+results.rows.item(y).StepID+'" onclick="riskclick('+"'"+results.rows.item(y).StepID+"'"+')">At Risk</a></div></div></div></td></tr></table></td></tr><tr><td width="100%"><table style="width:100% !important;"><tr><td width="60%"><table style="width:100% !important; border-color:#214e86 !important;"><tr style="border-bottom:2px !important;"><td width="15%" style="vertical-align:middle !important; text-align:right !important;">Comments:</td><td width="85%"><input type="text" name="comentario'+results.rows.item(y).StepID+'" id="comentario'+results.rows.item(y).StepID+'" value=""/></td></tr></table></td><td width="40%"><div class="ui-grid-solo"><div class="ui-block-a"><a data-role="button" id="botonpics'+results.rows.item(y).StepID+'" style="visibility:hidden;" onclick="riskclick('+"'"+results.rows.item(y).StepID+"'"+')"><strong>Pictures: 1</strong></a></div></div></td></tr></table></td></tr><tr><td width="100%" style="background-color:#f2f2f2; color:#FFF" id="fotocol'+results.rows.item(y).StepID+'"></td></tr>';
+			}
+			
+		}
+
+	}
+	tb.empty().append(htmltotal);
+	$("#table-resultAudits").table("refresh");
+	$("#table-resultAudits").trigger('create');
+}
+
+function safeclick(id)
+{
+	//$("#btnS"+id).removeClass( "myClass noClass" ).addClass( "yourClass" );
+	var hasgreen=$("#btnS"+id).hasClass("buttongreens");
+	//alert(hasgreen);
+	if(hasgreen)
+	{
+		//$("#btnS"+id).removeClass("buttongreens");
+
+	}
+	else
+	{
+		$("#btnS"+id).addClass("buttongreens");
+		$("#btnR"+id).removeClass("buttonreds");
+
+	}
+}
+
+function riskclick(id)
+{
+	var hasred=$("#btnR"+id).hasClass("buttonreds");
+	var commentarionuevo=$("#comentario"+id).val();
+	$("#Hidstepaudit").val(id);
+		//alert("vamos abrir");
+		$("#popupriskaudit").popup("open");
+		$("#btnS"+id).removeClass("buttongreens");
+		$("#btnR"+id).addClass( "buttonreds");
+		$("#sabecomment").val(commentarionuevo);
+		searchfilesphotosaudit();
+		//searchtexttemp();
+	//alert(id);
+}
+
+function SubmitAuditNow()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ QueryAuditNow(tx) },errorCBPAudits);
+}
+
+function QueryAuditNow(tx)
+{
+	var idaut=$("#auditIDL").val();
+	var newquery="SELECT * FROM AuditQuests WHERE AuditID='"+idaut+"' ORDER BY OrdNum";
+	tx.executeSql(newquery, [], QueryAuditNowSuccess,errorCBPAudits);
+}
+
+function QueryAuditNowSuccess(tx,results)
+{
+	var len=results.rows.length;
+	var completed=0;
+	var dt = new Date();
+	var SubmitDate=dt.toYMDhrs();
+	var idusera=sessionStorage.userid;
+	for (var i=0; i<results.rows.length; i++){
+		var hasred=$("#btnR"+results.rows.item(i).StepID).hasClass("buttonreds");
+		var hasgreen=$("#btnS"+results.rows.item(i).StepID).hasClass("buttongreens");
+		if(hasred || hasgreen)
+		{
+			completed++;
+
+		}
+	}
+
+	if(len==completed)
+	{
+		var submitID = sessionStorage.userid+new Date().getTime() + Math.random();
+		$("#tempidaud").val(submitID);
+		var statuss="";
+		var idaut=$("#auditIDL").val();
+		for (var x=0; x<results.rows.length; x++){
+			var hasred=$("#btnR"+results.rows.item(x).StepID).hasClass("buttonreds");
+			var hasgreen=$("#btnS"+results.rows.item(x).StepID).hasClass("buttongreens");
+			var comments=$("#comentario"+results.rows.item(x).StepID).val();
+			statuss="";
+			if(hasred)
+			{
+				statuss="At Risk";
+
+			}
+			else
+			{
+				statuss="Safe";
+			}
+			var descri="";
+			for (var ysa=0; ysa<commentsriskarray.length; ysa++)
+			{
+				if(commentsriskarray[ysa].id==results.rows.item(x).StepID)
+				{
+					descri=commentsriskarray[ysa].texto;
+
+				}
+	
+	
+			}
+            var cantidad=0;
+			for (var y=0; y<photosonarray.length; y++)
+			{
+				if(photosonarray[y].id==results.rows.item(x).StepID)
+				{
+					cantidad=photosonarray[y].cantidad;
+
+				}
+			}
+
+			var query="INSERT INTO SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,Date,UserID,NumFiles,Sync) VALUES ('"+submitID+"','"+idaut+"','"+results.rows.item(x).StepID+"','"+comments+"','"+descri+"','"+statuss+"','"+SubmitDate+"','"+idusera+"','"+cantidad+"','no')";
+			//alert(query);
+			tx.executeSql(query);
+			//alert(results.rows.item(x).StepID+" descripcion: "+descri);	
+		}
+		findmediaaudit();
+
+	}
+	else
+	{
+		navigator.notification.alert("Audit is not completed", null, 'FieldTracker', 'Accept');
+
+	}
+	
+
+}
+
+function findmediaaudit()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ Queryfindmediaaudit(tx) },errorCBPAudits);
+
+}
+
+function Queryfindmediaaudit(tx)
+{
+	var newquery="SELECT * FROM TEMPAUDITPHOTO";
+	tx.executeSql(newquery, [], QueryfindmediaauditSuccess,errorCBPAudits);
+
+}
+
+function QueryfindmediaauditSuccess(tx,results)
+{
+	var len=results.rows.length;
+	var query="";
+	var auditsubmit=$("#tempidaud").val();
+	var numfiles=0;
+	if(len>0)
+	{
+		for (var x=0; x<results.rows.length; x++){
+			query="INSERT INTO AUDITMEDIA (SubmitID,StepID,Path,Sync) VALUES ('"+auditsubmit+"','"+results.rows.item(x).IDStep+"','"+results.rows.item(x).Path+"','no')";
+			//alert(query);
+			tx.executeSql(query);
+		}
+	}
+    FindOwnersAudit();
+	//navigator.notification.confirm(
+	//	'Audit Submitted',      // mensaje (message)
+	//		onConfirmsubmitaudit,      // función 'callback' a llamar con el índice del botón pulsado (confirmCallback)
+	//			'FieldTracker',            // titulo (title)
+	//	'Accept'          // botones (buttonLabels)
+	//	);
+
+}
+
+function FindOwnersAudit()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ QueryFindOwnersAudit(tx) },errorCBPAudits);
+
+}
+
+function QueryFindOwnersAudit(tx)
+{
+	var auditsubmit=$("#tempidaud").val();
+	var query="";
+	utolistOA_array.forEach( function(valor, indice, array) {
+		query="INSERT INTO AUDITS2OWNERS (ID,UserID,Sync) VALUES ('"+auditsubmit+"','"+valor+"','no')";
+		//alert(query);
+		tx.executeSql(query);
+   });
+
+   	utolistIA_array.forEach( function(valor, indice, array) {
+	query="INSERT INTO AUDITS2INSPECTORS (ID,UserID,Sync) VALUES ('"+auditsubmit+"','"+valor+"','no')";
+	//alert(query);
+	tx.executeSql(query);
+});
+	navigator.notification.confirm(
+	'Audit Submitted',      // mensaje (message)
+	onConfirmsubmitaudit,      // función 'callback' a llamar con el índice del botón pulsado (confirmCallback)
+	'FieldTracker',            // titulo (title)
+	'Accept'          // botones (buttonLabels)
+	);
+
+}
+
+function onConfirmsubmitaudit(button)
+{
+	$(':mobile-pagecontainer').pagecontainer('change', '#pageAudits', {
+        transition: 'pop',
+        changeHash: false,
+        reverse: true,
+        showLoadMsg: true
+    });
+
+}
+
+function ShowModalAuditFinish()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ QueryAuditFinish(tx) },errorCBPAudits);
+
+}
+
+function QueryAuditFinish(tx)
+{
+	var idaut=$("#auditIDL").val();
+	var newquery="SELECT * FROM AuditQuests WHERE AuditID='"+idaut+"' ORDER BY OrdNum";
+	tx.executeSql(newquery, [], QueryAuditFinishSuccess,errorCBPAudits);
+}
+
+function QueryAuditFinishSuccess(tx,results)
+{
+	var len=results.rows.length;
+	var completed=0;
+	var dt = new Date();
+	var SubmitDate=dt.toYMDhrs();
+	var idusera=sessionStorage.userid;
+	for (var i=0; i<results.rows.length; i++){
+		var hasred=$("#btnR"+results.rows.item(i).StepID).hasClass("buttonreds");
+		var hasgreen=$("#btnS"+results.rows.item(i).StepID).hasClass("buttongreens");
+		if(hasred || hasgreen)
+		{
+			completed++;
+
+		}
+
+
+	}
+	//alert("len= "+len+" completed= "+completed);
+	if(len==completed)
+	{
+		var totalred=0;
+		var totalgreen=0;
+
+		for (var x=0; x<results.rows.length; x++){
+			var hasred=$("#btnR"+results.rows.item(x).StepID).hasClass("buttonreds");
+			var hasgreen=$("#btnS"+results.rows.item(x).StepID).hasClass("buttongreens");
+			var comments=$("#comentario"+results.rows.item(x).StepID).val();
+			statuss="";
+			if(hasred)
+			{
+				totalred++;
+
+			}
+			else
+			{
+				totalgreen++;
+			}
+		}
+		var percenta=(parseFloat(totalgreen)/parseFloat(completed))*100;
+		percenta=percenta.toFixed(2);
+		var newmessages="<strong>Score: "+totalgreen+"/"+completed+" - "+percenta+"%</strong>";
+		$("#AreaScore").html(newmessages);
+		$("#popupFinishAudit").popup("open");
+	}
+	else
+	{
+		navigator.notification.alert("Audit is not completed", null, 'FieldTracker', 'Accept');
+
+	}
+
+}
+
+function TakePhotoAudit()
+{
+	 // Toma la imagen y la retorna como una string codificada en base64
+	 navigator.camera.getPicture(onPhotoDataSuccessAudit, onFailAudit, { quality: 80,destinationType : Camera.DestinationType.FILE_URI});
+}
+
+function onPhotoDataSuccessAudit(imageData) {
+	// Descomenta esta linea para ver la imagen codificada en base64
+	// console.log(imageData);
+	 movePicAudit(imageData);         
+  }
+
+  function movePicAudit(file){
+	window.resolveLocalFileSystemURI(file, resolveOnSuccessAudit, resOnErrorAudit); 
+} 
+
+function resolveOnSuccessAudit(entry){ 
+   
+    var d = new Date();
+    var n = d.getTime();
+    //new file name
+    var newFileName = n + ".jpg";
+    var myFolderApp = ".FieldTracker";
+
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSys) {      
+    //The folder is created if doesn't exist
+    fileSys.root.getDirectory( myFolderApp,
+                    {create:true, exclusive: false},
+                    function(directory) {
+                        entry.copyTo(directory, newFileName,  function(entry){ successMoveAudit(entry,"photo") },resOnErrorAudit);
+                    },
+                    resOnErrorAudit);
+                    },
+					resOnErrorAudit);
+}
+
+//Callback function when the file has been moved successfully - inserting the complete path
+function successMoveAudit(entry,type) {	
+		savePhototempAudit(entry.toURL());
+    //I do my insert with "entry.fullPath" as for the path
+}
+
+//SAVE PHOTO URL TO DATABASE
+function savePhototempAudit(photopath)
+{
+	 var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+           db.transaction(function(tx){ QueryPhotoTempAudit(tx,photopath) }, errorCBPA);
+}
+
+
+function QueryPhotoTempAudit(tx,photopath)
+{
+
+	var stepaudit=$("#Hidstepaudit").val();
+	//var sabecomment=$("#sabecomment").val();
+	var query='INSERT INTO TEMPAUDITPHOTO (IDStep,Path) VALUES ("'+stepaudit+'","'+photopath+'")';
+	tx.executeSql(query);
+	searchfilesphotosaudit();
+
+}
+
+function resOnErrorAudit(error) {
+    alert(error.code);
+}
+
+function onFailAudit(message) {
+	alert('Error: ' + message);
+  }
+
+function searchfilesphotosaudit()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ Queryfilesphotosaudit(tx) }, errorCBPA);
+}
+
+function Queryfilesphotosaudit(tx)
+{
+	//alert("vamo");
+	var stepaudit=$("#Hidstepaudit").val();
+	var newquery="SELECT * FROM TEMPAUDITPHOTO WHERE IDStep='"+stepaudit+"'";
+	//alert(newquery);
+	tx.executeSql(newquery, [], QueryfilesphotosauditSuccess, errorCBPA);
+}
+
+function QueryfilesphotosauditSuccess(tx,results)
+{
+	var len=results.rows.length;
+	//alert("photos: "+len);
+	var htmls="";
+	var stepaudit=$("#Hidstepaudit").val();
+	$("#botonpics"+ stepaudit).html("<strong>Pictures: "+len+"</strong>");
+	for (var ysa=0; ysa<photosonarray.length; ysa++)
+	{
+		//alert(commentsriskarray[ysa].id+" => "+stepaudit);
+		if(photosonarray[ysa].id==stepaudit)
+		{
+			photosonarray.splice(ysa,1);
+			//alert("eliminado");
+		}
+
+
+	}
+		text_el=new Object();
+		text_el.id=stepaudit;
+		text_el.cantidad=len;
+		photosonarray.push(text_el); 
+	//alert("#botonpics"+stepaudit);
+	//document.getElementById("botonpics"+stepaudit).style.visibility = "hidden";
+	$("#table-resultAudits").table("refresh");
+	$("#table-resultAudits").trigger('create');	
+	var tb = $('#photosdrawau');
+	if(len>0)
+	{
+		
+		var conuter=0;
+		document.getElementById("botonpics"+stepaudit).style.visibility = "visible";
+		for (var i=0; i<results.rows.length; i++)
+		{
+			if(conuter==0)
+			{
+				htmls+='<tr>';
+			}
+            
+			htmls+='<td style="width:101px;"><img src="'+results.rows.item(i).Path+'" id="'+results.rows.item(i).ID+'" onclick="deleteimagerisk('+"'"+results.rows.item(i).ID+"'"+')" width="100" height="100"/></td>';
+			//alert(results.rows.item(i).ID);
+		
+		   if(conuter<5)
+		   {
+			conuter++;
+
+		   }
+		   else
+		   {
+			htmls+='</tr>';
+			conuter=0;
+		   }		
+		}	
+	}
+	else
+	{
+		document.getElementById("botonpics"+stepaudit).style.visibility = "hidden";
+	}
+	if(conuter!=0)
+	{
+		htmls+='</tr>';
+	}
+	//alert(htmls);
+	tb.empty().append(htmls);
+	$("#solosemeam").table("refresh");
+	$("#solosemeam").trigger('create');
+	//alert("ya dibujo");
+}
+
+function deleteimagerisk(id)
+{
+	$("#deleteriski").val(id);
+	navigator.notification.confirm(
+		'Do you want to delete this image?', // message
+		 onConfirmrisk,            // callback to invoke with index of button pressed
+		'Picture Risk',           // title
+		['Cancel','OK']     // buttonLabels
+	);
+	//alert(id);
+	
+}
+
+function onConfirmrisk(buttonIndex) {
+	//alert('You selected button ' + buttonIndex);
+	if(buttonIndex==2)
+	{
+		var id=$("#deleteriski").val();
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+		db.transaction(function(tx){ Querydeleteimagerisk(tx,id) }, errorCB);
+	}
+}
+
+function Querydeleteimagerisk(tx,id)
+{
+	var query='DELETE FROM TEMPAUDITPHOTO WHERE ID="'+id+'"';
+	tx.executeSql(query);
+	searchfilesphotosaudit();
+}
+
+function deletetempinforisk()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ Querydeletetempinforisk(tx) }, errorCBPA);
+}
+
+function Querydeletetempinforisk(tx)
+{
+	tx.executeSql("DELETE FROM TEMPRISKTEXT");
+	tx.executeSql("DELETE FROM TEMPAUDITPHOTO");
+
+}
+
+
+
+function SaveTempText()
+{
+	var stepaudit=$("#Hidstepaudit").val();
+	var textoatras=$("#sabecomment").val();
+	$("#comentario"+stepaudit).val(textoatras);
+	$("#popupriskaudit").popup("close");
+	$("#sabecomment").val('');
+	//var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    //db.transaction(function(tx){ QuerySaveTempTxt(tx) }, errorCBPA);
+
+}
+
+function QuerySaveTempTxt(tx)
+{
+	var stepaudit=$("#Hidstepaudit").val();
+	var textei=$("#sabecomment").val();
+	tx.executeSql("DELETE FROM TEMPRISKTEXT WHERE IDStep='"+stepaudit+"'");
+	var query='INSERT INTO TEMPRISKTEXT(IDStep,Text) VALUES ("'+stepaudit+'","'+textei+'")';
+	//alert(query);
+	tx.executeSql(query);
+	try
+	{
+		//alert("intentaremos");
+		if(commentsriskarray.length>0)
+		{
+			//alert("fugaaa");
+			for (var ysa=0; ysa<commentsriskarray.length; ysa++)
+			{
+				//alert(commentsriskarray[ysa].id+" => "+stepaudit);
+				if(commentsriskarray[ysa].id==stepaudit)
+				{
+					commentsriskarray.splice(ysa,1);
+					//alert("eliminado");
+				}
+	
+	
+			}
+		}
+		text_el=new Object();
+		text_el.id=stepaudit;
+		text_el.texto=textei;
+		commentsriskarray.push(text_el); 
+
+	}
+	catch(error)
+	{
+		alert(error);
+
+	}
+
+	$("#popupriskaudit").popup("close");
+	$("#sabecomment").val('');
+	//alert("guardado");	
+
+}
+
+function searchtexttemp()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ Querysearchtexttemp(tx) }, errorCB);
+
+}
+
+function Querysearchtexttemp(tx)
+{
+	var stepaudit=$("#Hidstepaudit").val();
+	var newquery="SELECT * FROM TEMPRISKTEXT WHERE IDStep='"+stepaudit+"'";
+	//alert(newquery);
+	tx.executeSql(newquery, [], QuerytxttempauditSuccess, errorCBPA);
+
+}
+
+function QuerytxttempauditSuccess(tx,results)
+{
+	var len=results.rows.length;
+	//alert(len);
+	if(len==1)
+	{
+		$("#sabecomment").val(results.rows.item(0).Text);
+
+	}
+
+}
+
+function OpenFinishAudit()
+{
+	$("#popupFinishAudit").popup("open");
+}
+
+function OpenInspectionModalAudit()
+{
+	$("#popupFinishAudit").popup("close");
+	$("#popupToInspectAudit").popup("open");
+
+}
+function CloseInspectionModalAudit()
+{
+	$("#popupToInspectAudit").popup("close");
+	$("#popupFinishAudit").popup("open");
+}
+
+function OpenOwnersModalAudit()
+{
+	$("#popupFinishAudit").popup("close");
+	$("#popupToOwnersAudit").popup("open");
+
+}
+function CloseOwnersModalAudit()
+{
+	$("#popupToOwnersAudit").popup("close");
+	$("#popupFinishAudit").popup("open");
+}
+
+//Fill Recipients
+function fillrecipientsAO()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryfillrecipientsAO, errorCB);
+	
+}
+
+function QueryfillrecipientsAO(tx)
+{
+	tx.executeSql("SELECT USERS.FirstName, USERS.LastName, Users.Username FROM USERS ORDER BY LastName,FirstName", [], QueryfillrecipientsAOSuccess, errorCB);
+	//SELECT USERS.FirstName, USERS.LastName, Users.Username FROM USERS
+}
+
+function QueryfillrecipientsAOSuccess(tx,results)
+{
+	 var len = results.rows.length;
+	 var tb = $('#recipientsbodyOwnerAudit');
+	 var tablehtml="";
+	 for (var i=0; i<len; i++){
+		    tablehtml+='<tr><td><label id="lbl'+results.rows.item(i).Username+'" class="ui-icon-delete ui-shadow-icon" ><input type="checkbox" onchange='+"FillToListAO('"+results.rows.item(i).Username+"') "+'  name="chklto'+results.rows.item(i).Username+'" id="chklto'+results.rows.item(i).Username+'">'+results.rows.item(i).LastName+', &nbsp;'+results.rows.item(i).FirstName+'</label></td></tr>';
+	  }
+	 tb.empty().append(tablehtml);
+	 $("#table-recipientsOwnersAudit").table("refresh");
+	 $("#table-recipientsOwnersAudit").trigger('create');
+}
+
+function fillrecipientsAI()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryfillrecipientsAI, errorCB);
+	
+}
+
+function QueryfillrecipientsAI(tx)
+{
+	tx.executeSql("SELECT USERS.FirstName, USERS.LastName, Users.Username FROM USERS ORDER BY LastName,FirstName", [], QueryfillrecipientsAISuccess, errorCB);
+	//SELECT USERS.FirstName, USERS.LastName, Users.Username FROM USERS
+}
+
+function QueryfillrecipientsAISuccess(tx,results)
+{
+	 var len = results.rows.length;
+	 var tb = $('#recipientsbodyInspectAudit');
+	 var tablehtml="";
+	 for (var i=0; i<len; i++){
+		    tablehtml+='<tr><td><label id="lbl'+results.rows.item(i).Username+'" class="ui-icon-delete ui-shadow-icon" ><input type="checkbox" onchange='+"FillToListAI('"+results.rows.item(i).Username+"') "+'  name="chklti'+results.rows.item(i).Username+'" id="chklti'+results.rows.item(i).Username+'">'+results.rows.item(i).LastName+', &nbsp;'+results.rows.item(i).FirstName+'</label></td></tr>';
+	  }
+	 tb.empty().append(tablehtml);
+	 $("#table-recipientsInspectAudit").table("refresh");
+	 $("#table-recipientsInspectAudit").trigger('create');
+}
+function FillToListAI(iduser)
+{
+
+	var jointolist=$("#chklti"+iduser).is(':checked') ;
+	var sabra=$("#chklti"+iduser).text();
+	if(jointolist)
+	{
+		if(iduser!="")
+		{
+		utolistIA_array.push(iduser);
+		}
+
+	}
+	else
+	{
+		//alert("remove");
+		// Find and remove item from an array
+		var i = utolistIA_array.indexOf(iduser);
+		if(i != -1) {
+			utolistIA_array.splice(i, 1);
+		}
+		
+	}
+	 var quantusersids= utolistIA_array.length;
+	 $("#lblquanttousersIA").html(quantusersids+" selected");
+	GetNamesListToAI();
+}
+
+function GetNamesListToAI()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryGetNamesListToAI, errorCB);
+}
+
+function QueryGetNamesListToAI(tx)
+{
+  tx.executeSql("SELECT USERS.FirstName, USERS.LastName, Users.Username FROM USERS ORDER BY LastName,FirstName", [], QueryGetNamesListToAISuccess, errorCB);
+}
+
+function QueryGetNamesListToAISuccess(tx,results)
+{
+	//alert("voy por nombres");
+	 var len = results.rows.length;
+	 var names="";
+	 var ids="";
+	 var TxtTo="";
+	 utolistIA_arrayNames  = new Array();
+	 
+	
+	
+	 		utolistIA_array.forEach( function(valor, indice, array) {
+		
+			  for (var i=0; i<len; i++)
+	 			{
+						 	 names=results.rows.item(i).LastName+', '+results.rows.item(i).FirstName;
+		 						ids=results.rows.item(i).Username;
+							 if(valor==ids)
+			 				{
+				// alert("igual");
+							utolistIA_arrayNames .push(names);
+				 			TxtTo+=names+"; "
+			 				}
+					
+	 			}
+	
+    		//console.log("En el índice " + indice + " hay este valor: " + valor);
+		 });
+	 
+	 //alert(TxtTo);
+	 $("#inInspections").val(TxtTo);	
+}
+
+function CheckAllusersIA()
+{
+
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryCheckAllusersIA, errorCB);
+}
+
+function QueryCheckAllusersIA(tx)
+{
+	tx.executeSql("SELECT USERS.FirstName, USERS.LastName, Users.Username FROM USERS ORDER BY LastName,FirstName", [], QueryCheckAllusersIASuccess, errorCB);
+}
+
+function QueryCheckAllusersIASuccess(tx,results)
+{
+	 var len = results.rows.length;
+	 var names="";
+	 var ids="";
+	 var TxtTo="";
+	 utolistIA_array  = new Array();
+	 utolistIA_arrayNames = new Array();
+	 for (var i=0; i<len; i++)
+	 {
+		 names=results.rows.item(i).LastName+', '+results.rows.item(i).FirstName;
+		 ids=results.rows.item(i).Username;
+		 $("#chklti"+ids).prop('checked', true).checkboxradio('refresh');
+		 if(ids!="")
+		 {
+			utolistIA_array  .push(ids);
+			utolistIA_arrayNames.push(names);
+		 TxtTo+=names+"; "
+			 
+		 }
+		
+
+	 }
+	 //alert(TxtTo);
+	 var quantusersids= utolistIA_array .length;
+	 $("#lblquanttousersIA").html(quantusersids+" selected");
+	 $("#inInspections").val(TxtTo);
+	
+}
+
+function UncheckAllusersIA()
+{
+	//alert("uncheck");
+	
+	$('#table-recipientsInspectAudit').find('input[type="checkbox"]:checked').each(function () {
+	$(this).prop('checked', false).checkboxradio('refresh');
+	});
+	$("#inInspections").val("");
+	utolistIA_array = new Array();
+	utolistIA_arrayNames = new Array();
+	 var quantusersids= utolistIA_array.length;
+	 $("#lblquanttousersIA").html(quantusersids+" selected");
+	 //$('#table-recipients').find('input:checkbox').prop('checked', false);
+	 $("#table-recipientsInspectAudit").table("refresh");
+}
+
+
+function FillToListAO(iduser)
+{
+
+	var jointolist=$("#chklto"+iduser).is(':checked') ;
+	var sabra=$("#chklto"+iduser).text();
+	if(jointolist)
+	{
+		if(iduser!="")
+		{
+		utolistOA_array.push(iduser);
+		}
+
+	}
+	else
+	{
+		//alert("remove");
+		// Find and remove item from an array
+		var i = utolistOA_array.indexOf(iduser);
+		if(i != -1) {
+		utolistOA_array.splice(i, 1);
+		}
+		
+	}
+	 var quantusersids= utolistOA_array.length;
+	 $("#lblquanttousersOA").html(quantusersids+" selected");
+	GetNamesListToAO();
+}
+
+function GetNamesListToAO()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryGetNamesListToAO, errorCB);
+}
+
+function QueryGetNamesListToAO(tx)
+{
+  tx.executeSql("SELECT USERS.FirstName, USERS.LastName, Users.Username FROM USERS ORDER BY LastName,FirstName", [], QueryGetNamesListToAOSuccess, errorCB);
+}
+
+function QueryGetNamesListToAOSuccess(tx,results)
+{
+	//alert("voy por nombres");
+	 var len = results.rows.length;
+	 var names="";
+	 var ids="";
+	 var TxtTo="";
+	 utolistOA_arrayNames = new Array();
+	 
+	
+	
+	 		utolistOA_array.forEach( function(valor, indice, array) {
+		
+			  for (var i=0; i<len; i++)
+	 			{
+						 	 names=results.rows.item(i).LastName+', '+results.rows.item(i).FirstName;
+		 						ids=results.rows.item(i).Username;
+							 if(valor==ids)
+			 				{
+				// alert("igual");
+							utolistOA_arrayNames.push(names);
+				 			TxtTo+=names+"; "
+			 				}
+					
+	 			}
+	
+    		//console.log("En el índice " + indice + " hay este valor: " + valor);
+		 });
+	 
+	 //alert(TxtTo);
+	 $("#inownerss").val(TxtTo);	
+}
+
+function CheckAllusersOA()
+{
+
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryCheckAllusersOA, errorCB);
+}
+
+function QueryCheckAllusersOA(tx)
+{
+	tx.executeSql("SELECT USERS.FirstName, USERS.LastName, Users.Username FROM USERS ORDER BY LastName,FirstName", [], QueryCheckAllusersOASuccess, errorCB);
+}
+
+function QueryCheckAllusersOASuccess(tx,results)
+{
+	 var len = results.rows.length;
+	 var names="";
+	 var ids="";
+	 var TxtTo="";
+	 utolistOA_array  = new Array();
+	 utolistOA_arrayNames = new Array();
+	 for (var i=0; i<len; i++)
+	 {
+		 names=results.rows.item(i).LastName+', '+results.rows.item(i).FirstName;
+		 ids=results.rows.item(i).Username;
+		 $("#chklto"+ids).prop('checked', true).checkboxradio('refresh');
+		 if(ids!="")
+		 {
+			utolistOA_array .push(ids);
+			utolistOA_arrayNames.push(names);
+		 TxtTo+=names+"; "
+			 
+		 }
+		
+
+	 }
+	 //alert(TxtTo);
+	 var quantusersids= utolistOA_array.length;
+	 $("#lblquanttousersOA").html(quantusersids+" selected");
+	 $("#inownerss").val(TxtTo);
+	
+}
+
+function UncheckAllusersOA()
+{
+	//alert("uncheck");
+	
+	$('#table-recipientsOwnersAudit').find('input[type="checkbox"]:checked').each(function () {
+	$(this).prop('checked', false).checkboxradio('refresh');
+	});
+	$("#inownerss").val("");
+	utolistOA_array = new Array();
+	utolistOA_arrayNames = new Array();
+	 var quantusersids= utolistOA_array.length;
+	 $("#lblquanttousersOA").html(quantusersids+" selected");
+	 //$('#table-recipients').find('input:checkbox').prop('checked', false);
+	 $("#table-recipientsOwnersAudit").table("refresh");
+}
+
+
+
+
+
+
+///////<<<<<<<<<<<<============================= AUDITS DRAW PAGE   =========================================>>>>>>>>>>>///////
+
 ///////<<<<<<<<<<<<============================= FUNCTION TO VERIFY STEPS HAVE MEDIA =========================================>>>>>>>>>>>
 //Dropdown Components
 	function verifymediainsubmitted(SubmitID)
@@ -9483,7 +10699,6 @@ function AddResponses()
 
      function Queryverifymedia(tx,SubmitID)
    {
-	  
 		tx.executeSql("SELECT * FROM MEDIA WHERE SubmitID='"+SubmitID+"'", [], verifymediaSuccess, errorCB);
 	   
    }
