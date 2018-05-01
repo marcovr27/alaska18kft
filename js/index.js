@@ -758,7 +758,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITMEDIA (SubmitID,StepID,Path,Sync)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITSUBPARTS (Name)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS GROUPS2AUDITS (GroupID,ID,Ord)');
-		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,NumFiles,Date DATETIME,UserID,Sync)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,NumFiles,Date DATETIME,UserID,Score,Sync)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITQUESTS (AuditID,StepID,Text,SubPart,OrdNum)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS2OWNERS (ID,UserID,Sync)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS2INSPECTORS (ID,UserID,Sync)');
@@ -770,7 +770,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS REJECTED (SubmitID,ProcID,Name,UserID,Status,SubmitDate,RejectReason)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS STEPS2COMPS (StepID,CompID)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS SETTINGS (Language,IP,SyncTime,LastSync,DateFormat)');
-		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/ServiceFT.asmx")');
+		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/serviceft.asmx")');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS LANGUAGES (Language,OrderNum)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS FILESDATA (FileID,FileUrl,FileName)');
 		// tx.executeSql('DROP TABLE IF EXISTS MEASUREMENTS');
@@ -9859,6 +9859,7 @@ function QueryAuditNowSuccess(tx,results)
 		$("#tempidaud").val(submitID);
 		var statuss="";
 		var idaut=$("#auditIDL").val();
+		var scorecito=$("#scorepa").val();
 		for (var x=0; x<results.rows.length; x++){
 			var hasred=$("#btnR"+results.rows.item(x).StepID).hasClass("buttonreds");
 			var hasgreen=$("#btnS"+results.rows.item(x).StepID).hasClass("buttongreens");
@@ -9894,7 +9895,7 @@ function QueryAuditNowSuccess(tx,results)
 				}
 			}
 
-			var query="INSERT INTO SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,Date,UserID,NumFiles,Sync) VALUES ('"+submitID+"','"+idaut+"','"+results.rows.item(x).StepID+"','"+comments+"','"+descri+"','"+statuss+"','"+SubmitDate+"','"+idusera+"','"+cantidad+"','no')";
+			var query="INSERT INTO SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,Date,UserID,Score,NumFiles,Sync) VALUES ('"+submitID+"','"+idaut+"','"+results.rows.item(x).StepID+"','"+comments+"','"+descri+"','"+statuss+"','"+SubmitDate+"','"+idusera+"','"+scorecito+"','"+cantidad+"','no')";
 			//alert(query);
 			tx.executeSql(query);
 			//alert(results.rows.item(x).StepID+" descripcion: "+descri);	
@@ -10047,6 +10048,7 @@ function QueryAuditFinishSuccess(tx,results)
 		var percenta=(parseFloat(totalgreen)/parseFloat(completed))*100;
 		percenta=percenta.toFixed(2);
 		var newmessages="<strong>Score: "+totalgreen+"/"+completed+" - "+percenta+"%</strong>";
+		$("#scorepa").val(percenta);
 		$("#AreaScore").html(newmessages);
 		$("#popupFinishAudit").popup("open");
 	}
