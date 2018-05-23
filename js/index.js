@@ -8,6 +8,7 @@ var newcoursesdatatoinsert;
 var newhoursdatatoinsert;
 var newmessagesdatatoinsert;
 var newcertsdatatoinsert;
+var newmeasdatatoinsert;
 var newlibrarydatatoinsert;
 var newfilesdatatoinsert;
 var newauditsdatatoinsert;
@@ -22,11 +23,14 @@ var sendAuditsarray;//Sync Variables
 var sendAOwnersarray;//Sync Variables
 var sendAInspectorsarray;//Sync Variables
 var sendMessagealone;//Sync Variables
+var sendMeasArray;
 var sendLibraryalone;
 var sendHoursalone;
 var synchours;
 var syncmessages;
 var commentsriskarray;
+var ExistsPhotoAudit=false;
+var listfieldsproc=new Array();
 var utolistOA_array = new Array();
 var utolistOA_arrayNames = new Array();
 var utolistIA_array = new Array();
@@ -773,8 +777,10 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 tx.executeSql('INSERT INTO SETTINGS (Language,IP) VALUES ("1","http://rdmwebt01.teckcominco.loc/Fieldtracker/serviceft.asmx")');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS LANGUAGES (Language,OrderNum)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS FILESDATA (FileID,FileUrl,FileName)');
-		// tx.executeSql('DROP TABLE IF EXISTS MEASUREMENTS');
+		// tx.executeSql('DROP TABLE IF EXISTS MEASUREMENTS'); 
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS MEASUREMENTS (MeasID,MeasDesc,Units,FieldType,MinValue,MaxValue)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS MEASDATA (MeasID,DropDownData)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync)');
 //		 tx.executeSql('INSERT INTO MEASUREMENTS (MeasID,MeasDesc,Units,FieldType,MinValue,MaxValue) VALUES ("TEMP","Motor Temperature","F","T","50","100")');
 //		 tx.executeSql('INSERT INTO MEASUREMENTS (MeasID,MeasDesc,Units,FieldType,MinValue,MaxValue) VALUES ("TEMPTWO","Other","F","T","50","100")');
 //		 tx.executeSql('INSERT INTO MEASUREMENTS (MeasID,MeasDesc,Units,FieldType,MinValue,MaxValue) VALUES ("EXTRACOMP","Other CompExtra","F","T","50","100")');
@@ -794,7 +800,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		// tx.executeSql('INSERT INTO COMP2MEAS (CompID,MeasID)  VALUES ("HMOTOR","EXTRACOMP")');
 		// tx.executeSql('INSERT INTO COMP2MEAS (CompID,MeasID)  VALUES ("HMOTOR","EXTRASELECT")');
 		  //tx.executeSql('DROP TABLE IF EXISTS MEASDATA');
-		 tx.executeSql('CREATE TABLE IF NOT EXISTS MEASDATA (MeasID,DropDownData)');
+		 
 		// tx.executeSql('INSERT INTO MEASDATA (MeasID,DropDownData) VALUES ("ALARM","C15")');
 		// tx.executeSql('INSERT INTO MEASDATA (MeasID,DropDownData) VALUES ("ALARM","D101")');
 		// tx.executeSql('INSERT INTO MEASDATA (MeasID,DropDownData) VALUES ("ALARM","F8")');
@@ -4754,7 +4760,7 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 	   showModal();
 	   var idprocedure=sessionStorage.currentProcedure;
 	   
-	   var query="SELECT StepID, OrdNum, Text, Type, Num, SelAllComps,SelAllFaults FROM PROCEDURESTEPS WHERE (ProcID = '"+idprocedure+"')  ORDER BY OrdNum";
+	   var query="SELECT PROCEDURESTEPS.StepID, OrdNum, Text, Type, Num, SelAllComps,SelAllFaults,STEP2MEAS.MeasID,MEASUREMENTS.MeasDesc,MEASUREMENTS.FieldType FROM PROCEDURESTEPS LEFT OUTER JOIN STEP2MEAS ON PROCEDURESTEPS.StepID=STEP2MEAS.StepID LEFT OUTER JOIN MEASUREMENTS ON STEP2MEAS.MeasID=MEASUREMENTS.MeasID  WHERE (ProcID = '"+idprocedure+"')  ORDER BY OrdNum";
 	   //akivoy
 	  // alert(query);
 	   tx.executeSql(query, [], QuerystepsprocedureSuccess, errorCB);
@@ -4808,6 +4814,7 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 		var specialequipment=false;
 		var introduction=false;
 		var stepshtml='';	
+		var medida='';
 		 var tb = $('#stepsbody');
 	
 		// Search For Special equipment required and Introduction.
@@ -4881,7 +4888,26 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 					}
 					else if(results.rows.item(i).Type=="Step")
 					{
-				       stepshtml+='<tr><td><label id="lbl'+results.rows.item(i).StepID+'" class="ui-icon-delete ui-shadow-icon" ><input type="checkbox"  name="'+results.rows.item(i).StepID+'" id="'+results.rows.item(i).StepID+'">'+results.rows.item(i).Num+' &nbsp;'+results.rows.item(i).Text+'</label> </td><td><a href="javascript:reportissue('+"'"+results.rows.item(i).StepID+"'"+');" data-theme="b" data-role="button" data-inline="true" data-icon="alert" data-iconpos="right">Report Issue</a></td></tr>';
+						if(results.rows.item(i).FieldType!=null)
+						{
+							if(results.rows.item(i).FieldType=="T")
+							{
+								medida='<label for="ID'+results.rows.item(i).MeasID+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><input type="text" name="ID'+results.rows.item(i).MeasID+'" id="ID'+results.rows.item(i).MeasID+'" value="" placeholder="'+"Enter value"+'" />';
+
+							}
+							else if(results.rows.item(i).FieldType=="D")
+							{
+								medida='<label for="ID'+results.rows.item(i).MeasID+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><select name="ID'+results.rows.item(i).MeasID+'" id="ID'+results.rows.item(i).MeasID+'"><option value=""> </option></select>';
+
+							}
+
+						}
+						else
+						{
+							medida="";
+						}
+						
+				       stepshtml+='<tr><td><label id="lbl'+results.rows.item(i).StepID+'" class="ui-icon-delete ui-shadow-icon" ><input type="checkbox"  name="'+results.rows.item(i).StepID+'" id="'+results.rows.item(i).StepID+'">'+results.rows.item(i).Num+' &nbsp;'+results.rows.item(i).Text+'</label> </td><td>'+medida+'</td><td><a href="javascript:reportissue('+"'"+results.rows.item(i).StepID+"'"+');" data-theme="b" data-role="button" data-inline="true" data-icon="alert" data-iconpos="right">Report Issue</a></td></tr>';
 					}
 				
 			}
@@ -4889,24 +4915,110 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 			//$("#stepsbody").html(stepshtml);
 			tb.empty().append(stepshtml);
 			$("#table-result").table("refresh");
-	 		$("#table-result").trigger('create');
+			 $("#table-result").trigger('create');			 
 			 hideModal();
-		 
-		 
-		 	
-		
-		
+			 fillSelectMeas();		
+		}
+
+		function fillSelectMeas()
+		{
+			var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+        	db.transaction(QueryfillSelectMeas, errorCB);
+
+		}
+
+		function QueryfillSelectMeas(tx)
+		{
+			var idprocedure=sessionStorage.currentProcedure;
+			var query="SELECT StepID FROM PROCEDURESTEPS WHERE ProcID='"+idprocedure+"'";
+			tx.executeSql(query, [], QueryfillSelectMeasSuccess, errorCB);
+		}
+
+		function QueryfillSelectMeasSuccess(tx,resultados)
+		{
+			var newquery="SELECT MEASDATA.MeasID,MEASDATA.DropDownData,STEP2MEAS.StepID FROM MEASDATA INNER JOIN STEP2MEAS ON MEASDATA.MeasID=STEP2MEAS.MeasID ";
+			var len = resultados.rows.length;
+			 if(len>0)
+		   {
+			  for (var i=0; i<resultados.rows.length; i++){
+				  if(i==0)
+				  {
+					newquery+="WHERE (STEP2MEAS.StepID='"+resultados.rows.item(i).StepID+"'";
+
+				  }
+				  else
+				  {
+					  newquery+=" OR STEP2MEAS.StepID='"+resultados.rows.item(i).StepID+"'";
+				  }
+				  
+				}
+				newquery+=")"
+			}
+			//alert(newquery);
+			tx.executeSql(newquery, [], QueryfillSelectMeastwoSuccess, errorCB);
+		}
+
+		function QueryfillSelectMeastwoSuccess(tx,results) 
+		{
+			//alert("vamo 4");
+			var len = results.rows.length;
+		//	alert(len);
+			if(len>0)
+		  {
+			 for (var i=0; i<results.rows.length; i++){
+				 $("#ID"+results.rows.item(i).MeasID).append('<option value="'+results.rows.item(i).DropDownData+'">'+results.rows.item(i).DropDownData+'</option>');
+			 }
+		   }
+		   $("#table-result").table("refresh");
+			 $("#table-result").trigger('create');	
+			 GetIDSWhitMEas();
+			
+
+		}
+
+		function GetIDSWhitMEas()
+		{
+			//alert("aa");
+			var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+       		db.transaction(QueryGetIDSWhitMEas, errorCB);
+
+		}
+
+		function QueryGetIDSWhitMEas(tx)
+		{
+			//alert("bb");
+			var idprocedure=sessionStorage.currentProcedure;
+			var query="SELECT Step2Meas.StepID,Step2Meas.MeasID FROM Step2Meas INNER JOIN ProcedureSteps ON Step2Meas.StepID=ProcedureSteps.StepID WHERE ProcID='"+idprocedure+"'";
+			//alert(query);
+			tx.executeSql(query, [], QueryGetIDSWhitMEasSuccess, errorCB);
+
+		}
+
+		function QueryGetIDSWhitMEasSuccess(tx,results)
+		{
+			//alert("cc");
+			listfieldsproc= new Array();
+			var len = results.rows.length;
+			if(len>0)
+			{
+				for (var i=0; i<results.rows.length; i++){
+					text_el=new Object();
+					text_el.StepID=results.rows.item(i).StepID;
+					text_el.MeasID=results.rows.item(i).MeasID;
+					listfieldsproc.push(text_el); 
+
+				}
+
+			}
+			
+
 		}
 		
-		
 		//IF WHATTODO IS TRUE CHECK FOR ISSUES ON SUBMIT ID
-		
 		   function fillredlables()
    {
 	   var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
-        db.transaction(Querygetredissues, errorCB);
-	   
-	   
+        db.transaction(Querygetredissues, errorCB);	   
    }
    
       function Querygetredissues(tx)
@@ -5049,9 +5161,79 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 	  }
 	  else
 	  {
-		  SaveSubmit();
+		  //checkMeasFields();
+		  var checkfieldsflag=false;
+		  try
+		  {
+			  if(listfieldsproc.length>0)
+			  {
+
+				  for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+				  {
+					  
+						  
+						var MeasID=listfieldsproc[ysa].MeasID;
+						var ValueMeas=$("#ID"+MeasID).val();
+						//alert(ValueMeas)
+						if(ValueMeas=="" || ValueMeas==null)
+						{
+							checkfieldsflag=true;
+
+						}
+
+					  
+
+				  }
+
+			  }  
+
+		  }
+		  catch(errors)
+		  {
+			  alert(errors);
+		  } 
+		  if(checkfieldsflag==false)
+		  {
+			 SaveSubmit();
+
+		  }
+		  else
+		  {
+			navigator.notification.confirm(
+				'One or more steps is missing measurement data.',      // mensaje (message)
+					onsuccesscheckfieldsa,      // función 'callback' a llamar con el índice del botón pulsado (confirmCallback)
+						'FieldTracker',            // titulo (title)
+				'Accept'          // botones (buttonLabels)
+				);
+
+		  }
+		 
 	  }
 		
+	}
+
+	function onsuccesscheckfieldsa (button) {
+		//checkIssuesSteps();
+
+	}
+
+	function checkMeasFields()
+	{
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+		db.transaction(QuerycheckMeasFields, errorCB);
+
+	}
+
+	function QuerycheckMeasFields(tx)
+	{
+		var query="SELECT * FROM PROCEDURESTEPS";
+	  	tx.executeSql(query, [], QuerycheckMeasFieldsSuccess, errorCB);
+
+	}
+
+	function QuerycheckMeasFieldsSuccess(tx,results)
+	{
+
 	}
 	
 	//Save Submit
@@ -5090,7 +5272,7 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 		
 		var SubmitID=sessionStorage.submitID;
 		var query="SELECT * FROM TEMPSUBMITTEDSTEPS WHERE SubmitID='"+SubmitID+"'";
-	  	tx.executeSql(query, [], function(tx,results){ QuerySaveIssuesStepsSuccess(tx,results,resultallsteps) }, errorCB);
+	  	tx.executeSql(query, [], function(tx,results){ QuerySaveIssuesStepsSuccess(tx,results,resultallsteps) }, errorCBPA);
 	}
 	
 		function QuerySaveIssuesStepsSuccess(tx,results,resultallsteps)
@@ -5115,7 +5297,10 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 		var UserID=sessionStorage.userid;
 	 	var ProcID=sessionStorage.currentProcedure;
      	var SubmitID=sessionStorage.submitID;
-	 	var FaultID="";
+		var FaultID="";
+		var MeasID="";
+		var QueryK="";
+		var ValueMeas="";
 		
 	
 			$('#table-result').find('input[type="checkbox"]').each(function () {
@@ -5143,8 +5328,6 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 					if(idcheck==results.rows.item(i).StepID)
 					{
 						 
-				
-					 
 						Ok="false";
 						StepID=results.rows.item(i).StepID;
 						Component=results.rows.item(i).Component;
@@ -5154,7 +5337,35 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 						
 						
 					//alert('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'")');
-tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
+					tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
+					try
+					{
+						if(listfieldsproc.length>0)
+						{
+		
+							for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+							{
+								if(StepID==listfieldsproc[ysa].StepID)
+								{
+									
+									MeasID=listfieldsproc[ysa].MeasID;
+									ValueMeas=$("#ID"+MeasID).val();
+									QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
+									//alert(QueryK);
+									tx.executeSql(QueryK);
+		
+								}
+		
+							}
+		
+						}  
+	
+					}
+					catch(errors)
+					{
+						alert(errors);
+					} 
+				
 				
 					}
 		  		}
@@ -5170,6 +5381,34 @@ tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,O
 		
 			     // alert('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'")');
 				tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
+				try
+				{
+					if(listfieldsproc.length>0)
+					{
+	
+						for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+						{
+							if(StepID==listfieldsproc[ysa].StepID)
+							{
+								
+								MeasID=listfieldsproc[ysa].MeasID;
+								ValueMeas=$("#ID"+MeasID).val();
+								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
+								//alert(QueryK);
+								tx.executeSql(QueryK);
+	
+							}
+	
+						}
+	
+					}  
+
+				}
+				catch(errors)
+				{
+					alert(errors);
+				} 
+				
 				
 					}
 
@@ -5185,7 +5424,8 @@ tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,O
 			if(idcheck==results.rows.item(i).StepID)
 			{
 				
-				
+				//akimerengues
+
 				exists=1;
 				Ok="false";
 				StepID=results.rows.item(i).StepID;
@@ -5197,6 +5437,33 @@ tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,O
 				Num=results.rows.item(i).Num;
 				//alert('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'")');
 				tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
+				try
+				{
+					if(listfieldsproc.length>0)
+					{
+	
+						for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+						{
+							if(StepID==listfieldsproc[ysa].StepID)
+							{
+								
+								MeasID=listfieldsproc[ysa].MeasID;
+								ValueMeas=$("#ID"+MeasID).val();
+								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
+								//alert(QueryK);
+								tx.executeSql(QueryK);
+	
+							}
+	
+						}
+	
+					}  
+
+				}
+				catch(errors)
+				{
+					alert(errors);
+				} 
 				
 			}
 		  }
@@ -5211,6 +5478,33 @@ tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,O
 				Comments="";
 		        //alert('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'")');
 				tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
+				try
+				{
+					if(listfieldsproc.length>0)
+					{
+	
+						for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+						{
+							if(StepID==listfieldsproc[ysa].StepID)
+							{
+								
+								MeasID=listfieldsproc[ysa].MeasID;
+								ValueMeas=$("#ID"+MeasID).val();
+								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
+								//alert(QueryK);
+								tx.executeSql(QueryK);
+	
+							}
+	
+						}
+	
+					}  
+
+				}
+				catch(errors)
+				{
+					alert(errors);
+				} 
 				
 			}
 			
@@ -5218,7 +5512,7 @@ tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,O
 		}
 
 	  });
-	 // alert('INSERT INTO SUBMITTEDPROCS  (SubmitID,ProcID,Name,UserID,SubmitDate,Time,Comments,Status,Sync) VALUES ("'+SubmitID+'","'+ProcID+'","'+procedurename+'","'+UserID+'","'+SubmitDate+'","'+SubmitTime+'"," ","'+status_procedure+'","'+"no"+'")');
+	  //alert('INSERT INTO SUBMITTEDPROCS  (SubmitID,ProcID,Name,UserID,SubmitDate,Time,Comments,Status,Sync) VALUES ("'+SubmitID+'","'+ProcID+'","'+procedurename+'","'+UserID+'","'+SubmitDate+'","'+SubmitTime+'"," ","'+status_procedure+'","'+"no"+'")');
 	 tx.executeSql('INSERT INTO SUBMITTEDPROCS  (SubmitID,ProcID,Name,UserID,SubmitDate,Time,Comments,Status,Sync) VALUES ("'+SubmitID+'","'+ProcID+'","'+procedurename+'","'+UserID+'","'+SubmitDate+'","'+SubmitTime+'"," ","'+status_procedure+'","'+"no"+'")');
 	 
 	   searchfortempmedia(SubmitID,StepID);
@@ -6908,7 +7202,8 @@ function failre(error) {
   {
 	  showModal();
 	   var idprocedure=sessionStorage.currentProcedure;
-	   var query="SELECT StepID, OrdNum, Text, Type, Num, SelAllComps,SelAllFaults FROM PROCEDURESTEPS WHERE (ProcID = '"+idprocedure+"')  ORDER BY OrdNum";
+	   var query="SELECT PROCEDURESTEPS.StepID, OrdNum, Text, Type, Num, SelAllComps,SelAllFaults,STEP2MEAS.MeasID,MEASUREMENTS.MeasDesc,MEASUREMENTS.FieldType FROM PROCEDURESTEPS LEFT OUTER JOIN STEP2MEAS ON PROCEDURESTEPS.StepID=STEP2MEAS.StepID LEFT OUTER JOIN MEASUREMENTS ON STEP2MEAS.MeasID=MEASUREMENTS.MeasID  WHERE (ProcID = '"+idprocedure+"')  ORDER BY OrdNum";
+	  // var query="SELECT StepID, OrdNum, Text, Type, Num, SelAllComps,SelAllFaults FROM PROCEDURESTEPS WHERE (ProcID = '"+idprocedure+"')  ORDER BY OrdNum";
 	   tx.executeSql(query, [], QuerystepssubmitSuccess, errorCB);
 	  
   }
@@ -6974,12 +7269,11 @@ function failre(error) {
          var specialequipment=false;
 		var introduction=false;
 		var stepshtml='';	
+		var medida='';
 		 var tb = $('#stepsbodyh');
 	
 		// Search For Special equipment required and Introduction.
 		 for (var i=0; i<resultsteps.rows.length; i++){
-			 
-	
 			 
 			 if(resultsteps.rows.item(i).Type=="Required Equipment")
 			 {
@@ -7076,7 +7370,28 @@ function failre(error) {
 					}
 					else if(resultsteps.rows.item(i).Type=="Step")
 					{
-				       stepshtml+='<tr><td><label id="lbl2'+resultsteps.rows.item(i).StepID+'" class="ui-icon-delete ui-shadow-icon" '+style+' ><input type="checkbox"  name="'+resultsteps.rows.item(i).StepID+'" id="'+resultsteps.rows.item(i).StepID+'" '+ischeck+'>'+resultsteps.rows.item(i).Num+' &nbsp;'+resultsteps.rows.item(i).Text+'</label> </td><td><a href="javascript:reportissueh('+"'"+resultsteps.rows.item(i).StepID+"'"+');" data-theme="b" data-role="button" data-inline="true" data-icon="alert" data-iconpos="right">Report Issue</a></td></tr>';
+						//alert(resultsteps.rows.item(i).FieldType);
+						if(resultsteps.rows.item(i).FieldType!=null)
+						{
+							if(resultsteps.rows.item(i).FieldType=="T")
+							{
+								medida='<label for="IDH'+resultsteps.rows.item(i).MeasID+'" id="lbl'+i+'">'+resultsteps.rows.item(i).MeasDesc+'</label><input type="text" name="IDH'+resultsteps.rows.item(i).MeasID+'" id="IDH'+resultsteps.rows.item(i).MeasID+'" value="" placeholder="'+"Enter value"+'" />';
+
+							}
+							else if(resultsteps.rows.item(i).FieldType=="D")
+							{
+								//alert("es D");
+								medida='<label for="IDH'+resultsteps.rows.item(i).MeasID+'" id="lbl'+i+'">'+resultsteps.rows.item(i).MeasDesc+'</label><select name="IDH'+resultsteps.rows.item(i).MeasID+'" id="IDH'+resultsteps.rows.item(i).MeasID+'"><option value=""></option></select>';
+
+							}
+
+						}
+						else
+						{
+							medida="";
+						}
+						//alert(medida);
+				       stepshtml+='<tr><td><label id="lbl2'+resultsteps.rows.item(i).StepID+'" class="ui-icon-delete ui-shadow-icon" '+style+' ><input type="checkbox"  name="'+resultsteps.rows.item(i).StepID+'" id="'+resultsteps.rows.item(i).StepID+'" '+ischeck+'>'+resultsteps.rows.item(i).Num+' &nbsp;'+resultsteps.rows.item(i).Text+'</label> </td><td>'+medida+'</td><td><a href="javascript:reportissueh('+"'"+resultsteps.rows.item(i).StepID+"'"+');" data-theme="b" data-role="button" data-inline="true" data-icon="alert" data-iconpos="right">Report Issue</a></td></tr>';
 					}
 				
 			}
@@ -7084,11 +7399,144 @@ function failre(error) {
 			//$("#stepsbody").html(stepshtml);
 			tb.empty().append(stepshtml);
 			$("#table-resulth").table("refresh");
-	 		$("#table-resulth").trigger('create');
-			 hideModal();	
-		
-		
+			 $("#table-resulth").trigger('create');
+			 fillSelectMeasH()
+			 //FindMeasValues();
+			 hideModal();		
 	}
+
+	function fillSelectMeasH()
+	{
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+		db.transaction(QueryfillSelectMeasH, errorCB);
+
+	}
+
+	function QueryfillSelectMeasH(tx)
+	{
+		var idprocedure=sessionStorage.currentProcedure;
+		var query="SELECT StepID FROM PROCEDURESTEPS WHERE ProcID='"+idprocedure+"'";
+		tx.executeSql(query, [], QueryfillSelectMeasHSuccess, errorCB);
+	}
+
+	function QueryfillSelectMeasHSuccess(tx,resultados)
+	{
+		var newquery="SELECT MEASDATA.MeasID,MEASDATA.DropDownData,STEP2MEAS.StepID FROM MEASDATA INNER JOIN STEP2MEAS ON MEASDATA.MeasID=STEP2MEAS.MeasID ";
+		var len = resultados.rows.length;
+		 if(len>0)
+	   {
+		  for (var i=0; i<resultados.rows.length; i++){
+			  if(i==0)
+			  {
+				newquery+="WHERE (STEP2MEAS.StepID='"+resultados.rows.item(i).StepID+"'";
+
+			  }
+			  else
+			  {
+				  newquery+=" OR STEP2MEAS.StepID='"+resultados.rows.item(i).StepID+"'";
+			  }
+			  
+			}
+			newquery+=")"
+		}
+		//alert(newquery);
+		tx.executeSql(newquery, [], QueryfillSelectMeastwoHSuccess, errorCB);
+	}
+
+	function QueryfillSelectMeastwoHSuccess(tx,results) 
+	{
+		//alert("vamo 4");
+		var len = results.rows.length;
+	//	alert(len);
+		if(len>0)
+	  {
+		 for (var i=0; i<results.rows.length; i++){
+			 $("#IDH"+results.rows.item(i).MeasID).append('<option value="'+results.rows.item(i).DropDownData+'">'+results.rows.item(i).DropDownData+'</option>');
+		 }
+	   }
+	   $("#table-resulth").table("refresh");
+	   $("#table-resulth").trigger('create');
+	   GetIDSWhitMEasH();
+	}
+
+	function GetIDSWhitMEasH()
+	{
+		//alert("aa");
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+		   db.transaction(QueryGetIDSWhitMEasH, errorCB);
+
+	}
+
+	function QueryGetIDSWhitMEasH(tx)
+	{
+		//alert("bb");
+		var idprocedure=sessionStorage.currentProcedure;
+		var query="SELECT Step2Meas.StepID,Step2Meas.MeasID FROM Step2Meas INNER JOIN ProcedureSteps ON Step2Meas.StepID=ProcedureSteps.StepID WHERE ProcID='"+idprocedure+"'";
+		//alert(query);
+		tx.executeSql(query, [], QueryGetIDSWhitMEasHSuccess, errorCB);
+
+	}
+
+	function QueryGetIDSWhitMEasHSuccess(tx,results)
+	{
+		//alert("cc");
+		listfieldsproc= new Array();
+		var len = results.rows.length;
+		if(len>0)
+		{
+			for (var i=0; i<results.rows.length; i++){
+				text_el=new Object();
+				text_el.StepID=results.rows.item(i).StepID;
+				text_el.MeasID=results.rows.item(i).MeasID;
+				listfieldsproc.push(text_el); 
+
+			}
+
+		}
+		FindMeasValues();
+
+	}
+
+	function FindMeasValues()
+    {
+		//alert("aa");
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+        db.transaction(QueryFindMeasValues, errorCB);
+
+	}
+
+	function QueryFindMeasValues(tx)
+	{
+		//alert("bb");
+		var SubmitID=sessionStorage.submitID;
+		var query="SELECT * FROM SUBMITTEDMEAS WHERE SubmitID='"+SubmitID+"'";
+		 tx.executeSql(query, [], QueryFindMeasValuesSuccessh, errorCB);
+
+	}
+
+	function QueryFindMeasValuesSuccessh(tx,results)
+	{
+		var len = results.rows.length;
+	//	alert("cc");
+		if(len>0)
+	   {
+		 for (var i=0; i<results.rows.length; i++){
+			 $("#IDH"+results.rows.item(i).MeasID).val(results.rows.item(i).Value);
+			 try{
+				$("#IDH"+results.rows.item(i).MeasID).selectmenu("refresh");
+
+			 }
+			 catch(error)
+			 {
+
+			 }
+			}
+		}
+		$("#table-resulth").table("refresh");
+		$("#table-resulth").trigger('create');
+
+	}
+
 	
 		function reportissueh(idstep)
 		{
@@ -7196,7 +7644,52 @@ function failre(error) {
 	  }
 	  else
 	  {
-		  SaveSubmith();
+		  
+		var checkfieldsflag=false;
+		try
+		{
+			if(listfieldsproc.length>0)
+			{
+
+				for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+				{
+					
+						
+					  var MeasID=listfieldsproc[ysa].MeasID;
+					  var ValueMeas=$("#IDH"+MeasID).val();
+					  //alert(ValueMeas)
+					  if(ValueMeas=="" || ValueMeas==null)
+					  {
+						  checkfieldsflag=true;
+
+					  }
+
+					
+
+				}
+
+			}  
+
+		}
+		catch(errors)
+		{
+			alert(errors);
+		} 
+		if(checkfieldsflag==false)
+		{
+		   SaveSubmith();
+
+		}
+		else
+		{
+		  navigator.notification.confirm(
+			  'One or more steps is missing measurement data.',      // mensaje (message)
+				  onsuccesscheckfieldsa,      // función 'callback' a llamar con el índice del botón pulsado (confirmCallback)
+					  'FieldTracker',            // titulo (title)
+			  'Accept'          // botones (buttonLabels)
+			  );
+
+		}
 	  }
 		
 	}
@@ -7267,6 +7760,9 @@ function failre(error) {
      	var SubmitID=sessionStorage.submitID;
 	 	var FaultID="";
 		var query="";
+		var MeasID="";
+		var QueryK="";
+		var ValueMeas="";
 		
 	
 			$('#table-resulth').find('input[type="checkbox"]').each(function () {
@@ -7312,7 +7808,34 @@ function failre(error) {
 				//alert(query);
 				//tx.executeSql(query);
 					
-				}	
+				}
+				try
+					{
+						if(listfieldsproc.length>0)
+						{
+		
+							for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+							{
+								if(idcheck==listfieldsproc[ysa].StepID)
+								{
+									
+									MeasID=listfieldsproc[ysa].MeasID;
+									ValueMeas=$("#IDH"+MeasID).val();
+									QueryK='UPDATE SUBMITTEDMEAS SET Value="'+ValueMeas+'",FaultID="'+FaultID+'",Sync="no" WHERE MeasID="'+MeasID+'" AND StepID="'+idcheck+'" AND SubmitID="'+SubmitID+'"';
+									//alert(QueryK);
+									tx.executeSql(QueryK);
+		
+								}
+		
+							}
+		
+						}  
+	
+					}
+					catch(errors)
+					{
+						alert(errors);
+					} 	
 				
 						
 			
@@ -7345,6 +7868,33 @@ function failre(error) {
 				Comments=results.rows.item(i).Comments;
 				//alert('DELETE FROM SUBMITTEDSTEPS  WHERE FaultID="'+results.rows.item(i).FaultID+'"');
 				tx.executeSql('DELETE FROM SUBMITTEDSTEPS  WHERE FaultID="'+results.rows.item(i).FaultID+'"');
+				try
+				{
+					if(listfieldsproc.length>0)
+					{
+	
+						for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+						{
+							if(idcheck==listfieldsproc[ysa].StepID)
+							{
+								
+								MeasID=listfieldsproc[ysa].MeasID;
+								ValueMeas=$("#IDH"+MeasID).val();
+								QueryK='UPDATE SUBMITTEDMEAS SET Value="'+ValueMeas+'",FaultID="'+results.rows.item(i).FaultID+'",Sync="no" WHERE MeasID="'+MeasID+'" AND StepID="'+idcheck+'" AND SubmitID="'+SubmitID+'"';
+								//alert(QueryK);
+								tx.executeSql(QueryK);
+	
+							}
+	
+						}
+	
+					}  
+	
+				}
+				catch(errors)
+				{
+					alert(errors);
+				} 
 					
 				}
 				
@@ -7356,6 +7906,7 @@ function failre(error) {
 			{
 				
 			}
+		
 			
 			
 		}
@@ -10260,14 +10811,62 @@ function Querydeletetempinforisk(tx)
 
 function SaveTempText()
 {
-	var stepaudit=$("#Hidstepaudit").val();
-	var textoatras=$("#sabecomment").val();
-	$("#comentario"+stepaudit).val(textoatras);
-	$("#popupriskaudit").popup("close");
-	$("#sabecomment").val('');
+	
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ QueryfilesphotosauditCount(tx) }, errorCBPA);
 	//var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
     //db.transaction(function(tx){ QuerySaveTempTxt(tx) }, errorCBPA);
 
+}
+
+function QueryfilesphotosauditCount(tx)
+{
+	var stepaudit=$("#Hidstepaudit").val();
+	var newquery="SELECT * FROM TEMPAUDITPHOTO WHERE IDStep='"+stepaudit+"'";
+	//alert(newquery);
+	tx.executeSql(newquery, [], QueryfilesphotosauditTestSuccess, errorCBPA);
+
+}
+function QueryfilesphotosauditTestSuccess(tx,results)
+{
+	var len=results.rows.length;
+	if(len>0)
+	{
+	var stepaudit=$("#Hidstepaudit").val();
+	var textoatras=$("#sabecomment").val();
+	if(textoatras!="")
+	{
+		$("#comentario"+stepaudit).val(textoatras);
+		$("#popupriskaudit").popup("close");
+		$("#sabecomment").val('');
+
+	}
+	else
+	{
+        navigator.notification.alert("You must enter a description and submit at least one picture.", null, 'FieldTracker', 'Accept');
+
+	}
+	}
+	else
+	{
+		navigator.notification.alert("You must enter a description and submit at least one picture.", null, 'FieldTracker', 'Accept');
+
+	}
+
+}
+
+function DeleteImagesAuditTemp()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(function(tx){ QueryfilesdeleteAudit(tx) }, errorCBPA);
+}
+
+function QueryfilesdeleteAudit(tx)
+{
+	var stepaudit=$("#Hidstepaudit").val();
+	tx.executeSql("DELETE FROM TEMPAUDITPHOTO WHERE IDStep='"+stepaudit+"'");
+	searchfilesphotosaudit();
+	
 }
 
 function QuerySaveTempTxt(tx)

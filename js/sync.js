@@ -95,6 +95,141 @@ function QuerytocheckifdbSuccess(tx,results,typeofsync)
 	}
 	
 }
+
+function GetMeasurements()
+{
+	var ipserver=$("#ipsync").val();
+	var obj = {};
+
+	$("#progressheader").html(" ");
+	//progressheader
+	$("#progressheader").html("Downloading data...");
+		$("#progressMessage").html("Post To GetMeasurements");
+		pbar.setValue(0);
+	                $.ajax({
+                    type: 'POST',
+				    url:ipserver+'//GetMeasurements',
+					data: JSON.stringify(obj),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+						InsertDatabaseMeas(response.d);
+                    },
+            error: function (xmlHttpRequest, textStatus, errorThrown) {
+							$("#progressheader").html("Can not connect to server");
+							$("#progressMessage").html("Error sending data:" +xmlHttpRequest.responseXML+" Status: "+textStatus+"==>"+xmlHttpRequest.statusText+" thrown: "+errorThrown);
+					IsSyncMessages=false;		
+					setTimeout( function(){ $("#generic-dialog").dialog("close"); }, 10000 );
+                    console.log(xmlHttpRequest.responseXML);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                   // alert("Error");
+                }
+                });
+}
+
+function InsertDatabaseMeas(newdatabase)
+{
+
+	$("#progressMessage").html("Successful connection");
+		pbar.setValue(1);
+		newmeasdatatoinsert=newdatabase;
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      	db.transaction(QuerytoinsertMeas, errorCB);	
+}
+
+function QuerytoinsertMeas(tx)
+{
+	//alert("deleteoldrecords");
+	//alert("Insert new data GetMessages");
+	$("#progressMessage").html("Deleting old records");
+		pbar.setValue(2);
+		//alert("Deleting "+idusera);
+		tx.executeSql("DELETE FROM MEASUREMENTS");
+		tx.executeSql("DELETE FROM MEASDATA");
+		tx.executeSql("DELETE FROM STEP2MEAS");
+
+
+	$("#progressMessage").html("Ready to insert new records");
+	var query;
+	var obj = jQuery.parseJSON(newmeasdatatoinsert.Measurements);
+	//alert("Items "+obj.length);
+	var itemcount=0;
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		query='INSERT INTO MEASUREMENTS (MeasID,MeasDesc,Units,FieldType,MinValue,MaxValue) VALUES ("'+value.MeasID+'", "'+escapeDoubleQuotes(value.MeasDesc)+'", "'+value.Units+'", "'+value.FieldType+'", "'+value.MinValue+'","'+value.MaxValue+'")';
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	 //alert("Certifications: "+itemcount);
+	 
+	 	$("#progressMessage").html("Measurements updated");
+	pbar.setValue(10);
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating Measurements "+error);
+			pbar.setValue(30);
+		 
+	 }
+	 itemcount=0;
+	 obj=jQuery.parseJSON(newmeasdatatoinsert.MeasData);
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		query='INSERT INTO MEASDATA (MeasID,DropDownData) VALUES ("'+value.MeasID+'", "'+escapeDoubleQuotes(value.DropDownData)+'")';
+		tx.executeSql(query);
+		itemcount++;
+     });
+	 //("USERS2CERTS: "+itemcount);
+	 
+	 	$("#progressMessage").html("Measdata updated");
+	pbar.setValue(10);
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating measdata "+error);
+			pbar.setValue(30);
+		 
+	 }
+
+	 itemcount=0;
+	 obj=jQuery.parseJSON(newmeasdatatoinsert.Steps2Meas);
+	 try
+	 {
+    $.each(obj, function (key, value) {
+		query='INSERT INTO STEP2MEAS (StepID,MeasID) VALUES ("'+value.StepID+'", "'+value.MeasID+'")';
+		tx.executeSql(query);
+		itemcount++;
+     });
+	 //("USERS2CERTS: "+itemcount);
+	 
+	 	$("#progressMessage").html("Measdata updated");
+	pbar.setValue(10);
+	 }
+	 catch(error)
+	 {
+		 alert(error);
+		 $("#progressMessage").html("Error updating measdata "+error);
+			pbar.setValue(30);
+		 
+	 }
+	 
+	
+		 
+	 $("#progressMessage").html("Certifications updated");
+		pbar.setValue(100);
+
+	$("#progressMessage").html("");
+		pbar.setValue(100);
+		SendMediaAudit();
+
+}
+
 function GetserviceCertifications()
 {
 	var ipserver=$("#ipsync").val();
@@ -207,7 +342,9 @@ function QuerytoinsertCerts(tx)
 
 	$("#progressMessage").html("");
 		pbar.setValue(100);
-		SendMediaAudit();
+		//SendMediaAudit();
+      GetMeasurements();
+
 			
 		
   //sendprocedures();	
@@ -1818,7 +1955,8 @@ function sendprocedures()
 
 function Querytosendprocedures(tx)
 {
-	var querytosend="SELECT * FROM SUBMITTEDPROCS WHERE Sync='no' AND Status='0'";
+	//var querytosend="SELECT * FROM SUBMITTEDPROCS WHERE Sync='no' AND Status='0'";
+	var querytosend="SELECT * FROM SUBMITTEDPROCS WHERE Sync='no'";
 	tx.executeSql(querytosend, [], QuerytosendproceduresSuccess, errorCB);
 	
 }
@@ -1852,7 +1990,8 @@ function sendsteps()
 
 function Querytosendsteps(tx)
 {
-	var querytosend="SELECT submittedsteps.* FROM submittedprocs INNER JOIN submittedsteps ON submittedprocs.SubmitID = submittedsteps.SubmitID WHERE submittedprocs.Status='0' AND submittedsteps.Sync='no'";
+	//var querytosend="SELECT submittedsteps.* FROM submittedprocs INNER JOIN submittedsteps ON submittedprocs.SubmitID = submittedsteps.SubmitID WHERE submittedprocs.Status='0' AND submittedsteps.Sync='no'";
+	var querytosend="SELECT submittedsteps.* FROM submittedprocs INNER JOIN submittedsteps ON submittedprocs.SubmitID = submittedsteps.SubmitID WHERE submittedsteps.Sync='no'";
 	tx.executeSql(querytosend, [], QuerytosendstepsSuccess, errorCB);
 	
 }
@@ -2123,6 +2262,38 @@ for (var i=0; i<results.rows.length; i++){
 sendCertificationsarray=array;
 	$("#progressMessage").html("Certifications ready to send");
 		pbar.setValue(50);
+		sendMeasInfo();
+
+	
+}
+
+function sendMeasInfo()
+{
+	//alert("submittedhours");
+	sendMeasArray="";
+	 var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      db.transaction(QuerytosendMeasInfo, errorCB);
+	
+}
+
+function QuerytosendMeasInfo(tx)
+{
+	var querytosend="SELECT * FROM SUBMITTEDMEAS WHERE Sync='no'";
+	tx.executeSql(querytosend, [], QuerysendMeasInfoSuccess, errorCB);
+}
+
+function QuerysendMeasInfoSuccess(tx,results)
+{	
+	var len = results.rows.length;
+	var array = [];
+for (var i=0; i<results.rows.length; i++){
+ row = results.rows.item(i);
+ array.push(JSON.stringify(row));
+}
+
+sendMeasArray=array;
+	$("#progressMessage").html("Measurements ready to send");
+		pbar.setValue(50);
 sendDataToServer();
 
 	
@@ -2148,6 +2319,7 @@ function sendDataToServer()
  obj['AuditsUpdate'] =JSON.stringify(sendAuditsarray); 
  obj['Audits2Owners'] =JSON.stringify(sendAOwnersarray); 
  obj['Audits2Inspectors'] =JSON.stringify(sendAInspectorsarray); 
+ obj['MeasUpdate'] =JSON.stringify(sendMeasArray); 
  $("#progressMessage").html("Connecting to "+ipserver);
  //var kaka=obj['procedures'];
  //alert("enviar datos"+ipserver+'//SetDeviceDataarray');
@@ -2398,6 +2570,7 @@ function Querytoupdatelocal(tx)
 	tx.executeSql("UPDATE SUBMITTEDSTEPS SET sync='yes'");
 	tx.executeSql("UPDATE SUBMITTEDHOURS SET sync='yes'");
 	tx.executeSql("UPDATE SUBMITTEDAUDITS SET sync='yes'");
+	tx.executeSql("UPDATE SUBMITTEDMEAS SET sync='yes'");
 	tx.executeSql("UPDATE AUDITS2OWNERS SET sync='yes'");
 	tx.executeSql("UPDATE AUDITS2INSPECTORS SET sync='yes'");
 	tx.executeSql("UPDATE MESSAGES SET sync='yes' WHERE SentFT='0'");

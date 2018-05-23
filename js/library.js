@@ -113,7 +113,7 @@ var onSuccessYa = function(data) {
 
 function onErrorYa(error) {
     //alert('message: ' + error.message);
-	 navigator.notification.alert("Please Check file on app folder or download", null, 'FieldTracker', 'Accept');
+	 navigator.notification.alert("File not found", null, 'FieldTracker', 'Accept');
 }
 
 function ifCheckFile(FileNames)
