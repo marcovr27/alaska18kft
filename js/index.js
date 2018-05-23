@@ -14,6 +14,7 @@ var newfilesdatatoinsert;
 var newauditsdatatoinsert;
 var sendCertificationsarray;
 var sendAloneCertifications;
+var SendWpis;
 var sendproceduresarray; //Sync Variables
 var sendstepsarray; //Sync Variables
 var sendchecklistarray;//Sync Variables
@@ -753,6 +754,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 //
 		 //alert("checadb");
 		 //New Tables febraury 2017
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDWPIS (SubmitID,EmpDate,Shift,UserID,Status,SupID,WPI1,WPI2,WPI3,WPI1Status,WPI2Status,WPI3Status,HI1,HI2,HI3,CAT1,CAT2,CAT3,SupQ1,SupQ2,SupQ3,SupQ4,SupQ5,Topics,Concerns,Actions,SupDate,SupComments,Sync)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPRISKTEXT (IDStep,Text)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPAUDITPHOTO (ID INTEGER PRIMARY KEY,IDStep,Path)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TIMETRACKING (UserID,ContentID,TotalTime,Date,ClassID)');

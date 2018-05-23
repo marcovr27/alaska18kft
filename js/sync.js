@@ -2294,6 +2294,38 @@ for (var i=0; i<results.rows.length; i++){
 sendMeasArray=array;
 	$("#progressMessage").html("Measurements ready to send");
 		pbar.setValue(50);
+		sendWpisInfo();
+
+	
+}
+
+function sendWpisInfo()
+{
+	//alert("submittedhours");
+	SendWpis="";
+	 var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      db.transaction(QuerytosendWpisInfo, errorCB);
+	
+}
+
+function QuerytosendWpisInfo(tx)
+{
+	var querytosend="SELECT * FROM SUBMITTEDWPIS WHERE Sync='no'";
+	tx.executeSql(querytosend, [], QuerytosendWpisInfoSuccess, errorCB);
+}
+
+function QuerytosendWpisInfoSuccess(tx,results)
+{	
+	var len = results.rows.length;
+	var array = [];
+for (var i=0; i<results.rows.length; i++){
+ row = results.rows.item(i);
+ array.push(JSON.stringify(row));
+}
+
+SendWpis=array;
+	$("#progressMessage").html("WPIs ready to send");
+		pbar.setValue(50);
 sendDataToServer();
 
 	
@@ -2303,7 +2335,6 @@ sendDataToServer();
 function sendDataToServer()
 {
 	//alert("entro a enviar datos");
-
 	var ipserver=$("#ipsync").val();
 		$("#progressheader").html("Uploading Data...");
 		$("#progressMessage").html("Preparing data to send");
@@ -2320,6 +2351,7 @@ function sendDataToServer()
  obj['Audits2Owners'] =JSON.stringify(sendAOwnersarray); 
  obj['Audits2Inspectors'] =JSON.stringify(sendAInspectorsarray); 
  obj['MeasUpdate'] =JSON.stringify(sendMeasArray); 
+ obj['Wpis'] =JSON.stringify(SendWpis); 
  $("#progressMessage").html("Connecting to "+ipserver);
  //var kaka=obj['procedures'];
  //alert("enviar datos"+ipserver+'//SetDeviceDataarray');
@@ -2572,6 +2604,7 @@ function Querytoupdatelocal(tx)
 	tx.executeSql("UPDATE SUBMITTEDAUDITS SET sync='yes'");
 	tx.executeSql("UPDATE SUBMITTEDMEAS SET sync='yes'");
 	tx.executeSql("UPDATE AUDITS2OWNERS SET sync='yes'");
+	tx.executeSql("UPDATE SUBMITTEDWPIS SET sync='yes'");
 	tx.executeSql("UPDATE AUDITS2INSPECTORS SET sync='yes'");
 	tx.executeSql("UPDATE MESSAGES SET sync='yes' WHERE SentFT='0'");
 	tx.executeSql("UPDATE USERS2CERTS SET sync='yes'");
