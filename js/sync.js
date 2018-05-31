@@ -290,12 +290,13 @@ function QuerytoinsertCerts(tx)
 
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
-	var obj = jQuery.parseJSON(newcertsdatatoinsert.Certifications);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 	 try
 	 {
-    $.each(obj, function (key, value) {
+		obj = jQuery.parseJSON(newcertsdatatoinsert.Certifications);
+    	$.each(obj, function (key, value) {
 		query='INSERT INTO CERTIFICATIONS (ID,Title,Desc,Type,ReqAllUsers,Expires,Months,Years,Days) VALUES ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.Title)+'", "'+escapeDoubleQuotes(value.Desc)+'", "'+escapeDoubleQuotes(value.Type)+'", "'+value.ReqAllUsers+'", "'+escapeDoubleQuotes(value.Expires)+'", "'+value.Months+'", "'+value.Years+'","'+value.Days+'")';
 		//alert(query);
 		tx.executeSql(query);
@@ -308,20 +309,30 @@ function QuerytoinsertCerts(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating Certifications "+error);
 			pbar.setValue(30);
 		 
 	 }
 	 itemcount=0;
-	 obj=jQuery.parseJSON(newcertsdatatoinsert.Users2Certs);
+	 
 	 try
 	 {
-    $.each(obj, function (key, value) {
+		obj=jQuery.parseJSON(newcertsdatatoinsert.Users2Certs);
+    	$.each(obj, function (key, value) {
 		query='INSERT INTO USERS2CERTS (FTID,UserID,ID,Date,Expiration,AlertSent,CertFile,AssesorID,PrintID) VALUES ("'+"ft"+itemcount+'","'+escapeDoubleQuotes(value.UserID)+'", "'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.Date)+'", "'+escapeDoubleQuotes(value.Expiration)+'", "'+value.AlertSent+'", "'+value.CertFile+'", "'+value.AssesorID+'","'+value.PrintID+'")';
 		tx.executeSql(query);
 		itemcount++;
-     });
+     	});
 	 //("USERS2CERTS: "+itemcount);
 	 
 	 	$("#progressMessage").html("USERS2CERTS updated");
@@ -329,7 +340,16 @@ function QuerytoinsertCerts(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating USERS2CERTS "+error);
 			pbar.setValue(30);
 		 
@@ -415,11 +435,12 @@ function QuerytoinsertAudits(tx)
 
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
-	var obj = jQuery.parseJSON(newauditsdatatoinsert.Audits);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 	 try
 	 {
+	obj=jQuery.parseJSON(newauditsdatatoinsert.Audits);	 
     $.each(obj, function (key, value) {
 		query='INSERT INTO AUDITS (ID,Name) VALUES ("'+escapeDoubleQuotes(value.ID)+'","'+escapeDoubleQuotes(value.Name)+'")';
 		//alert(query);
@@ -433,7 +454,17 @@ function QuerytoinsertAudits(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		 if(error=="SyntaxError: Unexpected token E")
+		 {
+			 alert("ERROR: Web service invalid data");
+
+		 }
+		 else
+		 {
+			alert(error);
+
+		 }
+		 
 		 $("#progressMessage").html("Error updating Audits"+error);
 			pbar.setValue(15);
 		 
@@ -461,7 +492,16 @@ function QuerytoinsertAudits(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating AUDITSUBPARTS"+error);
 			pbar.setValue(30);
 		 
@@ -489,7 +529,16 @@ function QuerytoinsertAudits(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating GROUPS2AUDITS"+error);
 			pbar.setValue(30);
 		 
@@ -519,7 +568,16 @@ function QuerytoinsertAudits(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating AUDITQUESTS"+error);
 			pbar.setValue(30);
 		 
@@ -598,7 +656,16 @@ function QuerytoinsertAudits(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating AUDITS2SUBPARTS"+error);
 			pbar.setValue(30);
 		 
@@ -702,12 +769,13 @@ function QuerytoinsertMessages(tx)
 	//alert("Insert new data MESSAGES");
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
-	var obj = jQuery.parseJSON(newmessagesdatatoinsert.Messages);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 	 try
 	 {
-    $.each(obj, function (key, value) {
+	 	obj = jQuery.parseJSON(newmessagesdatatoinsert.Messages);
+    	$.each(obj, function (key, value) {
 	//alert('INSERT INTO MESSAGES (ID,UserIDTo,UserIDFrom,Status,Date,Title,Category,Message,Priority,UserToList,Sync) VALUES ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.UserIDTo)+'", "'+escapeDoubleQuotes(value.UserIDFrom)+'", "'+escapeDoubleQuotes(value.Status)+'", "'+value.Date+'", "'+escapeDoubleQuotes(value.Title)+'", "'+escapeDoubleQuotes(value.Category)+'", "'+escapeDoubleQuotes(value.Message)+'", "'+escapeDoubleQuotes(value.Priority)+'", "'+escapeDoubleQuotes(value.UserToList)+'","yes")');
 		query='INSERT INTO MESSAGES (ID,UserIDTo,UserIDFrom,Status,Date,Title,Category,Message,Priority,UserToList,UserIDToName,UserIDFromName,Sync,SentFT) VALUES ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.UserIDTo)+'", "'+escapeDoubleQuotes(value.UserIDFrom)+'", "'+escapeDoubleQuotes(value.Status)+'", "'+value.Date+'", "'+escapeDoubleQuotes(value.Title)+'", "'+escapeDoubleQuotes(value.Category)+'", "'+escapeDoubleQuotes(value.Message)+'", "'+escapeDoubleQuotes(value.Priority)+'", "'+escapeDoubleQuotes(value.UserToList)+'","'+escapeDoubleQuotes(value.UserIDToName)+'","'+escapeDoubleQuotes(value.UserIDFromName)+'","yes","no")';
 		//alert(query);
@@ -721,7 +789,16 @@ function QuerytoinsertMessages(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating Messages "+error);
 			pbar.setValue(30);
 		 
@@ -837,12 +914,13 @@ function QuerytoinsertSubmitHours(tx)
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
 	//alert("newhoursvar "+newhoursdatatoinsert);
-	var obj = jQuery.parseJSON(newhoursdatatoinsert.SubmittedHours);
+	var obj;
 	//alert(obj);
 	//alert("Itemssdsdsdsdsd "+obj.length);
 	var itemcount=0;
 	 try
 	 {
+	obj = jQuery.parseJSON(newhoursdatatoinsert.SubmittedHours);
     $.each(obj, function (key, value) {
 		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
 		query='INSERT INTO SUBMITTEDHOURS (SubmitID,UserID,Type,Status,SubmitDate,EntryDate,Task,LevelNum,Item,Hours,Mins,PersonnelID,SupervisorID,RejectReason,ReviewDate,Sync) VALUES ("'+escapeDoubleQuotes(value.SubmitID)+'", "'+escapeDoubleQuotes(value.UserID)+'", "'+escapeDoubleQuotes(value.Type)+'", "'+escapeDoubleQuotes(value.Status)+'", "'+value.SubmitDate+'", "'+value.EntryDate+'", "'+escapeDoubleQuotes(value.Task)+'", "'+value.LevelNum+'", "'+escapeDoubleQuotes(value.Item)+'", "'+value.Hours+'", "'+value.Mins+'", "'+value.PersonnelID+'", "'+value.SupervisorID+'", "'+value.RejectReason+'", "'+value.ReviewDate+'","yes")';
@@ -856,7 +934,16 @@ function QuerytoinsertSubmitHours(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating SubmittedHours "+error);
 			pbar.setValue(30);
 		 
@@ -950,11 +1037,12 @@ function QuerytoinsertCourses(tx)
 	//alert("Insert new data GetCoursesdata");
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
-	var obj = jQuery.parseJSON(newcoursesdatatoinsert.Courses);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 	 try
 	 {
+	obj = jQuery.parseJSON(newcoursesdatatoinsert.Courses);
     $.each(obj, function (key, value) {
 		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
 		query='INSERT INTO COURSES (ID,Description,DescriptionLang2,ContentType,DurationHours,DurationMins,Scope,Instructor,FileName) VALUES ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.Description)+'", "'+escapeDoubleQuotes(value.DescriptionLang2)+'", "'+value.ContentType+'", "'+value.DurationHours+'", "'+value.DurationMins+'", "'+value.Scope+'", "'+escapeDoubleQuotes(value.Instructor)+'","'+escapeDoubleQuotes(value.FileName)+'")';
@@ -969,7 +1057,16 @@ function QuerytoinsertCourses(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating Courses "+error);
 			pbar.setValue(30);
 		 
@@ -1050,11 +1147,12 @@ function QuerytoinsertTimeTracking(tx)
 	//alert("Insert new data GetCoursesdata");
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
-	var obj = jQuery.parseJSON(newtimetrackingtoinsert.TimeTracking);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 	 try
 	 {
+	obj = jQuery.parseJSON(newtimetrackingtoinsert.TimeTracking);
     $.each(obj, function (key, value) {
 		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
 		query='INSERT INTO TIMETRACKING  (UserID,ContentID,TotalTime,Date,ClassID) VALUES ("'+escapeDoubleQuotes(value.UserID)+'", "'+escapeDoubleQuotes(value.ContentID)+'", "'+value.TotalTime+'", "'+value.Date+'", "'+escapeDoubleQuotes(value.ClassID)+'")';
@@ -1069,7 +1167,16 @@ function QuerytoinsertTimeTracking(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating TimeTracking "+error);
 			pbar.setValue(30);
 		 
@@ -1153,11 +1260,12 @@ function QuerytoinsertGroups(tx)
 	//alert("Insert new data GetGroupsData");
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
-	var obj = jQuery.parseJSON(newgroupsdatatoinsert.Categories);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 		 try
 	 {
+	obj = jQuery.parseJSON(newgroupsdatatoinsert.Categories);
     $.each(obj, function (key, value) {
 		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
 		//alert('INSERT INTO CATEGORIES (Name) VALUES ("'+value.Name+'")');
@@ -1172,7 +1280,16 @@ function QuerytoinsertGroups(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating Categories "+error);
 			pbar.setValue(30);
 		 
@@ -1195,7 +1312,16 @@ function QuerytoinsertGroups(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating Groups2Content "+error);
 			pbar.setValue(30);
 		 
@@ -1324,11 +1450,12 @@ function QuerytoinsertTasks(tx)
 	//alert("Insert new data GetTaskData");
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
-	var obj = jQuery.parseJSON(newtasksdatatoinsert.Items);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 	 try
 	 {
+	obj = jQuery.parseJSON(newtasksdatatoinsert.Items);
     $.each(obj, function (key, value) {
 		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
 		query='INSERT INTO ITEMS (ID,Item,Location,RTISup,CourseID) VALUES ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.Item)+'","'+escapeDoubleQuotes(value.Location)+'","'+escapeDoubleQuotes(value.RTISup)+'","'+escapeDoubleQuotes(value.CourseID)+'")';
@@ -1342,7 +1469,16 @@ function QuerytoinsertTasks(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert(error);
+
+		}
 		 $("#progressMessage").html("Error updating Items "+error);
 			pbar.setValue(30);
 		 
