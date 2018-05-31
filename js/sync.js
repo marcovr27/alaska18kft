@@ -170,7 +170,7 @@ function QuerytoinsertMeas(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		 alert("Measurements: "+error);
 		 $("#progressMessage").html("Error updating Measurements "+error);
 			pbar.setValue(30);
 		 
@@ -191,7 +191,7 @@ function QuerytoinsertMeas(tx)
 	 }
 	 catch(error)
 	 {
-		 alert(error);
+		 alert("Measdata "+error);
 		 $("#progressMessage").html("Error updating measdata "+error);
 			pbar.setValue(30);
 		 
@@ -311,12 +311,12 @@ function QuerytoinsertCerts(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("CERTIFICATIONS ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("CERTIFICATIONS "+error);
 
 		}
 		 $("#progressMessage").html("Error updating Certifications "+error);
@@ -342,12 +342,12 @@ function QuerytoinsertCerts(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("USERS2CERTS ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("USERS2CERTS "+error);
 
 		}
 		 $("#progressMessage").html("Error updating USERS2CERTS "+error);
@@ -456,12 +456,12 @@ function QuerytoinsertAudits(tx)
 	 {
 		 if(error=="SyntaxError: Unexpected token E")
 		 {
-			 alert("ERROR: Web service invalid data");
+			 alert("AUDITS ERROR: Web service invalid data");
 
 		 }
 		 else
 		 {
-			alert(error);
+			alert("AUDITS "+error);
 
 		 }
 		 
@@ -494,12 +494,12 @@ function QuerytoinsertAudits(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("AUDITSUBPARTS ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("AUDITSUBPARTS "+error);
 
 		}
 		 $("#progressMessage").html("Error updating AUDITSUBPARTS"+error);
@@ -531,12 +531,12 @@ function QuerytoinsertAudits(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert(" GROUPS2AUDITS ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("GROUPS2AUDITS "+error);
 
 		}
 		 $("#progressMessage").html("Error updating GROUPS2AUDITS"+error);
@@ -570,12 +570,12 @@ function QuerytoinsertAudits(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("AUDITQUESTS ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("AUDITQUESTS "+error);
 
 		}
 		 $("#progressMessage").html("Error updating AUDITQUESTS"+error);
@@ -658,12 +658,12 @@ function QuerytoinsertAudits(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert(" AUDITS2SUBPARTS ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("AUDITS2SUBPARTS "+error);
 
 		}
 		 $("#progressMessage").html("Error updating AUDITS2SUBPARTS"+error);
@@ -791,12 +791,12 @@ function QuerytoinsertMessages(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert(" MESSAGES ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("MESSAGES " +error);
 
 		}
 		 $("#progressMessage").html("Error updating Messages "+error);
@@ -936,12 +936,12 @@ function QuerytoinsertSubmitHours(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("SUBMITTEDHOURS ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("SUBMITTEDHOURS "+error);
 
 		}
 		 $("#progressMessage").html("Error updating SubmittedHours "+error);
@@ -1059,12 +1059,12 @@ function QuerytoinsertCourses(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("COURSES ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("COURSES "+ error);
 
 		}
 		 $("#progressMessage").html("Error updating Courses "+error);
@@ -1169,12 +1169,12 @@ function QuerytoinsertTimeTracking(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("TIMETRACKING ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("TIMETRACKING "+error);
 
 		}
 		 $("#progressMessage").html("Error updating TimeTracking "+error);
@@ -1282,12 +1282,12 @@ function QuerytoinsertGroups(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert(" CATEGORIES ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("CATEGORIES"+ error);
 
 		}
 		 $("#progressMessage").html("Error updating Categories "+error);
@@ -1314,12 +1314,12 @@ function QuerytoinsertGroups(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("GROUPS2CONTENT ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("GROUPS2CONTENT "+error);
 
 		}
 		 $("#progressMessage").html("Error updating Groups2Content "+error);
@@ -1471,12 +1471,12 @@ function QuerytoinsertTasks(tx)
 	 {
 		if(error=="SyntaxError: Unexpected token E")
 		{
-			alert("ERROR: Web service invalid data");
+			alert("ITEMS ERROR: Web service invalid data");
 
 		}
 		else
 		{
-		   alert(error);
+		   alert("ITEMS "+error);
 
 		}
 		 $("#progressMessage").html("Error updating Items "+error);
