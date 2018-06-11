@@ -412,42 +412,34 @@ function InsertDatabaseAudits(newdatabase)
 		pbar.setValue(1);
 		newauditsdatatoinsert=newdatabase;
 		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
-      	db.transaction(QuerytoinsertAudits, errorCB);
+      	db.transaction(QuerytoinsertAudits, errorCBPAudits);
 	
 }
 
 function QuerytoinsertAudits(tx)
 {
-	//alert("deleteoldrecords");
-	//alert("Insert new data GetMessages");
 	$("#progressMessage").html("Deleting old records");
 		pbar.setValue(2);
-		//alert("Deleting "+idusera);
 		tx.executeSql("DELETE FROM AUDITS");
 		tx.executeSql("DELETE FROM AUDITSUBPARTS");
 		tx.executeSql("DELETE FROM GROUPS2AUDITS");
-		//tx.executeSql("DELETE FROM SUBMITTEDAUDITS");
 		tx.executeSql("DELETE FROM AUDITQUESTS");
-		//tx.executeSql("DELETE FROM AUDITS2OWNERS");
-		//tx.executeSql("DELETE FROM AUDITS2INSPECTORS");
 		tx.executeSql("DELETE FROM AUDITS2SUBPARTS");
-
-
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
 	var obj;
-	//alert("Items "+obj.length);
+	//alert("audits sync");
 	var itemcount=0;
 	 try
 	 {
 	obj=jQuery.parseJSON(newauditsdatatoinsert.Audits);	 
     $.each(obj, function (key, value) {
-		query='INSERT INTO AUDITS (ID,Name) VALUES ("'+escapeDoubleQuotes(value.ID)+'","'+escapeDoubleQuotes(value.Name)+'")';
+		query='INSERT INTO AUDITS (ID,Name) VALUES ("'+value.ID+'","'+escapeDoubleQuotes(value.Name)+'")';
 		//alert(query);
 		tx.executeSql(query);
 		itemcount++;
      });
-	 //alert("Certifications: "+itemcount);
+	// alert("Audits: "+itemcount);
 	 
 	 	$("#progressMessage").html("Audits updated");
 	pbar.setValue(12);
@@ -513,13 +505,25 @@ function QuerytoinsertAudits(tx)
 	 {
 		 if(newauditsdatatoinsert.Groups2Audits!="")
 		 {
+			var ordgg="0";
 			obj=jQuery.parseJSON(newauditsdatatoinsert.Groups2Audits);
 			$.each(obj, function (key, value) {
-				query='INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord) VALUES ("'+escapeDoubleQuotes(value.GroupID)+'", "'+escapeDoubleQuotes(value.ID)+'", "'+value.Ord+'")';
+				
+				if(value.Ord=="null" || value.Ord==null)
+				{
+					ordgg="0";
+				}
+				else
+				{
+					ordgg=value.Ord;
+
+				}
+				query='INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord) VALUES ("'+value.GroupID+'","'+value.ID+'","'+ordgg+'")';
+				//alert(query);
 				tx.executeSql(query);
 				itemcount++;
 			 });
-			 //("USERS2CERTS: "+itemcount);
+			// alert("Groups2audits: "+itemcount);
 			 
 				 $("#progressMessage").html("GROUPS2AUDITS updated");
 			pbar.setValue(50);
@@ -582,60 +586,6 @@ function QuerytoinsertAudits(tx)
 			pbar.setValue(30);
 		 
 	 }
-
-	// itemcount=0;
-	 
-	// try
-	// {
-	//	 if(newauditsdatatoinsert.Audits2Owners!="")
-	//	 {
-	//		obj=jQuery.parseJSON(newauditsdatatoinsert.Audits2Owners);
-	//		$.each(obj, function (key, value) {
-	//			query='INSERT INTO AUDITS2OWNERS (ID,UserID) ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.UserID)+'")';
-	//			tx.executeSql(query);
-	//			itemcount++;
-	//		 });
-			 //("USERS2CERTS: "+itemcount);
-			 
-	//			 $("#progressMessage").html("AUDITS2OWNERS updated");
-	//		pbar.setValue(10);
-
-	//	 }
-
-	// }
-	// catch(error)
-	// {
-	//	 alert(error);
-	//	 $("#progressMessage").html("Error updating AUDITS2OWNERS"+error);
-	//		pbar.setValue(30);
-		 
-	// }
-
-	// itemcount=0;
-	 
-	// try
-	// {
-	//	 if(newauditsdatatoinsert.Audits2Inspectors!="")
-	//	 {
-	//		obj=jQuery.parseJSON(newauditsdatatoinsert.Audits2Inspectors);
-	//		$.each(obj, function (key, value) {
-	//			query='INSERT INTO AUDITS2INSPECTORS (ID,UserID) ("'+value.ID+'", "'+value.UserID+'")';
-	//			tx.executeSql(query);
-	//			itemcount++;
-	//		 });		 
-	//			 $("#progressMessage").html("AUDITS2OWNERS updated");
-	//		pbar.setValue(10);
-
-	//	 }
-
-	// }
-	// catch(error)
-	// {
-	//	 alert(error);
-	//	 $("#progressMessage").html("Error updating AUDITS2OWNERS"+error);
-	//		pbar.setValue(30);	 
-	// }
-
 	 itemcount=0;
 	 
 	 try
@@ -645,6 +595,7 @@ function QuerytoinsertAudits(tx)
 			obj=jQuery.parseJSON(newauditsdatatoinsert.Audits2SubParts);
 			$.each(obj, function (key, value) {
 				query='INSERT INTO AUDITS2SUBPARTS (ID,SubPart) ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.SubPart)+'")';
+				//alert(query);
 				tx.executeSql(query);
 				itemcount++;
 			 });
@@ -670,10 +621,11 @@ function QuerytoinsertAudits(tx)
 			pbar.setValue(30);
 		 
 	 }
-	 $("#progressMessage").html("Audits completed updated");
+
+	 	$("#progressMessage").html("Audits completed updated");
 		pbar.setValue(100);
 
-	$("#progressMessage").html("");
+		$("#progressMessage").html("");
 		pbar.setValue(100);
 		GetserviceCertifications();		
 		

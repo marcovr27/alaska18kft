@@ -43,6 +43,7 @@ function QuerytoSyncSilenceAudits(tx)
 
 function QuerytosendAuditsSilenceSuccess(tx,results)
 {
+	//alert("1");
 	
 	var len = results.rows.length;
 	//alert("SubmittedHours="+len);
@@ -64,6 +65,7 @@ sendAuditsarray=array;
 
 function sendAuditsSOwnersRows()
 {
+	//alert("2");
 	//alert("submittedhours");
 	sendAOwnersarray="";
 	 var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
@@ -79,6 +81,7 @@ function QuerytosendAuditsSOwners(tx)
 
 function QuerytosendAuditsOwnersSSuccess(tx,results)
 {	
+	//alert("3");
 	var len = results.rows.length;
 	var array = [];
 	for (var i=0; i<results.rows.length; i++){
@@ -96,6 +99,7 @@ sendAuditsSInspectorsRows();
 function sendAuditsSInspectorsRows()
 {
 	//alert("submittedhours");
+	//alert("4");
 	sendAInspectorsarray="";
 	 var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
       db.transaction(QuerytosendAuditsSInspectors, errorCB);
@@ -110,6 +114,7 @@ function QuerytosendAuditsSInspectors(tx)
 
 function QuerytosendAuditsSInspectorsSuccess(tx,results)
 {	
+	//alert("5");
 	var len = results.rows.length;
 	var array = [];
 	for (var i=0; i<results.rows.length; i++){
@@ -123,6 +128,7 @@ sendAInspectorsarray=array;
 
 function SilenceAuditToServer()
 {
+	//alert(6)
 		var ipserver=$("#ipsync").val();
 //alert("hacer post a obter mensajes");
 	var obj = {};
@@ -158,6 +164,7 @@ function SilenceAuditToServer()
 
 function SendSMediaAudit()
 {
+	//alert("7");
     //alert("enviar archivos");
         
 	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
@@ -234,6 +241,7 @@ function finishaudisync()
 
 function QuerytoupdatelocalFaudits(tx)
 {
+	//alert("finalizo");
     tx.executeSql("UPDATE AUDITMEDIA SET sync='yes'");
     tx.executeSql("UPDATE SUBMITTEDAUDITS SET sync='yes'");
 	tx.executeSql("UPDATE AUDITS2OWNERS SET sync='yes'");
@@ -284,17 +292,19 @@ function QuerytoinsertSAudits(tx)
 		tx.executeSql("DELETE FROM AUDITQUESTS");
 		tx.executeSql("DELETE FROM AUDITS2SUBPARTS");
 	var query;
-	var obj = jQuery.parseJSON(newauditsdatatoinsert.Audits);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 	 try
 	 {
+	obj = jQuery.parseJSON(newauditsdatatoinsert.Audits);
     $.each(obj, function (key, value) {
 		query='INSERT INTO AUDITS (ID,Name) VALUES ("'+escapeDoubleQuotes(value.ID)+'","'+escapeDoubleQuotes(value.Name)+'")';
-		//alert(query);
+		alert(query);
 		tx.executeSql(query);
 		itemcount++;
-     });
+	 });
+	 alert("Audits: "+itemcount);
 
 	 }
 	 catch(error)
@@ -338,6 +348,7 @@ function QuerytoinsertSAudits(tx)
 				tx.executeSql(query);
 				itemcount++;
 			 });
+			// alert("Groups2Audits:"+ itemcount);
 
 		 }
 

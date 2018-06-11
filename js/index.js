@@ -764,6 +764,10 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITMEDIA (SubmitID,StepID,Path,Sync)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITSUBPARTS (Name)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS GROUPS2AUDITS (GroupID,ID,Ord)');
+		 //tx.executeSql('INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord) VALUES ("Field Tracker-01","1","1")');
+		 //tx.executeSql('INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord) VALUES ("Field Tracker-01","c829cd37-c552-4985-a2ff-2f9ad4445432","2")');
+		 //tx.executeSql('INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord) VALUES ("Field Tracker-01","68e184fa-2a6a-4ec1-ab35-0077661670b3","3")');
+		 //tx.executeSql('INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord) VALUES ("Field Tracker-01","83b90572-e09c-41ef-b4b3-e402cb40c2e6","4")');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,NumFiles,Date DATETIME,UserID,Score,Sync)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITQUESTS (AuditID,StepID,Text,SubPart,OrdNum)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS AUDITS2OWNERS (ID,UserID,Sync)');
@@ -2106,7 +2110,7 @@ function successFunctionx() {
  // Transaction success callback
     //
     function successCBMain() {
-        
+        alert("DB Error: "+err.message + "\nCode="+err.code);
     }
 	 // Transaction error callback
 	function errorCBIN(tx, err) {
@@ -2670,7 +2674,7 @@ $(document).on( 'pagebeforeshow', '#pageProcedureLaunch',function(){
 
 //ON CREATE Pageaudits
 $(document).on( 'pagebeforeshow', '#pageAudits',function(){
-	AuditSilenceStartSync();
+	//AuditSilenceStartSync();
 	IsSyncMessages=true;
 	inPageMes=0;
 	$("#auditIDL").val(0);
@@ -2686,17 +2690,8 @@ $(document).on( 'pagebeforeshow', '#pageAudits',function(){
 		$(this).css({color: 'white'});
 		var idrow=$(this).attr('data-name');
 		$("#auditIDL").val(idrow);
-		//alert(idrow);
 		searchareaid();
-		//$("#chnamep").val('');
-		//$("#chpro").val(idrow);
-		//searchnameprocedure();
 		$("#headtableaudit").addClass("ui-bar-c");
-		//alert(idrow);
-		//var text=$(this).text();
-	//	text=text.replace('Procedure Name','');
-		//text=$.trim(text);
-		//sessionStorage.loadsteps="true";
 	 $("#table-LAudits").table("refresh");
 	 $("#table-LAudits").trigger('create');
 	
@@ -10128,6 +10123,7 @@ function Querygroupsfilters(tx)
 function QuerygroupsfiltersSuccess(tx,results)
 {
 	var len=results.rows.length;
+	//alert("Groups: "+len);
 	var selecthtml='<option value="0">All</option>';
 	if(len>0)
  	{
@@ -10152,6 +10148,8 @@ function Querytoauditstolaunch(tx)
 	showModal();
 	var UseraID=sessionStorage.userid;
 	var newquery="SELECT Users2Groups.ID FROM Users2Groups INNER JOIN Groups2Audits ON Users2Groups.ID=Groups2Audits.GroupID WHERE Users2Groups.UserID='"+UseraID+"' Group by Users2Groups.ID";
+	//var newquery="SELECT * FROM Users2Groups WHERE Users2Groups.UserID='"+UseraID+"' Group by Users2Groups.ID";
+	//alert(newquery);
 	//var newquery ="SELECT Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits  ON Groups2Audits.ID=Audits.ID  WHERE GroupID='Assay Lab-01'";
 	tx.executeSql(newquery, [], QuerytoauditstolaunchSuccess,errorCBPAudits);
 
@@ -10159,6 +10157,8 @@ function Querytoauditstolaunch(tx)
 
 function QuerytoauditstolaunchSuccess(tx,results)
 {
+	var len=results.rows.length;
+	//alert("real lenght: "+len);
 	Filltableaudits(results);
 		
 }
@@ -10178,6 +10178,7 @@ function QueryFilltableaudits(tx,resultados)
 	//alert(len+" cantidad "+ " opcion="+optionss);
 	if(optionss=="0")
 	{
+		//alert("entro en el 0");
 		if(len>0)
 		{
 			for (var i=0; i<resultados.rows.length; i++){
@@ -10206,6 +10207,7 @@ function QueryFilltableaudits(tx,resultados)
 	{
 		newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as Date  FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY Date DESC LIMIT 1) AS lastp,Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID WHERE GroupID='"+optionss+"'";
 	}
+	//alert(newquery);
 	tx.executeSql(newquery, [],  function(tx,results){  QueryFilltableauditsSuccess(tx,results,resultados) },errorCBPAudits);
 }
 
@@ -10279,12 +10281,7 @@ function launchaudit()
 	{
 		navigator.notification.alert("Please select an Audit", null, 'FieldTracker', 'Accept');
 	}
-
-
 }
-
-
-
 
 ///////<<<<<<<<<<<<============================= AUDITS PAGE   =========================================>>>>>>>>>>>///////
 
