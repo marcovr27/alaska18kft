@@ -15,6 +15,8 @@ var newauditsdatatoinsert;
 var sendCertificationsarray;
 var sendAloneCertifications;
 var SendWpis;
+var SendAloneWpis;
+var newsWpistoinsert;
 var sendproceduresarray; //Sync Variables
 var sendstepsarray; //Sync Variables
 var sendchecklistarray;//Sync Variables
@@ -754,7 +756,7 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 //
 		 //alert("checadb");
 		 //New Tables febraury 2017
-		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDWPIS (SubmitID,EmpDate,Shift,UserID,Status,SupID,WPI1,WPI2,WPI3,WPI1Status,WPI2Status,WPI3Status,HI1,HI2,HI3,CAT1,CAT2,CAT3,SupQ1,SupQ2,SupQ3,SupQ4,SupQ5,Topics,Concerns,Actions,SupDate,SupComments,Sync)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDWPIS (SubmitID,EmpDate,Shift,UserID,Status,SupID,WPI1,WPI2,WPI3,WPI1Status,WPI2Status,WPI3Status,HI1,HI2,HI3,CAT1,CAT2,CAT3,SupQ1,SupQ2,SupQ3,SupQ4,SupQ5,Topics,Concerns,Actions,SupDate,SupComments,Sync,SyncTwo)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPRISKTEXT (IDStep,Text)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPAUDITPHOTO (ID INTEGER PRIMARY KEY,IDStep,Path)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TIMETRACKING (UserID,ContentID,TotalTime,Date,ClassID)');
@@ -824,7 +826,7 @@ function QuerywritehtmltSuccess(tx,results,language)
         // tx.executeSql('DROP TABLE IF EXISTS USERS');
 		
 		
-         tx.executeSql('CREATE TABLE IF NOT EXISTS USERS (Username unique,Password,FirstName,LastName,LevelNum,LevelType,AltLevel,CertDate,Location)');
+         tx.executeSql('CREATE TABLE IF NOT EXISTS USERS (Username unique,Password,FirstName,LastName,LevelNum,LevelType,AltLevel,CertDate,Location,Supervisor)');
 		 
 //         tx.executeSql('INSERT INTO USERS (Username,Password,FirstName,LastName) VALUES ("dclaxton", "pai","Darien","Claxton")');
 //		 tx.executeSql('INSERT INTO USERS (Username,Password,FirstName,LastName) VALUES ("mpoarch", "pai","Mark","Poarch")');
@@ -2657,6 +2659,7 @@ $(document).on( 'pagebeforeshow', '#pageProcedureLaunch',function(){
 		var idrow=$(this).attr('data-name');
 		$("#chnamep").val('');
 		$("#chpro").val(idrow);
+		//alert("ID PROCD ="+ idrow);
 		searchnameprocedure();
 		$("#headtableprocedure").addClass("ui-bar-c");
 		//alert(idrow);
@@ -2730,24 +2733,36 @@ $(document).on( 'pagebeforeshow', '#pageDrawAudit',function(){
 
 //ON CREATE PROCEDURE STEPS
 $(document).on( 'pagebeforeshow', '#pageProcedure',function(){
-	inPageMes=0;
-	IsSyncMessages=true;
-	$('#bodyissues').html("");
-	var whattodo=sessionStorage.loadsteps;
-	if(whattodo=="true")
+	try
 	{
-		//alert("whattodo true");
-    var submitID = sessionStorage.userid+new Date().getTime() + Math.random();
-	sessionStorage.submitID=submitID;
-	var nameprocedure=sessionStorage.nameprocedure;
-	$("#headproname").html(" <img src='img/graphs/Logo_Small.png' style='height: 2em' /> &nbsp;&nbsp;"+nameprocedure);
-	fillstepsprocedure();
+		//alert("Entramo");
+		inPageMes=0;
+		IsSyncMessages=true;
+		$('#bodyissues').html("");
+		var whattodo=sessionStorage.loadsteps;
+		//alert("Quehacer= "+whattodo);
+		if(whattodo=="true")
+		{
+			//alert("whattodo true");
+		var submitID = sessionStorage.userid+new Date().getTime() + Math.random();
+		sessionStorage.submitID=submitID;
+		var nameprocedure=sessionStorage.nameprocedure;
+		//alert("name procedure: "+nameprocedure);
+		$("#headproname").html(" <img src='img/graphs/Logo_Small.png' style='height: 2em' /> &nbsp;&nbsp;"+nameprocedure);
+		fillstepsprocedure();
+		}
+		else
+		{
+			
+			fillredlables();
+		}
+
 	}
-	else
+	catch(err)
 	{
-		
-		fillredlables();
+		alert(err);
 	}
+
 });
 
 
@@ -3576,6 +3591,7 @@ function LoginUser()
 				 sessionStorage.lvlname=LevelName;
 				 sessionStorage.lvltype=results.rows.item(0).LevelType;
 				 sessionStorage.location=results.rows.item(0).Location;
+				 sessionStorage.Supervisor=results.rows.item(0).Supervisor;
 				// SyncStatus();
 				
 			  $(':mobile-pagecontainer').pagecontainer('change', '#pageMenu', {
@@ -4627,11 +4643,13 @@ function QuerycheckdbproceduresSuccess(tx,results)
    function launchprocedure()
 {
 	var idprocedure=$("#chpro").val();
-	
+	//alert("aidicillo= "+idprocedure);
 	if(idprocedure!="0")
 	{
+		//alert("ID ES: "+idprocedure+" nombre ES:"+$("#chnamep").val());
 		sessionStorage.nameprocedure=$("#chnamep").val();
 		sessionStorage.currentProcedure=idprocedure;
+		//alert("mandare a pagina");
 		$(':mobile-pagecontainer').pagecontainer('change', '#pageProcedure', {
         transition: 'slide',
         changeHash: false,
@@ -4653,6 +4671,7 @@ function QuerycheckdbproceduresSuccess(tx,results)
 
 function searchnameprocedure()
 {
+	//alert("busco nombre");
 	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
     db.transaction(QuerytoGetProcedureName, errorCB);
 	
@@ -4661,18 +4680,20 @@ function searchnameprocedure()
 function QuerytoGetProcedureName(tx)
 {
 	var idprocedure=$("#chpro").val();
-	tx.executeSql("SELECT * FROM PROCEDURES WHERE ProcID='"+idprocedure+"'", [], QuerytoGetProcedureNameSuccess, errorCB);
+	//alert("busco nombre query = "+"SELECT * FROM PROCEDURES WHERE ProcID='"+idprocedure+"'");
+	tx.executeSql("SELECT * FROM PROCEDURES WHERE ProcID='"+idprocedure+"'", [], QuerytoGetProcedureNameSuccessz, errorCB);
 	
 }
 
-function QuerytoGetProcedureNameSuccess(tx, results)
+function QuerytoGetProcedureNameSuccessz(tx, results)
 {
 	//alert("aqui");
 	var len = results.rows.length;
+	//alert("hay procedimientos= "+len);
 	  if(len>0)
 	  {
 		  //alert(results.rows.item(0).Name);
-		// alert(results.rows.item(0).Name);
+		// alert("Nombre eS= "+results.rows.item(0).Name);
 		 $("#chnamep").val(results.rows.item(0).Name); 
 	  }
 	
@@ -4759,8 +4780,9 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 	   
 	   var query="SELECT PROCEDURESTEPS.StepID, OrdNum, Text, Type, Num, SelAllComps,SelAllFaults,STEP2MEAS.MeasID,MEASUREMENTS.MeasDesc,MEASUREMENTS.FieldType FROM PROCEDURESTEPS LEFT OUTER JOIN STEP2MEAS ON PROCEDURESTEPS.StepID=STEP2MEAS.StepID LEFT OUTER JOIN MEASUREMENTS ON STEP2MEAS.MeasID=MEASUREMENTS.MeasID  WHERE (ProcID = '"+idprocedure+"')  ORDER BY OrdNum";
 	   //akivoy
-	  // alert(query);
-	   tx.executeSql(query, [], QuerystepsprocedureSuccess, errorCB);
+	   //alert(query)
+	   
+	   tx.executeSql(query, [], QuerystepsprocedureSuccess, errorCBPA);
 	  
 	  
   }
@@ -4769,8 +4791,9 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
   
     function QuerystepsprocedureSuccess(tx,results)
   {
+	
 	  var len = results.rows.length;
-	 
+	  //alert("Quant Steps:"+len);
 	  if(len=="0")
 	  {
 		   				hideModal();
@@ -4808,7 +4831,9 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 	
 	function filltablesteps(results)
 	{
-		var specialequipment=false;
+		try
+		{
+			var specialequipment=false;
 		var introduction=false;
 		var stepshtml='';	
 		var medida='';
@@ -4880,21 +4905,69 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 					else if(results.rows.item(i).Type=="Substep")
 					{
 						//alert('<tr><td><label class="ui-icon-delete ui-shadow-icon"><input type="checkbox" name="" id="">'+results.rows.item(i).Num+' &nbsp;'+results.rows.item(i).Text+'</label> </td><td><a href="javascript:reportissue('+results.rows.item(i).StepID+');" data-theme="b" data-role="button" data-inline="true" data-icon="alert" data-iconpos="right">Report Issue</a></td></tr>');
-						
-						stepshtml+='<tr><td><label id="lbl'+results.rows.item(i).StepID+'" class="ui-icon-delete ui-shadow-icon" ><input type="checkbox"  name="'+results.rows.item(i).StepID+'" id="'+results.rows.item(i).StepID+'">'+results.rows.item(i).Num+' &nbsp;'+results.rows.item(i).Text+'</label> </td><td><a href="javascript:reportissue('+"'"+results.rows.item(i).StepID+"'"+');" data-theme="b" data-role="button" data-inline="true" data-icon="alert" data-iconpos="right">Report Issue</a></td></tr>';
-					}
-					else if(results.rows.item(i).Type=="Step")
-					{
 						if(results.rows.item(i).FieldType!=null)
 						{
+							var str;
+							var resid;
+							try
+							{
+								str=results.rows.item(i).MeasID;
+							   resid = str.replace(" ", "ctsxxx");
+
+							}
+							catch(exeeee)
+							{
+
+							}
+							
+							//alert(resid);
 							if(results.rows.item(i).FieldType=="T")
 							{
-								medida='<label for="ID'+results.rows.item(i).MeasID+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><input type="text" name="ID'+results.rows.item(i).MeasID+'" id="ID'+results.rows.item(i).MeasID+'" value="" placeholder="'+"Enter value"+'" />';
+
+								medida='<label for="ID'+resid+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><input type="text" name="ID'+resid+'" id="ID'+resid+'" value="" placeholder="'+"Enter value"+'" />';
 
 							}
 							else if(results.rows.item(i).FieldType=="D")
 							{
-								medida='<label for="ID'+results.rows.item(i).MeasID+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><select name="ID'+results.rows.item(i).MeasID+'" id="ID'+results.rows.item(i).MeasID+'"><option value=""> </option></select>';
+								medida='<label for="ID'+resid+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><select name="ID'+resid+'" id="ID'+resid+'"><option value=""> </option></select>';
+
+							}
+
+						}
+						else
+						{
+							medida="";
+						}
+						
+						stepshtml+='<tr><td><label id="lbl'+results.rows.item(i).StepID+'" class="ui-icon-delete ui-shadow-icon" ><input type="checkbox"  name="'+results.rows.item(i).StepID+'" id="'+results.rows.item(i).StepID+'">'+results.rows.item(i).Num+' &nbsp;'+results.rows.item(i).Text+'</label> </td><td>'+medida+'</td><td><a href="javascript:reportissue('+"'"+results.rows.item(i).StepID+"'"+');" data-theme="b" data-role="button" data-inline="true" data-icon="alert" data-iconpos="right">Report Issue</a></td></tr>';
+					}
+					else if(results.rows.item(i).Type=="Step")
+					{
+						
+						
+						if(results.rows.item(i).FieldType!=null)
+						{
+							var str;
+							var resid;
+							try
+							{
+								str=results.rows.item(i).MeasID;
+								resid = str.replace(" ", "ctsxxx");
+
+							}
+							catch(errorsx)
+							{
+
+							}
+							
+							if(results.rows.item(i).FieldType=="T")
+							{
+								medida='<label for="ID'+resid+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><input type="text" name="ID'+resid+'" id="ID'+resid+'" value="" placeholder="'+"Enter value"+'" />';
+
+							}
+							else if(results.rows.item(i).FieldType=="D")
+							{
+								medida='<label for="ID'+resid+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><select name="ID'+resid+'" id="ID'+resid+'"><option value=""> </option></select>';
 
 							}
 
@@ -4914,8 +4987,15 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 			$("#table-result").table("refresh");
 			 $("#table-result").trigger('create');			 
 			 hideModal();
-			 fillSelectMeas();		
+			 fillSelectMeas();
+
 		}
+		catch(err)
+		{
+			alert(err);
+		}
+				
+	}
 
 		function fillSelectMeas()
 		{
@@ -4963,11 +5043,14 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 			if(len>0)
 		  {
 			 for (var i=0; i<results.rows.length; i++){
-				 $("#ID"+results.rows.item(i).MeasID).append('<option value="'+results.rows.item(i).DropDownData+'">'+results.rows.item(i).DropDownData+'</option>');
+				var str=results.rows.item(i).MeasID;
+				var resid = str.replace(" ", "ctsxxx");
+				//alert(resid);
+				 $("#ID"+resid).append('<option value="'+results.rows.item(i).DropDownData+'">'+results.rows.item(i).DropDownData+'</option>');
 			 }
 		   }
 		   $("#table-result").table("refresh");
-			 $("#table-result").trigger('create');	
+			$("#table-result").trigger('create');	
 			 GetIDSWhitMEas();
 			
 
@@ -5170,7 +5253,9 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 					  
 						  
 						var MeasID=listfieldsproc[ysa].MeasID;
-						var ValueMeas=$("#ID"+MeasID).val();
+						var str=MeasID;
+						var resid = str.replace(" ","ctsxxx");
+						var ValueMeas=$("#ID"+resid).val();
 						//alert(ValueMeas)
 						if(ValueMeas=="" || ValueMeas==null)
 						{
@@ -5346,7 +5431,9 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 								{
 									
 									MeasID=listfieldsproc[ysa].MeasID;
-									ValueMeas=$("#ID"+MeasID).val();
+									var str=MeasID;
+									var resid = str.replace(" ","ctsxxx");
+									ValueMeas=$("#ID"+resid).val();
 									QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
 									//alert(QueryK);
 									tx.executeSql(QueryK);
@@ -5389,7 +5476,9 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 							{
 								
 								MeasID=listfieldsproc[ysa].MeasID;
-								ValueMeas=$("#ID"+MeasID).val();
+								var str=MeasID;
+								var resid = str.replace(" ","ctsxxx");
+								ValueMeas=$("#ID"+resid).val();
 								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
 								//alert(QueryK);
 								tx.executeSql(QueryK);
@@ -5445,7 +5534,9 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 							{
 								
 								MeasID=listfieldsproc[ysa].MeasID;
-								ValueMeas=$("#ID"+MeasID).val();
+								var str=MeasID;
+								var resid = str.replace(" ","ctsxxx");
+								ValueMeas=$("#ID"+resid).val();
 								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
 								//alert(QueryK);
 								tx.executeSql(QueryK);
@@ -5486,7 +5577,9 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 							{
 								
 								MeasID=listfieldsproc[ysa].MeasID;
-								ValueMeas=$("#ID"+MeasID).val();
+								var str=MeasID;
+								var resid = str.replace(" ","ctsxxx");
+								ValueMeas=$("#ID"+resid).val();
 								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
 								//alert(QueryK);
 								tx.executeSql(QueryK);
@@ -7370,6 +7463,7 @@ function failre(error) {
 						//alert(resultsteps.rows.item(i).FieldType);
 						if(resultsteps.rows.item(i).FieldType!=null)
 						{
+							
 							if(resultsteps.rows.item(i).FieldType=="T")
 							{
 								medida='<label for="IDH'+resultsteps.rows.item(i).MeasID+'" id="lbl'+i+'">'+resultsteps.rows.item(i).MeasDesc+'</label><input type="text" name="IDH'+resultsteps.rows.item(i).MeasID+'" id="IDH'+resultsteps.rows.item(i).MeasID+'" value="" placeholder="'+"Enter value"+'" />';
@@ -9437,7 +9531,7 @@ function openrejected()
 //Fill table
      function fillevaluationsteps()
   {
-	  var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	  	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
         db.transaction(Querystepsevalprocedure, errorCB);
 	  
   }

@@ -1350,7 +1350,6 @@ function QuerytoinsertTimeTrackingPM(tx)
 	 try
 	 {
     $.each(obj, function (key, value) {
-		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
 		query='INSERT INTO TIMETRACKING  (UserID,ContentID,TotalTime,Date,ClassID) VALUES ("'+escapeDoubleQuotes(value.UserID)+'", "'+escapeDoubleQuotes(value.ContentID)+'", "'+value.TotalTime+'", "'+value.Date+'", "'+escapeDoubleQuotes(value.ClassID)+'")';
 		//alert(query);
 		tx.executeSql(query);

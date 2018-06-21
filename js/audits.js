@@ -422,10 +422,17 @@ function QuerytoinsertSAudits(tx)
 	 }	
 }
 
+
+
 function CancelRisk()
 {
 	var stepaudit=$("#Hidstepaudit").val();
 	$("#btnR"+stepaudit).removeClass( "buttonreds");
 	DeleteImagesAuditTemp();
 	$("#popupriskaudit").popup("close");
+}
+
+function CheckDBAudit()
+{
+	
 }

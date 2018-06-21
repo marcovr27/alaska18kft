@@ -229,6 +229,126 @@ function QuerytoinsertMeas(tx)
 		SendMediaAudit();
 
 }
+function GetWpisx()
+{
+	var ipserver=$("#ipsync").val();
+	var obj = {};
+	if(!!sessionStorage.userid)
+	{
+		obj['UserID'] =sessionStorage.userid;
+	}
+	else
+	{
+		obj['UserID'] ="xxxxxxxx";
+		
+	}
+
+	$("#progressheader").html(" ");
+	//progressheader
+	$("#progressheader").html("Downloading data...");
+		$("#progressMessage").html("Post To GetWpis");
+		pbar.setValue(0);
+		//alert("listo para el post: "+ipserver+'//GetStructureData');
+	                $.ajax({
+                    type: 'POST',
+                    //url: 'http://dc4life78-001-site6.dtempurl.com/ServiceFt.asmx//GetStructureData',
+				    url:ipserver+'//GetWpis',
+					data: JSON.stringify(obj),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+						InsertDatabaseWPIS(response.d);
+                    },
+            error: function (xmlHttpRequest, textStatus, errorThrown) {
+							$("#progressheader").html("Can not connect to server");
+							$("#progressMessage").html("Error sending data:" +xmlHttpRequest.responseXML+" Status: "+textStatus+"==>"+xmlHttpRequest.statusText+" thrown: "+errorThrown);
+					IsSyncMessages=false;		
+					setTimeout( function(){ $("#generic-dialog").dialog("close"); }, 10000 );
+                    console.log(xmlHttpRequest.responseXML);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                   // alert("Error");
+                }
+                });	
+	
+}
+
+function InsertDatabaseWPIS(newdatabase)
+{
+
+	$("#progressMessage").html("Successful connection");
+		pbar.setValue(1);
+		newcertsdatatoinsert=newdatabase;
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      	db.transaction(QuerytoinsertWpisx, errorCBPA);
+	
+}
+
+function QuerytoinsertWpisx(tx)
+{
+	//alert("deleteoldrecords");
+	//alert("Insert new data GetMessages");
+	$("#progressMessage").html("Deleting old records");
+	var userids;
+	if(!!sessionStorage.userid)
+	{
+		userids =sessionStorage.userid;
+	}
+	else
+	{
+		userids ="xxxxxxxx";
+		
+	}
+		pbar.setValue(2);
+		//alert("Deleting "+idusera);
+		tx.executeSql("DELETE FROM SUBMITTEDWPIS WHERE SupID='"+userids+"'");
+
+
+	$("#progressMessage").html("Ready to insert new records");
+	var query;
+	var obj;
+	//alert("Items "+obj.length);
+	var itemcount=0;
+	 try
+	 {
+		obj = jQuery.parseJSON(newcertsdatatoinsert.Wpis);
+    	$.each(obj, function (key, value) {
+	    var query="INSERT INTO SUBMITTEDWPIS (SubmitID,EmpDate,Shift,UserID,Status,SupID,WPI1,WPI2,WPI3,WPI1Status,WPI2Status,WPI3Status,HI1,HI2,HI3,CAT1,CAT2,CAT3,Sync,SyncTwo) VALUES ('"+value.SubmitID+"','"+value.EmpDate+"','"+value.Shift+"','"+value.UserID+"','"+value.Status+"','"+value.SupID+"','"+escapeDoubleQuotes(value.WPI1)+"','"+escapeDoubleQuotes(value.WPI2)+"','"+escapeDoubleQuotes(value.WPI3)+"','"+value.WPI1Status+"','"+value.WPI2Status+"','"+value.WPI3Status+"','"+escapeDoubleQuotes(value.HI1)+"','"+escapeDoubleQuotes(value.HI2)+"','"+escapeDoubleQuotes(value.HI3)+"','"+escapeDoubleQuotes(value.CAT1)+"','"+escapeDoubleQuotes(value.CAT2)+"','"+escapeDoubleQuotes(value.CAT3)+"','no','no')";
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	// alert("Wpis: "+itemcount);
+	 
+	 	$("#progressMessage").html("WPIS updated");
+	pbar.setValue(10);
+	 }
+	 catch(error)
+	 {
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("WPIS ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert("WPIS "+error);
+
+		}
+		 $("#progressMessage").html("Error updating WPIS "+error);
+			pbar.setValue(30);
+		 
+	 }
+	 
+		 
+	 $("#progressMessage").html("Inspections updated");
+		pbar.setValue(100);
+
+	$("#progressMessage").html("");
+		pbar.setValue(100);
+		//SendMediaAudit();
+	  GetMeasurements();	
+}
 
 function GetserviceCertifications()
 {
@@ -261,8 +381,7 @@ function GetserviceCertifications()
                     console.log(errorThrown);
                    // alert("Error");
                 }
-                });
-	
+                });	
 	
 }
 
@@ -363,7 +482,8 @@ function QuerytoinsertCerts(tx)
 	$("#progressMessage").html("");
 		pbar.setValue(100);
 		//SendMediaAudit();
-      GetMeasurements();
+	 // GetMeasurements();
+	 GetWpisx();
 
 			
 		
@@ -1639,7 +1759,7 @@ function Querytoinsertusers(tx)
 	 {
     $.each(obj, function (key, value) {
 		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
-		query='INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum,LevelType,Location,AltLevel) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'","'+value.LevelType+'","'+escapeDoubleQuotes(value.Location)+'","'+value.AltLevel+'")';
+		query='INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum,LevelType,Location,Supervisor,AltLevel) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'","'+value.LevelType+'","'+escapeDoubleQuotes(value.Location)+'","'+value.Supervisor+'","'+value.AltLevel+'")';
 		tx.executeSql(query);
 		usercount++;
      });

@@ -334,7 +334,7 @@ function QuerytoinsertLibrary(tx)
 	 try
 	 {
     $.each(obj, function (key, value) {
-		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
+
 		query='INSERT INTO COURSES (ID,Description,DescriptionLang2,ContentType,DurationHours,DurationMins,Scope,Instructor,FileName) VALUES ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.Description)+'", "'+escapeDoubleQuotes(value.DescriptionLang2)+'", "'+value.ContentType+'", "'+value.DurationHours+'", "'+value.DurationMins+'", "'+value.Scope+'", "'+escapeDoubleQuotes(value.Instructor)+'","'+escapeDoubleQuotes(value.FileName)+'")';
 		//alert(query);
 		tx.executeSql(query);
@@ -357,7 +357,7 @@ function QuerytoinsertLibrary(tx)
 	 {
 	obj=jQuery.parseJSON(newlibrarydatatoinsert.Groups2Content);
     $.each(obj, function (key, value) {
-		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
+
 		query='INSERT INTO GROUPS2CONTENT (GroupID,ID,Ord) VALUES ("'+escapeDoubleQuotes(value.GroupID)+'", "'+escapeDoubleQuotes(value.ID)+'","'+escapeDoubleQuotes(value.Ord)+'")';
 		//alert(query);
 		tx.executeSql(query);
@@ -580,7 +580,6 @@ CountReady=len;
 //	 try
 //	 {
 //    $.each(obj, function (key, value) {
-//		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
 //		query='INSERT INTO FILESDATA (FileID,FileUrl,FileName) VALUES ("'+escapeDoubleQuotes(value.FileID)+'","'+escapeDoubleQuotes(value.FileUrl)+'","'+escapeDoubleQuotes(value.FileName)+'")';
 //		//alert(query);
 //		tx.executeSql(query);
@@ -767,7 +766,7 @@ function QuerySLibrary(tx)
    try
 	 {
     $.each(obj, function (key, value) {
-		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
+
 		query='INSERT INTO COURSES (ID,Description,DescriptionLang2,ContentType,DurationHours,DurationMins,Scope,Instructor,FileName) VALUES ("'+escapeDoubleQuotes(value.ID)+'", "'+escapeDoubleQuotes(value.Description)+'", "'+escapeDoubleQuotes(value.DescriptionLang2)+'", "'+value.ContentType+'", "'+value.DurationHours+'", "'+value.DurationMins+'", "'+value.Scope+'", "'+escapeDoubleQuotes(value.Instructor)+'","'+escapeDoubleQuotes(value.FileName)+'")';
 		//alert(query);
 		tx.executeSql(query);
@@ -783,7 +782,7 @@ function QuerySLibrary(tx)
 	 {
 	obj=jQuery.parseJSON(sendLibraryalone.Groups2Content);
     $.each(obj, function (key, value) {
-		//alert('INSERT INTO USERS (Username,Password,FirstName,LastName,LevelNum) VALUES ("'+value.Username+'", "'+value.Password+'","'+value.FirstName+'","'+value.LastName+'","'+value.LevelNum+'")');
+
 		query='INSERT INTO GROUPS2CONTENT (GroupID,ID,Ord) VALUES ("'+escapeDoubleQuotes(value.GroupID)+'", "'+escapeDoubleQuotes(value.ID)+'","'+escapeDoubleQuotes(value.Ord)+'")';
 		//alert(query);
 		tx.executeSql(query);

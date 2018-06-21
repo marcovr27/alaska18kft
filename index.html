@@ -2603,21 +2603,200 @@
             <div data-role="header" data-position="fixed" data-theme="b">
                     <h1>
                         <img src="img/graphs/Logo_Small.png" style="height: 2em" />
-                        <label></label> 
+                        <label>Safety Contacts To Complete</label> 
                     </h1>
+                    <a href="#menu-panelproinspections" data-icon="bars" data-iconpos="notext">Menu</a>
+                    <a href="javascript:opensylenceInspections();" data-icon="recycle" data-iconpos="notext">Sync</a>
             </div>
             <div data-role="content">
+                    <form>
+                        <input id="filterTable-inputsafety" data-type="search">
+                        </form>
+                                  <input type="hidden" id="mlpid" name="mlpid" value="0"/>
+                                   <table data-role="table" data-filter="true" id="table-psafety" data-input="#filterTable-inputsafety"  class="ui-body-c ui-shadow table-stripe ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a">
+                            <thead>
+                              <tr id="headtablesafety" class="ui-bar-c">
+                                <th data-priority="1" style="text-align: center" id="htable2procedureww">Operator &nbsp;</th>
+                                <th data-priority="2" style="text-align: center" id="htable2lastww">Date &nbsp;</th>
+                             </tr>
+                             </thead>
+                             <tbody id="proceduresbodysafety">
+                        
+                        
+                            </tbody>
+                          </table>	
            
             </div>
             <div data-role="footer" data-position="fixed">
                     <div data-role="navbar">
                             <ul>
-                    <li><a href="javascript:navbyapp('menu');" class="ui-btn-c" data-icon="back" data-iconpos="left">Back</a></li></ul>
+                                    <li><a href="javascript:navbyapp('menu');" class="ui-btn-c" data-icon="back" data-iconpos="left">Back</a></li>
+                                    <li><a href="#pageworkplace" class="ui-btn-b" data-icon="grid" data-iconpos="left">Workplace Inspection Form</a></li>
+                                    <li><a href="javascript:gotoinspect();" class="ui-btn-a"  data-icon="action" data-iconpos="right" id="alaunch1">Launch</a></li>
+                            </ul>
                     </div>   
             </div>
+            <div data-role="panel" data-position-fixed="true" data-display="push" data-theme="a"  id="menu-panelproinspections">
+                    <ul data-role="listview">
+                            <li data-icon="home"><a href="javascript:navbyapp('menu');" id="amenu5ii">Menu</a></li>
+                            <li data-icon="info"><a href="#" id="ahelp4ii">Help</a></li>      
+                    </ul>
+                    <br>
+                    <button class="ui-btn ui-btn-b ui-mini" data-rel="close" id="acloseb4pa" >Close Menu</button>
+                </div><!-- /panel -->
         </div>
     
        <!--Page Inspections--> 
+
+              <!--Page Inspections--> 
+
+    <div data-role="page" id="pageworkplace" class="normal">
+        <div data-role="header" data-position="fixed" data-theme="b">
+                <h1>
+                    <img src="img/graphs/Logo_Small.png" style="height: 2em" />
+                    <label>WORKPLACE INSPECTION FORM</label> 
+                </h1>
+        </div>
+        <div data-role="content">
+                     <table data-role="table" data-filter="false" id="table-workplaceinspection"  class="ui-body-c ui-shadow table-stripe ui-responsive" data-column-btn-theme="a"  data-column-popup-theme="a">
+                        <thead>
+                          <tr id="headtableinspection" class="ui-bar-a">
+                            <th></th><th></th><th></th>
+                         </tr>
+                         </thead>
+                         <tbody id="proceduresbodyinspection">
+                          <tr style="background-color: #dbeef4; font-size: 20px;"><td><b>What are the high potential risks?</b></td><td></td><td></td></tr>
+                          <tr style="background-color: #dbeef4; font-size: 20px;"><td><b>What are the sources of fatal energy release?</b></td><td></td><td></td></tr>
+                          <tr style="background-color:#376092; color:white;"><td>Work Place(s) Inspected:</td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>1. <input type="text" name="workplaceone" id="workplaceone" value=""></td><td><a data-role="button" id="btnSone"  class="buttonInspection" onclick="changeones()">Safe</a></td><td><a data-role="button" id="btnRone"  class="buttonInspection" onclick="changeonesrr()">At Risk</a></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>2. <input type="text" name="workplacetwo" id="workplacetwo" value=""></td><td><a data-role="button" id="btnStwo"  class="buttonInspection" onclick="changetwos()">Safe</a></td><td><a data-role="button" id="btnRtwo" class="buttonInspection" onclick="changetwosrr()">At Risk</a></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>3. <input type="text" name="workplacethree" id="workplacethree" value=""></td><td><a data-role="button" id="btnSthree" class="buttonInspection" onclick="changethrees()">Safe</a></td><td><a data-role="button" id="btnRthree" class="buttonInspection" onclick="changethreesrr()">At Risk</a></td></tr>
+                          <tr style="background-color:#376092; color:white;"><td>Hazard(s) Identified:</td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>1. <input type="text" name="workplacefour" id="workplacefour" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>2. <input type="text" name="workplacefive" id="workplacefive" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>3. <input type="text" name="workplacesix" id="workplacesix" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#376092; color:white;"><td>Corrective Action Taken:</td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>1. <input type="text" name="workplaceseven" id="workplaceseven" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>2. <input type="text" name="workplaceeight" id="workplaceeight" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>3. <input type="text" name="workplacenine" id="workplacenine" value=""></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                      <table data-role="table" class="ui-body-c ui-shadow  ui-responsive">
+                            <thead>
+                                <tr><th><b>During your inspection of the work area, be alert for hazards that could put you or others’ safety at risk. Several items to look for during your inspection are:</b></th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>	
+                      <table data-role="table" class="ui-body-c ui-shadow  ui-responsive">
+                          <thead>
+                              <tr><th></th><th></th><th></th><th></th></tr>
+                          </thead>
+                          <tbody>
+                                <tr><td>Chemicals</td><td>Eyewash / Showers</td><td>Housekeeping</td><td>Proper PPE</td></tr>
+                                <tr><td>Combustible Storage</td><td>Fall Protection</td><td>Labels – Legible</td><td>Ramps / Roads / Berms</td></tr>
+                                <tr><td>Conveyors / Pull Cords</td><td>First-Aid Materials</td><td>Lifting Gear</td><td>Safety Water Hose Clips</td></tr>
+                                <tr><td>Cutting / Gauges / Caps</td><td>Fixed / Portable Ladders</td><td>Lighting / Emergency</td><td>Signs / Barricades</td></tr>
+                                <tr><td>Dials / Gauges</td><td>Flammable Storage</td><td>Housekeeping</td><td>Stacking / Storage</td></tr>
+                                <tr><td>Electrical Cords</td><td>Floors / Walkways</td><td>Housekeeping</td><td>Stairs / Stairways</td></tr>
+                                <tr><td>Electrical Installations</td><td>Grinder / Guards / Rests</td><td>Open Holes</td><td>Ventilation</td></tr>
+                                <tr><td>Environmental</td><td>Ground Checks</td><td>Pipe Labeling</td><td>Welding / Cables / </td></tr>
+                                <tr><td>Exits / Egress</td><td>Ground Conditions</td><td>Handrails / Toe Boards</td><td>Shield</td></tr>
+                                <tr><td>Extinguishers – Annual</td><td>Guards In Place</td><td>Oxy / Acetylene Welding</td><td>Whip Checks /</td></tr>
+                                <tr><td>Extinguishers - Monthly</td><td>Hand Tools</td><td>Power Tools</td><td>Safety Pins</td></tr>
+
+                          </tbody>
+                      </table>	
+       
+        </div>
+        <div data-role="footer" data-position="fixed">
+                <div data-role="navbar">
+                        <ul>
+                                <li><a href="#pageInspections" class="ui-btn-c" data-icon="back" data-iconpos="left">Back</a><br></li>
+                                <li><select id="shiftworkp"><option value="Select">Select Shift</option><option value="day">Day</option><option value="night">Night</option></select></li>
+                                <li><a href="javascript:SaveWorkplace();" class="ui-btn-a" style="height:5px !important;" data-icon="action" data-iconpos="right" id="submitwork">Submit</a><br></li>
+                        </ul>
+                </div>   
+        </div>
+       
+    </div>
+
+   <!--Page Inspections--> 
+   
+              <!--Page Inspections--> 
+
+              <div data-role="page" id="pagesafetycontact" class="normal">
+                <div data-role="header" data-position="fixed" data-theme="b">
+                        <h1>
+                            <img src="img/graphs/Logo_Small.png" style="height: 2em" />
+                            <label>SAFETY CONTACT</label> 
+                        </h1>
+                </div>
+                <div data-role="content">
+                        <table data-role="table" class="ui-body-c ui-shadow  ui-responsive">
+                                <thead>
+                                    <tr><th></th><th></th><th></th></tr>
+                                </thead>
+                                <tbody>
+                                        <tr style="background-color: #dbeef4; font-size: 20px;"><td><b>Y</b></td><td><b>N</b></td><td></td></tr>
+                                        <tr style="background-color: #dbeef4; font-size: 20px;"><td><input type="checkbox" onChange="chkinsonef()" id="chkinsone" name="chkinsone"></td><td><input type="checkbox" onChange="chkinsonetf()" id="chkinsonet" name="chkinsonet"></td><td>&nbsp;&nbsp;&nbsp;Did employee inspect work area for hazards?</td></tr>
+                                        <tr style="background-color: #dbeef4; font-size: 20px;"><td><input type="checkbox" onChange="chkinstwof()" id="chkinstwo" name="chkinstwo"></td><td><input type="checkbox" onChange="chkinstwotf()" id="chkinstwot" name="chkinstwot"></td><td>&nbsp;&nbsp;&nbsp;If employee is operating mobile equipment, was it inspected before use?</td></tr>
+                                        <tr style="background-color: #dbeef4; font-size: 20px;"><td><input type="checkbox" onChange="chkinsthreef()" id="chkinsthree" name="chkinsthree"></td><td><input type="checkbox" onChange="chkinsthreetf()" id="chkinsthreet" name="chkinsthreet"></td><td>&nbsp;&nbsp;&nbsp;Are equipment & working areas in good order?</td></tr>
+                                        <tr style="background-color: #dbeef4; font-size: 20px;"><td><input type="checkbox" onChange="chkinsfourf()" id="chkinsfour" name="chkinsfour"></td><td><input type="checkbox" onChange="chkinsfourtf()" id="chkinsfourt" name="chkinsfourt"></td><td>&nbsp;&nbsp;&nbsp;Is work assignment understood?</td></tr>
+                                        <tr style="background-color: #dbeef4; font-size: 20px;"><td><input type="checkbox" onChange="chkinsfivef()" id="chkinsfive" name="chkinsfive"></td><td><input type="checkbox" onChange="chkinsfivetf()" id="chkinsfivet" name="chkinsfivet"></td><td>&nbsp;&nbsp;&nbsp;Is employee working properly & can he/she continue to do so?</td></tr>
+
+                                </tbody>
+                            </table>	
+                             <table data-role="table" data-filter="false" id="table-workplaceinspection"  class="ui-body-c ui-shadow table-stripe ui-responsive" data-column-btn-theme="a"  data-column-popup-theme="a">
+                                <thead>
+                                  <tr id="headtableinspection" class="ui-bar-a">
+                                    <th></th>
+                                 </tr>
+                                 </thead>
+                                 <tbody id="proceduresbodyinspection">
+
+                                  <tr style="background-color:#376092; color:white;"><td>Topics discussed:</td></tr>
+                                  <tr style="background-color:#dbeef4;"><td> <textarea data-mini="true" cols="40" rows="8" name="textarea-instopics" id="textarea-instopics"></textarea></td></tr>
+                                  <tr style="background-color:#376092; color:white;"><td>Employee concerns, recommendations, etc.</td></tr>
+                                  <tr style="background-color:#dbeef4;"><td><textarea data-mini="true" cols="40" rows="8" name="textarea-insemp" id="textarea-insemp"></textarea></tr>
+                                  <tr style="background-color:#376092; color:white;"><td>Follow-up actions: (who, what, when?)</td></tr>
+                                  <tr style="background-color:#dbeef4;"><td><textarea data-mini="true" cols="40" rows="8" name="textarea-insfollow" id="textarea-insfollow"></textarea></td></tr>
+                                  <tr style="background-color:#376092; color:white;"><td>Comments</td></tr>
+                                  <tr style="background-color:#dbeef4;"><td><textarea data-mini="true" cols="40" rows="8" name="textarea-inscomments" id="textarea-inscomments"></textarea></td></tr>
+                                </tbody>
+                              </table>
+                              <table data-role="table" class="ui-body-c ui-shadow  ui-responsive">
+                                    <thead>
+                                        <tr><th><b>Thought starters for safety topics:</b></th></tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>	
+                              <table data-role="table" class="ui-body-c ui-shadow  ui-responsive">
+                                  <thead>
+                                      <tr><th></th><th></th><th></th><th></th></tr>
+                                  </thead>
+                                  <tbody>
+                                        <tr><td>Safety Share</td><td>Hazard Recognition</td><td>Lock Out / Tag Out / Try Out</td><td>Shift Work</td></tr>
+                                        <tr><td>Be Alert</td><td>Hazard Substances</td><td>Machine Guarding</td><td>Slips, Trips, & Falls</td></tr>
+                                        <tr><td>Communication</td><td>Health & Hygiene</td><td>Material Handling / Lifting</td><td>Stacking & Storage</td></tr>
+                                        <tr><td>Electrical Hazards</td><td>Hearing Conversation</td><td>Mobile Equipment</td><td>Task Training</td></tr>
+                                        <tr><td>Fall Protections</td><td>Housekeeping</td><td>PPE Usage</td><td>Weather</td></tr>   
+                                        <tr><td>Fire Protection / Prevention</td><td>Lifting Gear</td><td>Safety Rules</td><td>Working Alone</td></tr>       
+                                  </tbody>
+                              </table>	
+               
+                </div>
+                <div data-role="footer" data-position="fixed">
+                        <div data-role="navbar">
+                                <ul>
+                                        <li><a href="#pageInspections" class="ui-btn-c" data-icon="back" data-iconpos="left">Back</a><br></li>
+                                        <li><a href="javascript:SubmitInspection();" class="ui-btn-a" data-icon="action" data-iconpos="right" id="submitwork">Submit</a><br></li>
+                                </ul>
+                        </div>   
+                </div>
+               
+            </div>
+        
+           <!--Page Inspections--> 
 
 <!--Page Messages Launch-->
 
