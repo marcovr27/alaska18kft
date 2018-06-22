@@ -1,6 +1,43 @@
+function gotowpinspections()
+{
+    var leveltocheck=sessionStorage.lvltype;
+    if(leveltocheck=="9 - Trainee")
+    {
+         $(':mobile-pagecontainer').pagecontainer('change', '#pageworkplace', {
+         transition: 'pop',
+         changeHash: false,
+         reverse: true,
+         showLoadMsg: true
+         });
+    }
+    else
+    {
+        $(':mobile-pagecontainer').pagecontainer('change', '#pageInspections', {
+            transition: 'pop',
+            changeHash: false,
+            reverse: true,
+            showLoadMsg: true
+            });
+
+    }
+
+}
+
 $(document).on( 'pagebeforeshow', '#pageInspections',function(){
    // Supervisorofme();
-   $("#mlpid").val("0");
+   var leveltocheck=sessionStorage.lvltype;
+   if(leveltocheck=="9 - Trainee")
+   {
+        $(':mobile-pagecontainer').pagecontainer('change', '#pageworkplace', {
+        transition: 'pop',
+        changeHash: false,
+        reverse: true,
+        showLoadMsg: true
+        });
+   }
+   else
+   {
+    $("#mlpid").val("0");
     CheckSupervisorSafe();
     $('#table-psafety').on('click','tr', function() {
         $('#proceduresbodysafety tr').css({background: 'transparent'});
@@ -15,6 +52,9 @@ $(document).on( 'pagebeforeshow', '#pageInspections',function(){
 	
     });
    
+
+   }
+
 });
 
 $(document).on( 'pagebeforeshow', '#pageworkplace',function(){
@@ -71,7 +111,7 @@ function QuerytoCheckSupervisor(tx)
 {
  
     var UserIDx=sessionStorage.userid;
-    var querys="SELECT SUBMITTEDWPIS.SubmitID,SUBMITTEDWPIS.EmpDate, USERS.FirstName,USERS.LastName FROM SUBMITTEDWPIS INNER JOIN USERS ON SUBMITTEDWPIS.UserID=USERS.Username  WHERE SupID='"+UserIDx+"' AND Status!='C'";
+    var querys="SELECT SUBMITTEDWPIS.SubmitID,SUBMITTEDWPIS.EmpDate, USERS.FirstName,USERS.LastName FROM SUBMITTEDWPIS INNER JOIN USERS ON SUBMITTEDWPIS.UserID=USERS.Username  WHERE SupID='"+UserIDx+"' AND Status='R' ORDER BY SUBMITTEDWPIS.EmpDate";
     //var querys="SELECT * FROM SUBMITTEDWPIS";
     //alert(querys);
     tx.executeSql(querys, [], QuerytoCheckSupervisorSuccess,errorCBPA);
@@ -478,7 +518,7 @@ function SaveWorkplace()
     //alert(queryx);
     tx.executeSql(queryx);
     navigator.notification.confirm(
-        'Inspection form Saved',      // mensaje (message)
+        'Saved',      // mensaje (message)
                 onConfirmaxxxy,      // función 'callback' a llamar con el índice del botón pulsado (confirmCallback)
                     'FieldTracker',            // titulo (title)
             'Accept'          // botones (buttonLabels)
@@ -687,7 +727,7 @@ function QuerySaveRInspection(tx)
    // alert(querys);
     tx.executeSql(querys);
     navigator.notification.confirm(
-        'Safety Contact Saved',      // mensaje (message)
+                'Saved', // mensaje (message)
                 onConfirmaxxxy,      // función 'callback' a llamar con el índice del botón pulsado (confirmCallback)
                     'FieldTracker',            // titulo (title)
             'Accept'          // botones (buttonLabels)
@@ -832,7 +872,7 @@ function InsertDatabaseWpisInsModalX(newdatabase)
 {
     newsWpistoinsert=newdatabase;
     var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
-    db.transaction(QueryInsertDatabaseWpisInsModalX, errorCB);
+    db.transaction(QueryInsertDatabaseWpisInsModalX, errorCBPA);
 
 }
 
@@ -848,7 +888,7 @@ function QueryInsertDatabaseWpisInsModalX(tx)
 		userids ="xxxxxxxx";
 		
 	}
-	tx.executeSql("DELETE FROM SUBMITTEDWPIS WHERE SupID='"+userids+"'");
+	tx.executeSql("DELETE FROM SUBMITTEDWPIS");
 	var query;
 	var obj;
 	var itemcount=0;
@@ -876,7 +916,7 @@ function QueryInsertDatabaseWpisInsModalX(tx)
      } 
      hideModal();
         setTimeout( function(){ 
-            $(':mobile-pagecontainer').pagecontainer('change', '#pageInspections', {
+            $(':mobile-pagecontainer').pagecontainer('change', '#pageMenu', {
              transition: 'flip',
            changeHash: false,
            reverse: true,
@@ -1047,7 +1087,7 @@ function InsertDatabaseWpisInsModal(newdatabase)
 	pbar.setValue(30);
     newsWpistoinsert=newdatabase;
     var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
-    db.transaction(QueryInsertDatabaseWpisInsModal, errorCB);
+    db.transaction(QueryInsertDatabaseWpisInsModal, errorCBPA);
 
 }
 
@@ -1065,7 +1105,7 @@ function QueryInsertDatabaseWpisInsModal(tx)
 		
 	}
 	pbar.setValue(35);
-	tx.executeSql("DELETE FROM SUBMITTEDWPIS WHERE SupID='"+userids+"'");
+	tx.executeSql("DELETE FROM SUBMITTEDWPIS");
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
 	var obj;

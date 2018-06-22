@@ -301,7 +301,7 @@ function QuerytoinsertWpisx(tx)
 	}
 		pbar.setValue(2);
 		//alert("Deleting "+idusera);
-		tx.executeSql("DELETE FROM SUBMITTEDWPIS WHERE SupID='"+userids+"'");
+		tx.executeSql("DELETE FROM SUBMITTEDWPIS");
 
 
 	$("#progressMessage").html("Ready to insert new records");
