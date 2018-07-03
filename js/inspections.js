@@ -37,6 +37,7 @@ $(document).on( 'pagebeforeshow', '#pageInspections',function(){
    }
    else
    {
+    GetQuantNewInspections();   
     $("#mlpid").val("0");
     CheckSupervisorSafe();
     $('#table-psafety').on('click','tr', function() {
@@ -1151,6 +1152,40 @@ function QueryInsertDatabaseWpisInsModal(tx)
            showLoadMsg: true
            });
        }, 3000 );    
+}
+
+
+function GetQuantNewInspections()
+{
+	//alert("principio mensajes");
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(QuantNewInspections, errorCB);
+}
+
+function QuantNewInspections(tx)
+{
+	//alert("Query Mensajes");
+    var UserIDx=sessionStorage.userid;
+    var queryx="SELECT SUBMITTEDWPIS.SubmitID,SUBMITTEDWPIS.EmpDate, USERS.FirstName,USERS.LastName FROM SUBMITTEDWPIS INNER JOIN USERS ON SUBMITTEDWPIS.UserID=USERS.Username  WHERE SupID='"+UserIDx+"' AND Status='R' ORDER BY SUBMITTEDWPIS.EmpDate";
+	tx.executeSql(queryx, [], function(tx,results){ QuantNewInspectionsSuccess(tx,results) }, errorCB);
+}
+
+function QuantNewInspectionsSuccess(tx,results)
+{
+	var len = results.rows.length;
+	$("#UnreadI").val(len);
+	//alert("Resultado Mensajes");
+	//alert("messages "+len);
+	if(len>0)
+	{
+		$("#mbtninspection").html('<img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections('+len+')');
+	}
+	else
+	{
+		$("#mbtninspection").html('<img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections');
+	}
+	//alert("Final mensajese3");
+	
 }
 
 

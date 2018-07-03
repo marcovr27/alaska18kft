@@ -2550,6 +2550,7 @@ translatehtml();
 	checkifnotsync();
 	//verifyrejected();
 		GetQuantNewMessages();
+		GetQuantNewInspections();
 	//IntervalMessagesP= setInterval(function(){ SilenceStartSync(); }, 59000);
 	SilenceStartSync();
 	IntervalMessagesNew= setInterval(function(){ GetQuantNewMessages(); }, 35000);
@@ -10393,7 +10394,8 @@ function fillstepsaudits()
 function Queryfillstepsaudits(tx)
 {
 	var idaut=$("#auditIDL").val();
-	var newquery="SELECT SubPart FROM AuditQuests WHERE AuditID='"+idaut+"' GROUP BY SubPart";
+	var newquery="SELECT SubPart,MIN(CAST(OrdNum AS INTEGER)) as Num FROM AuditQuests WHERE AuditID='"+idaut+"' GROUP BY SubPart ORDER BY MIN(CAST(OrdNum AS INTEGER))";
+	//var newquery="SELECT SubPart FROM AuditQuests WHERE AuditID='"+idaut+"' GROUP BY SubPart";
 	tx.executeSql(newquery, [], QueryfillstepsauditsSuccess,errorCBPAudits);
 
 }
@@ -10420,6 +10422,7 @@ function QueryFillauditsparttwoSuccess(tx,results,resultados)
 	var htmltotal="";
 	var tb = $('#AuditsbodyDraw');
 	for (var i=0; i<resultados.rows.length; i++){
+		//alert(resultados.rows.item(i).SubPart+" "+resultados.rows.item(i).Num);
 		htmltotal+='<tr style="background-color:#214e86; color:#FFF;"><td style="font-size:14px !important;">'+resultados.rows.item(i).SubPart+'</td></tr>';
 		for (var y=0; y<results.rows.length; y++){
 			if(resultados.rows.item(i).SubPart==results.rows.item(y).SubPart)
@@ -10428,7 +10431,6 @@ function QueryFillauditsparttwoSuccess(tx,results,resultados)
 			}
 			
 		}
-
 	}
 	tb.empty().append(htmltotal);
 	$("#table-resultAudits").table("refresh");
@@ -10609,7 +10611,7 @@ function QueryFindOwnersAudit(tx)
 	utolistOA_array.forEach( function(valor, indice, array) {
 		query="INSERT INTO AUDITS2OWNERS (ID,UserID,Sync) VALUES ('"+auditsubmit+"','"+valor+"','no')";
 		//alert(query);
-		tx.executeSql(query);
+		//tx.executeSql(query);
    });
 
    	utolistIA_array.forEach( function(valor, indice, array) {
