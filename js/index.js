@@ -38,6 +38,7 @@ var utolistOA_array = new Array();
 var utolistOA_arrayNames = new Array();
 var utolistIA_array = new Array();
 var utolistIA_arrayNames = new Array();
+var listMeasDraw_array = new Array();
 var photosonarray;
 var pictureSource;   // picture source
 var destinationType; // sets the format of returned value
@@ -4840,7 +4841,7 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 		var stepshtml='';	
 		var medida='';
 		 var tb = $('#stepsbody');
-	
+		 listMeasDraw_array= new Array();
 		// Search For Special equipment required and Introduction.
 		 for (var i=0; i<results.rows.length; i++){
 			 
@@ -4911,16 +4912,27 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 						{
 							var str;
 							var resid;
+							var numberID=listMeasDraw_array.length;
+							
 							try
 							{
-								str=results.rows.item(i).MeasID;
+							   str=results.rows.item(i).MeasID;
 							   resid = str.replace(" ", "ctsxxx");
+							   resid=resid+numberID;
 
 							}
 							catch(exeeee)
 							{
 
 							}
+							MeasObj = new Object();
+							MeasObj.id=results.rows.item(i).MeasID;
+							MeasObj.item="ID"+resid;
+							MeasObj.number=numberID;
+							MeasObj.StepID=results.rows.item(i).StepID;
+							MeasObj.isb="";
+							listMeasDraw_array.push(MeasObj); 
+						    //alert(results.rows.item(i).MeasID+"==>"+"ID"+resid+"==>"+numberID);
 							
 							//alert(resid);
 							if(results.rows.item(i).FieldType=="T")
@@ -4951,17 +4963,27 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 						{
 							var str;
 							var resid;
+							var numberID=listMeasDraw_array.length;
+							
 							try
 							{
-								str=results.rows.item(i).MeasID;
-								resid = str.replace(" ", "ctsxxx");
+							   str=results.rows.item(i).MeasID;
+							   resid = str.replace(" ", "ctsxxx");
+                               resid=resid+numberID;
 
 							}
-							catch(errorsx)
+							catch(exeeee)
 							{
 
 							}
-							
+							MeasObj = new Object();
+							MeasObj.id=results.rows.item(i).MeasID;
+							MeasObj.item="ID"+resid;
+							MeasObj.number=numberID;
+							MeasObj.StepID=results.rows.item(i).StepID;
+							MeasObj.isb="";
+							listMeasDraw_array.push(MeasObj); 
+							//alert(results.rows.item(i).MeasID+"==>"+"ID"+resid+"==>"+numberID);
 							if(results.rows.item(i).FieldType=="T")
 							{
 								medida='<label for="ID'+resid+'" id="lbl'+i+'">'+results.rows.item(i).MeasDesc+'</label><input type="text" name="ID'+resid+'" id="ID'+resid+'" value="" placeholder="'+"Enter value"+'" />';
@@ -5041,14 +5063,61 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 		{
 			//alert("vamo 4");
 			var len = results.rows.length;
-		//	alert(len);
+			//alert(len);
 			if(len>0)
 		  {
 			 for (var i=0; i<results.rows.length; i++){
 				var str=results.rows.item(i).MeasID;
-				var resid = str.replace(" ", "ctsxxx");
+				if(listMeasDraw_array.length>0)
+				{
+  
+					for (var yxz=0; yxz<listMeasDraw_array.length; yxz++)
+					{
+						//alert(listMeasDraw_array[yxz].id+"==>"+str);
+						var ides=listMeasDraw_array[yxz].id;
+						if(ides==str)
+						{
+							
+							//alert(listMeasDraw_array[yxz].isb);
+							var elxxx="#"+listMeasDraw_array[yxz].item;
+							//alert(elxxx);
+							
+							var kv=listMeasDraw_array[yxz].isb;
+							//alert(yxz+"==>"+kv);
+							var arrayson=kv.split(";");
+							var existio=false;
+							if(arrayson.length>0);
+							{
+								for (var yst=0; yst<arrayson.length; yst++)
+								{
+									if(arrayson[yst]==results.rows.item(i).DropDownData)
+									{
+										existio=true;
+									}
+
+								}
+								
+
+							}
+							if(existio==false)
+							{
+								$(elxxx).append('<option value="'+results.rows.item(i).DropDownData+'">'+results.rows.item(i).DropDownData+'</option>');
+								listMeasDraw_array[yxz].isb+=results.rows.item(i).DropDownData+";";
+
+							}
+							
+							//alert(listMeasDraw_array[yxz].isb);
+
+					
+						}
+						
+
+					}
+				}
+				//var resid = str.replace(" ", "ctsxxx");
 				//alert(resid);
-				 $("#ID"+resid).append('<option value="'+results.rows.item(i).DropDownData+'">'+results.rows.item(i).DropDownData+'</option>');
+				//akimerengues
+				
 			 }
 		   }
 		   $("#table-result").table("refresh");
@@ -5247,17 +5316,20 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 		  var checkfieldsflag=false;
 		  try
 		  {
-			  if(listfieldsproc.length>0)
+			  //alert("Items=> "+listMeasDraw_array.length);
+			  if(listMeasDraw_array.length>0)
 			  {
 
-				  for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+				  for (var ysa=0; ysa<listMeasDraw_array.length; ysa++)
 				  {
 					  
 						  
-						var MeasID=listfieldsproc[ysa].MeasID;
-						var str=MeasID;
-						var resid = str.replace(" ","ctsxxx");
-						var ValueMeas=$("#ID"+resid).val();
+						//var MeasID=listfieldsproc[ysa].MeasID;
+						//var str=MeasID;
+						//var resid = str.replace(" ","ctsxxx");
+						var eee=listMeasDraw_array[ysa].item;
+						//alert(listMeasDraw_array[ysa].StepID);
+						var ValueMeas=$("#"+eee).val();
 						//alert(ValueMeas)
 						if(ValueMeas=="" || ValueMeas==null)
 						{
@@ -5278,7 +5350,8 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 		  } 
 		  if(checkfieldsflag==false)
 		  {
-			 SaveSubmit();
+			  //alert("Submit");
+			SaveSubmit();
 
 		  }
 		  else
@@ -5424,18 +5497,16 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 					tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
 					try
 					{
-						if(listfieldsproc.length>0)
+						if(listMeasDraw_array.length>0)
 						{
 		
-							for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+							for (var ysa=0; ysa<listMeasDraw_array.length; ysa++)
 							{
-								if(StepID==listfieldsproc[ysa].StepID)
+								if(StepID==listMeasDraw_array[ysa].StepID)
 								{
 									
-									MeasID=listfieldsproc[ysa].MeasID;
-									var str=MeasID;
-									var resid = str.replace(" ","ctsxxx");
-									ValueMeas=$("#ID"+resid).val();
+									MeasID=listMeasDraw_array[ysa].id;
+									ValueMeas=$("#"+listMeasDraw_array[ysa].item).val();
 									QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
 									//alert(QueryK);
 									tx.executeSql(QueryK);
@@ -5469,18 +5540,16 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 				tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
 				try
 				{
-					if(listfieldsproc.length>0)
+					if(listMeasDraw_array.length>0)
 					{
 	
-						for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+						for (var ysa=0; ysa<listMeasDraw_array.length; ysa++)
 						{
-							if(StepID==listfieldsproc[ysa].StepID)
+							if(StepID==listMeasDraw_array[ysa].StepID)
 							{
 								
-								MeasID=listfieldsproc[ysa].MeasID;
-								var str=MeasID;
-								var resid = str.replace(" ","ctsxxx");
-								ValueMeas=$("#ID"+resid).val();
+								MeasID=listMeasDraw_array[ysa].id;
+								ValueMeas=$("#"+listMeasDraw_array[ysa].item).val();
 								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
 								//alert(QueryK);
 								tx.executeSql(QueryK);
@@ -5495,7 +5564,7 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 				catch(errors)
 				{
 					alert(errors);
-				} 
+				}  
 				
 				
 					}
@@ -5527,18 +5596,16 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 				tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
 				try
 				{
-					if(listfieldsproc.length>0)
+					if(listMeasDraw_array.length>0)
 					{
 	
-						for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+						for (var ysa=0; ysa<listMeasDraw_array.length; ysa++)
 						{
-							if(StepID==listfieldsproc[ysa].StepID)
+							if(StepID==listMeasDraw_array[ysa].StepID)
 							{
 								
-								MeasID=listfieldsproc[ysa].MeasID;
-								var str=MeasID;
-								var resid = str.replace(" ","ctsxxx");
-								ValueMeas=$("#ID"+resid).val();
+								MeasID=listMeasDraw_array[ysa].id;
+								ValueMeas=$("#"+listMeasDraw_array[ysa].item).val();
 								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
 								//alert(QueryK);
 								tx.executeSql(QueryK);
@@ -5553,7 +5620,7 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 				catch(errors)
 				{
 					alert(errors);
-				} 
+				}  
 				
 			}
 		  }
@@ -5570,18 +5637,16 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 				tx.executeSql('INSERT INTO SUBMITTEDSTEPS (FaultID,SubmitID,ProcID,StepID,Text,OK,Num,Component,Fault,Priority,Comments,Sync) VALUES ("'+FaultID+'","'+SubmitID+'","'+ProcID+'","'+StepID+'","'+Text+'","'+Ok+'","'+Num+'","'+Component+'","'+Fault+'","'+Priority+'","'+Comments+'","no")');
 				try
 				{
-					if(listfieldsproc.length>0)
+					if(listMeasDraw_array.length>0)
 					{
 	
-						for (var ysa=0; ysa<listfieldsproc.length; ysa++)
+						for (var ysa=0; ysa<listMeasDraw_array.length; ysa++)
 						{
-							if(StepID==listfieldsproc[ysa].StepID)
+							if(StepID==listMeasDraw_array[ysa].StepID)
 							{
 								
-								MeasID=listfieldsproc[ysa].MeasID;
-								var str=MeasID;
-								var resid = str.replace(" ","ctsxxx");
-								ValueMeas=$("#ID"+resid).val();
+								MeasID=listMeasDraw_array[ysa].id;
+								ValueMeas=$("#"+listMeasDraw_array[ysa].item).val();
 								QueryK='INSERT INTO SUBMITTEDMEAS (MeasID,StepID,Value,FaultID,SubmitID,Sync) VALUES ("'+MeasID+'","'+StepID+'","'+ValueMeas+'","'+FaultID+'","'+SubmitID+'","no")';
 								//alert(QueryK);
 								tx.executeSql(QueryK);

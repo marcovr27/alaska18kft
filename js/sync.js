@@ -100,7 +100,7 @@ function GetMeasurements()
 {
 	var ipserver=$("#ipsync").val();
 	var obj = {};
-
+    //alert("GetMeas");
 	$("#progressheader").html(" ");
 	//progressheader
 	$("#progressheader").html("Downloading data...");
@@ -130,7 +130,7 @@ function GetMeasurements()
 
 function InsertDatabaseMeas(newdatabase)
 {
-
+     //alert("MEas Success")
 	$("#progressMessage").html("Successful connection");
 		pbar.setValue(1);
 		newmeasdatatoinsert=newdatabase;
@@ -143,7 +143,7 @@ function QuerytoinsertMeas(tx)
 	//alert("deleteoldrecords");
 	//alert("Insert new data GetMessages");
 	$("#progressMessage").html("Deleting old records");
-		pbar.setValue(2);
+		pbar.setValue(4);
 		//alert("Deleting "+idusera);
 		tx.executeSql("DELETE FROM MEASUREMENTS");
 		tx.executeSql("DELETE FROM MEASDATA");
@@ -152,11 +152,12 @@ function QuerytoinsertMeas(tx)
 
 	$("#progressMessage").html("Ready to insert new records");
 	var query;
-	var obj = jQuery.parseJSON(newmeasdatatoinsert.Measurements);
+	var obj;
 	//alert("Items "+obj.length);
 	var itemcount=0;
 	 try
 	 {
+		obj = jQuery.parseJSON(newmeasdatatoinsert.Measurements);
     $.each(obj, function (key, value) {
 		query='INSERT INTO MEASUREMENTS (MeasID,MeasDesc,Units,FieldType,MinValue,MaxValue) VALUES ("'+value.MeasID+'", "'+escapeDoubleQuotes(value.MeasDesc)+'", "'+value.Units+'", "'+value.FieldType+'", "'+value.MinValue+'","'+value.MaxValue+'")';
 		//alert(query);
@@ -176,9 +177,10 @@ function QuerytoinsertMeas(tx)
 		 
 	 }
 	 itemcount=0;
-	 obj=jQuery.parseJSON(newmeasdatatoinsert.MeasData);
+	 
 	 try
 	 {
+		obj=jQuery.parseJSON(newmeasdatatoinsert.MeasData);
     $.each(obj, function (key, value) {
 		query='INSERT INTO MEASDATA (MeasID,DropDownData) VALUES ("'+value.MeasID+'", "'+escapeDoubleQuotes(value.DropDownData)+'")';
 		tx.executeSql(query);
@@ -198,9 +200,10 @@ function QuerytoinsertMeas(tx)
 	 }
 
 	 itemcount=0;
-	 obj=jQuery.parseJSON(newmeasdatatoinsert.Steps2Meas);
+	 
 	 try
 	 {
+	obj=jQuery.parseJSON(newmeasdatatoinsert.Steps2Meas);
     $.each(obj, function (key, value) {
 		query='INSERT INTO STEP2MEAS (StepID,MeasID) VALUES ("'+value.StepID+'", "'+value.MeasID+'")';
 		tx.executeSql(query);
@@ -231,6 +234,7 @@ function QuerytoinsertMeas(tx)
 }
 function GetWpisx()
 {
+	//alert("GetWpisx");
 	var ipserver=$("#ipsync").val();
 	var obj = {};
 	if(!!sessionStorage.userid)
@@ -352,6 +356,7 @@ function QuerytoinsertWpisx(tx)
 
 function GetserviceCertifications()
 {
+	//alert("GetserviceCertifications");
 	var ipserver=$("#ipsync").val();
 	var obj = {};
 
@@ -500,7 +505,7 @@ function GetserviceAudits()
 	$("#progressheader").html("Downloading data...");
 		$("#progressMessage").html("Post To GetAudits");
 		pbar.setValue(0);
-		//alert("listo para el post: "+ipserver+'//GetStructureData');
+		//alert("listo para el post: "+ipserver+'//GetAudits');
 	                $.ajax({
                     type: 'POST',
 				    url:ipserver+'//GetAudits',
@@ -508,6 +513,7 @@ function GetserviceAudits()
                     dataType: 'json',
                     contentType: 'application/json; charset=utf-8',
                     success: function (response) {
+						//alert(response.d);
 						InsertDatabaseAudits(response.d);
                     },
             error: function (xmlHttpRequest, textStatus, errorThrown) {
@@ -518,7 +524,7 @@ function GetserviceAudits()
                     console.log(xmlHttpRequest.responseXML);
                     console.log(textStatus);
                     console.log(errorThrown);
-                   // alert("Error");
+                    alert("Error");
                 }
                 });
 	
@@ -527,7 +533,7 @@ function GetserviceAudits()
 
 function InsertDatabaseAudits(newdatabase)
 {
-
+   // alert("lsito audits");
 	$("#progressMessage").html("Successful connection");
 		pbar.setValue(1);
 		newauditsdatatoinsert=newdatabase;

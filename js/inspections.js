@@ -81,6 +81,12 @@ $(document).on( 'pagebeforeshow', '#pageworkplace',function(){
    
 });
 
+$(document).on( 'pagebeforeshow', '#pageworkplaceread',function(){
+    //alert("entro");
+    FillReadWorkPlaceR();
+
+});
+
 $(document).on( 'pagebeforeshow', '#pagesafetycontact',function(){
     $("#chkinsone").prop('checked',false).checkboxradio('refresh');
     $("#chkinsonet").prop('checked',false).checkboxradio('refresh');
@@ -1185,8 +1191,135 @@ function QuantNewInspectionsSuccess(tx,results)
 		$("#mbtninspection").html('<img src="img/Inspections.png" height="36" width="36"/><br>WP Inspections');
 	}
 	//alert("Final mensajese3");
-	
 }
+
+function FillReadWorkPlaceR()
+{
+    //alert("0");
+    var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(FillReadWorkPlaceRQuery, errorCB);
+}
+
+function FillReadWorkPlaceRQuery(tx)
+{
+    //GET ID
+    //alert("1");
+    var idInsTT= $("#mlpid").val();
+    var queryx="SELECT * FROM SUBMITTEDWPIS WHERE SubmitID='"+idInsTT+"'";
+    //alert(queryx);
+    tx.executeSql(queryx, [], ReadSuccessWorkplace,errorCBPA);
+    //alert(idInsTT);
+
+}
+
+function ReadSuccessWorkplace(tx,results)
+{
+    //alert("2");
+    var len = results.rows.length;
+    //alert(len);
+    if(len>0)
+    {
+        var EmpdateRead=results.rows.item(0).EmpDate;
+        var ShiftRead=results.rows.item(0).Shift;
+        var StatusRead=results.rows.item(0).Status;
+        var WpI1Read=results.rows.item(0).WPI1;
+        var WpI2Read=results.rows.item(0).WPI2;
+        var WPI3Read=results.rows.item(0).WPI3;
+        var WPI1SRead=results.rows.item(0).WPI1Status;
+        var WPI2SRead=results.rows.item(0).WPI2Status;
+        var WPI3SRead=results.rows.item(0).WPI3Status;
+        var HI1Read=results.rows.item(0).HI1;
+        var HI2Read=results.rows.item(0).HI2;
+        var HI3Read=results.rows.item(0).HI3;
+        var CAT1Read=results.rows.item(0).CAT1;
+        var CAT2Read=results.rows.item(0).CAT2;
+        var CAT3Read=results.rows.item(0).CAT3;
+        var ShiftRead=results.rows.item(0).Shift;
+        $("#workplaceoner").val(WpI1Read);
+        $("#workplacetwor").val(WpI2Read);
+        $("#workplacethreer").val(WPI3Read);
+	    $("#workplacefourr").val(HI1Read);
+        $("#workplacefiver").val(HI2Read);
+        $("#workplacesixr").val(HI3Read);
+        $("#workplacesevenr").val(CAT1Read);
+        $("#workplaceeightr").val(CAT2Read);
+        $("#workplaceniner").val(CAT3Read);
+        if(WPI1SRead=="R")
+        {
+            $("#btnRoner").removeClass("buttongreens");
+           // $("#btnSoner").removeClass("buttonreds");
+            $("#btnRoner").removeClass("buttonInspection");
+            $("#btnRoner").addClass("buttonreds");
+            $("#btnSoner").removeClass("buttonreds");
+            $("#btnSoner").removeClass("buttongreens");
+            $("#btnSoner").addClass("buttonInspection");
+        }
+        else
+        {
+           
+            $("#btnSoner").removeClass("buttonreds");
+            $("#btnSoner").removeClass("buttonInspection");
+            $("#btnSoner").addClass("buttongreens");
+            $("#btnRoner").removeClass("buttonreds");
+            $("#btnRoner").removeClass("buttongreens");
+            $("#btnRoner").addClass("buttonInspection");
+
+        }
+        if(WPI2SRead=="R")
+        {
+           // $("#btnStwor").removeClass("buttongreens");
+            $("#btnRtwor").removeClass("buttongreens");
+            // $("#btnSoner").removeClass("buttonreds");
+             $("#btnRtwor").removeClass("buttonInspection");
+             $("#btnRtwor").addClass("buttonreds");
+             $("#btnStwor").removeClass("buttonreds");
+             $("#btnStwor").removeClass("buttongreens");
+             $("#btnStwor").addClass("buttonInspection");
+
+        }
+        else
+        {
+            $("#btnStwor").removeClass("buttonreds");
+            $("#btnStwor").removeClass("buttonInspection");
+            $("#btnStwor").addClass("buttongreens");
+            $("#btnRtwor").removeClass("buttonreds");
+            $("#btnRtwor").removeClass("buttongreens");
+            $("#btnRtwor").addClass("buttonInspection");
+
+        }
+        if(WPI3SRead=="R")
+        {
+            // $("#btnStwor").removeClass("buttongreens");
+            $("#btnRthreer").removeClass("buttongreens");
+            // $("#btnSoner").removeClass("buttonreds");
+             $("#btnRthreer").removeClass("buttonInspection");
+             $("#btnRthreer").addClass("buttonreds");
+             $("#btnSthreer").removeClass("buttonreds");
+             $("#btnSthreer").removeClass("buttongreens");
+             $("#btnSthreer").addClass("buttonInspection");
+
+        }
+        else
+        {
+            $("#btnSthreer").removeClass("buttonreds");
+            $("#btnSthreer").removeClass("buttonInspection");
+            $("#btnSthreer").addClass("buttongreens");
+            $("#btnRthreer").removeClass("buttonreds");
+            $("#btnRthreer").removeClass("buttongreens");
+            $("#btnRthreer").addClass("buttonInspection");
+
+        }
+
+        //alert(ShiftRead);
+        $("#shiftworkpr").val(ShiftRead);
+        $('#shiftworkpr').selectmenu('refresh');
+        $('#shiftworkpr').selectmenu('refresh', true);
+
+        //alert(EmpdateRead);
+    }
+
+}
+
 
 
   

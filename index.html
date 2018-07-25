@@ -2731,6 +2731,7 @@
                             <img src="img/graphs/Logo_Small.png" style="height: 2em" />
                             <label>Safety Contact</label> 
                         </h1>
+                        <a href="#pageworkplaceread" data-icon="refresh" data-iconpos="left">Workplace Inspection Form</a>
                 </div>
                 <div data-role="content">
                         <table data-role="table" class="ui-body-c ui-shadow  ui-responsive">
@@ -2798,6 +2799,80 @@
             </div>
         
            <!--Page Inspections--> 
+
+                         <!--Page Inspections--> 
+
+    <div data-role="page" id="pageworkplaceread" class="normal">
+        <div data-role="header" data-position="fixed" data-theme="b">
+                <h1>
+                    <img src="img/graphs/Logo_Small.png" style="height: 2em" />
+                    <label>Workplace Inspection Form</label> 
+                </h1>
+                <a href="#pagesafetycontact" data-icon="refresh" data-iconpos="left">Safety Contact</a>
+        </div>
+        <div data-role="content">
+                     <table data-role="table" data-filter="false" id="table-workplaceinspectionr"  class="ui-body-c ui-shadow table-stripe ui-responsive" data-column-btn-theme="a"  data-column-popup-theme="a">
+                        <thead>
+                          <tr id="headtableinspectionr" class="ui-bar-a">
+                            <th></th><th></th><th></th>
+                         </tr>
+                         </thead>
+                         <tbody id="proceduresbodyinspectionr">
+                          <tr style="background-color: #dbeef4; font-size: 20px;"><td><b>What are the high potential risks?</b></td><td></td><td></td></tr>
+                          <tr style="background-color: #dbeef4; font-size: 20px;"><td><b>What are the sources of fatal energy release?</b></td><td></td><td></td></tr>
+                          <tr style="background-color:#376092; color:white;"><td>Work Place(s) Inspected:</td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>1. <input type="text" name="workplaceoner" id="workplaceoner" value=""></td><td><a data-role="button" id="btnSoner"  class="buttonInspection" >Safe</a></td><td><a data-role="button" id="btnRoner"  class="buttonInspection">At Risk</a></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>2. <input type="text" name="workplacetwor" id="workplacetwor" value=""></td><td><a data-role="button" id="btnStwor"  class="buttonInspection">Safe</a></td><td><a data-role="button" id="btnRtwor" class="buttonInspection">At Risk</a></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>3. <input type="text" name="workplacethreer" id="workplacethreer" value=""></td><td><a data-role="button" id="btnSthreer" class="buttonInspection">Safe</a></td><td><a data-role="button" id="btnRthreer" class="buttonInspection">At Risk</a></td></tr>
+                          <tr style="background-color:#376092; color:white;"><td>Hazard(s) Identified:</td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>1. <input type="text" name="workplacefourr" id="workplacefourr" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>2. <input type="text" name="workplacefiver" id="workplacefiver" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>3. <input type="text" name="workplacesixr" id="workplacesixr" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#376092; color:white;"><td>Corrective Action Taken:</td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>1. <input type="text" name="workplacesevenr" id="workplacesevenr" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>2. <input type="text" name="workplaceeightr" id="workplaceeightr" value=""></td><td></td><td></td></tr>
+                          <tr style="background-color:#dbeef4;"><td>3. <input type="text" name="workplaceniner" id="workplaceniner" value=""></td><td></td><td></td></tr>
+                        </tbody>
+                      </table>
+                      <table data-role="table" class="ui-body-c ui-shadow  ui-responsive">
+                            <thead>
+                                <tr><th><b>During your inspection of the work area, be alert for hazards that could put you or others’ safety at risk. Several items to look for during your inspection are:</b></th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>	
+                      <table data-role="table" class="ui-body-c ui-shadow  ui-responsive">
+                          <thead>
+                              <tr><th></th><th></th><th></th><th></th></tr>
+                          </thead>
+                          <tbody>
+                                <tr><td>Chemicals</td><td>Eyewash / Showers</td><td>Housekeeping</td><td>Proper PPE</td></tr>
+                                <tr><td>Combustible Storage</td><td>Fall Protection</td><td>Labels – Legible</td><td>Ramps / Roads / Berms</td></tr>
+                                <tr><td>Conveyors / Pull Cords</td><td>First-Aid Materials</td><td>Lifting Gear</td><td>Safety Water Hose Clips</td></tr>
+                                <tr><td>Cutting / Gauges / Caps</td><td>Fixed / Portable Ladders</td><td>Lighting / Emergency</td><td>Signs / Barricades</td></tr>
+                                <tr><td>Dials / Gauges</td><td>Flammable Storage</td><td>Housekeeping</td><td>Stacking / Storage</td></tr>
+                                <tr><td>Electrical Cords</td><td>Floors / Walkways</td><td>Housekeeping</td><td>Stairs / Stairways</td></tr>
+                                <tr><td>Electrical Installations</td><td>Grinder / Guards / Rests</td><td>Open Holes</td><td>Ventilation</td></tr>
+                                <tr><td>Environmental</td><td>Ground Checks</td><td>Pipe Labeling</td><td>Welding / Cables / </td></tr>
+                                <tr><td>Exits / Egress</td><td>Ground Conditions</td><td>Handrails / Toe Boards</td><td>Shield</td></tr>
+                                <tr><td>Extinguishers – Annual</td><td>Guards In Place</td><td>Oxy / Acetylene Welding</td><td>Whip Checks /</td></tr>
+                                <tr><td>Extinguishers - Monthly</td><td>Hand Tools</td><td>Power Tools</td><td>Safety Pins</td></tr>
+
+                          </tbody>
+                      </table>	
+       
+        </div>
+        <div data-role="footer" data-position="fixed">
+                <div data-role="navbar">
+                        <ul>
+                                <li><a href="#pagesafetycontact" class="ui-btn-c" data-icon="back" data-iconpos="left">Back</a><br></li>
+                                <li><select id="shiftworkpr"><option value="Select">Select Shift</option><option value="Day">Day</option><option value="Night">Night</option></select></li>
+                        </ul>
+                </div>   
+        </div>
+       
+    </div>
+
+   <!--Page Inspections--> 
 
 <!--Page Messages Launch-->
 
