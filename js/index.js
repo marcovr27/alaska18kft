@@ -2544,7 +2544,7 @@ catch(err)
 
 }
 
-translatehtml();
+//translatehtml();
 	
 	$("#mainusername").html(sessionStorage["fname"]);
 	$("#hs").val('yes');
@@ -2557,6 +2557,8 @@ translatehtml();
 	IntervalMessagesNew= setInterval(function(){ GetQuantNewMessages(); }, 35000);
 	IntervalMessagesP= setInterval(function(){ SilenceStartSync(); }, 59000);
 	refreshverify();
+	openNoModalsylenceInspections();
+	
 
 	//SyncStatus();
 	 

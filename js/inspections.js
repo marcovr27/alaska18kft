@@ -1320,6 +1320,186 @@ function ReadSuccessWorkplace(tx,results)
 
 }
 
+function openNoModalsylenceInspections()
+{
+    //alert("comienza");
+    var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+	db.transaction(GetNMsylenceInspections, errorCB);	
+}
+
+function GetNMsylenceInspections(tx)
+{
+    var querytosend="SELECT * FROM SETTINGS";
+	tx.executeSql(querytosend, [], function(tx,results){ GetNMsylenceInspectionsSuccess(tx,results) }, errorCB);
+
+}
+
+function GetNMsylenceInspectionsSuccess(tx,results)
+{
+    var len = results.rows.length;
+	if(len>0)
+	{
+		$("#ipsync").val(results.rows.item(0).IP);
+		StartSyncNMWInspection();
+	}
+
+}
+
+function StartSyncNMWInspection()
+{
+    var ipserver=$("#ipsync").val();
+    SendAloneWpis="";
+    var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryNMInsWpi, errorCB);
+}
+
+function QueryNMInsWpi(tx)
+{
+    var querytosend="SELECT * FROM SUBMITTEDWPIS WHERE Sync='no'";
+	tx.executeSql(querytosend, [], QueryNMInsWpiSuccess, errorCB);
+    
+}
+
+function QueryNMInsWpiSuccess(tx,results)
+{
+   
+    try
+    {
+        var len = results.rows.length;
+        var array = [];
+        for (var i=0; i<results.rows.length; i++){
+            row = results.rows.item(i);
+            array.push(JSON.stringify(row));
+        }
+        SendAloneWpis=array;
+        sendDataToServerNMInspectionsWpis();
+    }
+    catch(err)
+    {
+        alert(err);
+    }
+
+}
+
+function sendDataToServerNMInspectionsWpis()
+{
+    try
+    {
+        var ipserver=$("#ipsync").val();
+        var obj = {};
+        obj['WPIs'] =JSON.stringify(SendAloneWpis);  
+             $.ajax({
+                        type: 'POST',
+                        url: ipserver+'//SetWPIs',
+                        data: JSON.stringify(obj),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            if(response.d=="success")
+                            {
+                                pbar.setValue(100);
+                                UpdateWpisNMInsModalSync();
+                            }
+                        },
+                        error: function (xmlHttpRequest, textStatus, errorThrown) {
+                        console.log(xmlHttpRequest.responseXML);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    }
+                    });
+
+    }
+    catch(error)
+    {
+        alert(error);
+    }
+
+}
+
+function UpdateWpisNMInsModalSync()
+{
+    var ipserver=$("#ipsync").val();
+    var obj = {};
+    var userids;
+	if(!!sessionStorage.userid)
+	{
+		obj['UserID'] =sessionStorage.userid;
+	}
+	else
+	{
+		obj['UserID'] ="xxxxxxxx";
+		
+	}
+    $.ajax({
+        type: 'POST',
+        url:ipserver+'//GetWpis',
+        data: JSON.stringify(obj),
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8',
+        success: function (response) {
+            InsertDatabaseWpisInsNM(response.d);
+        },
+                        error: function (xmlHttpRequest, textStatus, errorThrown) {
+                            console.log(xmlHttpRequest.responseXML);
+                            console.log(textStatus);
+                            console.log(errorThrown);
+    }
+    });
+
+}
+
+function InsertDatabaseWpisInsNM(newdatabase)
+{
+	
+    newsWpistoinsert=newdatabase;
+    var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryInsertDatabaseWpisNM, errorCBPA);
+
+}
+
+function QueryInsertDatabaseWpisNM(tx)
+{
+	var userids;
+	if(!!sessionStorage.userid)
+	{
+		userids =sessionStorage.userid;
+	}
+	else
+	{
+		userids ="xxxxxxxx";
+		
+	}
+	tx.executeSql("DELETE FROM SUBMITTEDWPIS");
+	var query;
+	var obj;
+	var itemcount=0;
+	 try
+	 {
+		obj = jQuery.parseJSON(newsWpistoinsert.Wpis);
+    	$.each(obj, function (key, value) {
+	    var query="INSERT INTO SUBMITTEDWPIS (SubmitID,EmpDate,Shift,UserID,Status,SupID,WPI1,WPI2,WPI3,WPI1Status,WPI2Status,WPI3Status,HI1,HI2,HI3,CAT1,CAT2,CAT3,Sync,SyncTwo) VALUES ('"+value.SubmitID+"','"+value.EmpDate+"','"+value.Shift+"','"+value.UserID+"','"+value.Status+"','"+value.SupID+"','"+escapeDoubleQuotes(value.WPI1)+"','"+escapeDoubleQuotes(value.WPI2)+"','"+escapeDoubleQuotes(value.WPI3)+"','"+value.WPI1Status+"','"+value.WPI2Status+"','"+value.WPI3Status+"','"+escapeDoubleQuotes(value.HI1)+"','"+escapeDoubleQuotes(value.HI2)+"','"+escapeDoubleQuotes(value.HI3)+"','"+escapeDoubleQuotes(value.CAT1)+"','"+escapeDoubleQuotes(value.CAT2)+"','"+escapeDoubleQuotes(value.CAT3)+"','no','no')";
+		tx.executeSql(query);
+		itemcount++;
+      });
+	 }
+	 catch(error)
+	 {
+		if(error=="SyntaxError: Unexpected token E")
+		{
+			alert("WPIS ERROR: Web service invalid data");
+
+		}
+		else
+		{
+		   alert("WPIS "+error);
+
+		}
+		 
+     } 
+     //alert("finish sinc");
+     GetQuantNewInspections();
+}
+
 
 
   
