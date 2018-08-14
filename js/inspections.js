@@ -1397,7 +1397,6 @@ function sendDataToServerNMInspectionsWpis()
                         success: function (response) {
                             if(response.d=="success")
                             {
-                                pbar.setValue(100);
                                 UpdateWpisNMInsModalSync();
                             }
                         },

@@ -10675,11 +10675,11 @@ function QueryFindOwnersAudit(tx)
 {
 	var auditsubmit=$("#tempidaud").val();
 	var query="";
-	utolistOA_array.forEach( function(valor, indice, array) {
-		query="INSERT INTO AUDITS2OWNERS (ID,UserID,Sync) VALUES ('"+auditsubmit+"','"+valor+"','no')";
+	//utolistOA_array.forEach( function(valor, indice, array) {
+		//query="INSERT INTO AUDITS2OWNERS (ID,UserID,Sync) VALUES ('"+auditsubmit+"','"+valor+"','no')";
 		//alert(query);
 		//tx.executeSql(query);
-   });
+   //});
 
    	utolistIA_array.forEach( function(valor, indice, array) {
 	query="INSERT INTO AUDITS2INSPECTORS (ID,UserID,Sync) VALUES ('"+auditsubmit+"','"+valor+"','no')";
