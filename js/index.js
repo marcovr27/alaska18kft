@@ -591,9 +591,36 @@ function QuerycertsyncSuccess(tx,results)
 	{
 		$("#hs").val("no");
 	}
+	Auditssync();
+	
+}
+
+
+function Auditssync()
+{
+	var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+    db.transaction(QueryAuditsSync, errorCB);
+}
+
+function QueryAuditsSync(tx)
+{
+	
+	var query='SELECT * FROM SUBMITTEDAUDITS WHERE Sync="no"';
+	tx.executeSql(query, [], QueryAuditsSyncSuccess, errorCB);
+}
+
+function QueryAuditsSyncSuccess(tx,results)
+{
+	var len = results.rows.length;
+	if(len>0)
+	{
+		$("#hs").val("no");
+	}
 	SyncStatus();
 	
 }
+
+
 
 
 
