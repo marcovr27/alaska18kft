@@ -247,3 +247,28 @@ margin: auto;
     overflow:auto;
     height: 50vw;
 }
+
+.buttonreds
+{
+    background:#5d2a2e !important;
+    color:white !important;
+
+}
+
+.buttongreens
+{
+    background:#4f6228 !important;
+    color:white !important;
+
+}
+
+.buttonInspection
+{
+    background: #f6f6f6 !important; 
+    color: black !important;
+}
+
+.center-button{
+    width:90%;
+    margin: 0 auto;
+  }
