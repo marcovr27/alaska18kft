@@ -10364,7 +10364,7 @@ function QueryFilltableaudits(tx,resultados)
 	var UseraID=sessionStorage.userid;
 	var len=resultados.rows.length;
 	var optionss=$("#select_groupAudit").val();
-	var newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as Date FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY Date DESC LIMIT 1) AS lastp, Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID ";
+	var newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as DATETIME FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY DATETIME(Date) DESC LIMIT 1) AS lastp, Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID ";
 	//alert(len+" cantidad "+ " opcion="+optionss);
 	if(optionss=="0")
 	{
@@ -10395,7 +10395,7 @@ function QueryFilltableaudits(tx,resultados)
 	}
 	else
 	{
-		newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as Date  FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY Date DESC LIMIT 1) AS lastp,Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID WHERE GroupID='"+optionss+"'";
+		newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as DATETIME  FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY  DATETIME(Date) DESC LIMIT 1) AS lastp,Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID WHERE GroupID='"+optionss+"'";
 	}
 	//alert(newquery);
 	tx.executeSql(newquery, [],  function(tx,results){  QueryFilltableauditsSuccess(tx,results,resultados) },errorCBPAudits);
@@ -10415,6 +10415,10 @@ function QueryFilltableauditsSuccess(tx,results,resultados)
 		 if(lastp==null)
 		 {
 			 lastp="";
+		 }
+		 else
+		 {
+			 lastp=ShowFormatDateTimeAudit(lastp);
 		 }		
 		 //alert(lastp);
    		tablehtml+='<tr data-name="'+results.rows.item(i).ID+'"><td>'+results.rows.item(i).Name+'</td><td>'+lastp+'</td></tr>';		 
@@ -11585,6 +11589,31 @@ function UncheckAllusersOA()
 		   {
 			   return d1.toString('MM/dd/yyyy H:mm:ss');
 		   }
+		   }
+		   catch(err)
+		   {
+			   return err.message;
+		   }
+		   	//var d1 = Date.parse('2015-07-23 13:22:53');
+			//alert(d1.toString('MM/dd/yyyy H:mm:ss ')+"next: "+d1.toString('dd/MM/yyyy'));
+	   }
+
+	   function ShowFormatDateTimeAudit(olddate)
+	   {
+		   
+		   try
+		   {
+			 var res = olddate.split(" ");
+			 var dateold=res[2];
+			 dateold=dateold.trim();
+			 dateold=dateold+" "+res[3];
+			 //alert(dateold);
+			 var d1=Date.parse(dateold);
+	
+			realdate= d1.toString('MM/dd/yyyy H:mm:ss');
+			realdate=res[0]+" - "+realdate;
+			return realdate;
+		   
 		   }
 		   catch(err)
 		   {
