@@ -10987,6 +10987,10 @@ function QueryFindOwnersAudit(tx)
 
 function onConfirmsubmitaudit(button)
 {
+	var tb = $('#AuditsbodyDraw');
+	tb.empty().append("");
+	$("#table-resultAudits").table("refresh");
+	$("#table-resultAudits").trigger('create');
 	$(':mobile-pagecontainer').pagecontainer('change', '#pageAudits', {
         transition: 'pop',
         changeHash: false,
@@ -11068,6 +11072,8 @@ function QueryAuditFinishSuccess(tx,results)
 			$("#AreaScore").html(newmessages);
 			//perreo
 			var iduserak=sessionStorage.userid;
+			$("#chklti"+iduserak).prop('checked', true).checkboxradio('refresh');
+			FillToListAI(iduserak);
 
 			$("#popupFinishAudit").popup("open");
 		}
