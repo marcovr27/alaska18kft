@@ -449,6 +449,7 @@
 	</div>
 	<div data-role="content">
  <input type="hidden" id="Statushidden" name="Statushidden" value="0"> 
+ <input type="hidden" id="valuemeasid" name="valuemeasid" value="0">
  <table data-role="table" id="table-result" class="ui-body-a  ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a">
     <thead>
       <tr class="ui-bar-c">
@@ -518,7 +519,7 @@
     <input type="hidden" id="steptoedit" name="steptoedit" value="0">
                <table data-role="table"  id="table-issues"  class="ui-body-d ui-shadow table-stripe ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a">
     <thead>
-      <tr class="ui-bar-b">
+      <tr class="ui-bar-b" id="newheadreddog">
         <th data-priority="1" id="tbreportcomponent">Component</th>
         <th data-priority="2" id="tbreportfault">Fault</th>
         <th data-priority="3" id="tbreportpriority">Priority</th>
@@ -609,21 +610,24 @@
     </div>
     <div role="main" class="ui-content">
     <fieldset>
-       <label for="select-addcomponent">Component:</label>
-    <select name="select-addcomponent" id="select-addcomponent" onChange="SearchFault()" data-iconpos="left">
-    
-    </select>
-           <label for="select-addfault">Fault:</label>
-    <select name="select-addfault" id="select-addfault" onChange="SearchPriority()"  data-iconpos="left">
-    
-    </select>
-    
-    <div id="drawcustomfields">
-     
-    </div>
-     <div id="compdrawcustomfields">
-     
-    </div>
+        <div id="hidecomponentsx">
+                <label for="select-addcomponent">Component:</label>
+                <select name="select-addcomponent" id="select-addcomponent" onChange="SearchFault()" data-iconpos="left">
+                
+                </select>
+                       <label for="select-addfault">Fault:</label>
+                <select name="select-addfault" id="select-addfault" onChange="SearchPriority()"  data-iconpos="left">
+                
+                </select>
+                
+                <div id="drawcustomfields">
+                 
+                </div>
+                 <div id="compdrawcustomfields">
+                 
+                </div>
+        </div>
+
     
                <label for="select-addpriority">Priority:</label>
     <select name="select-addpriority" id="select-addpriority" data-iconpos="left">
@@ -648,19 +652,23 @@
     <h1>Edit Issue</h1>
     </div>
     <div role="main" class="ui-content">
+     <div id="hidecomponentsy">
+            <label for="select-editcomponent">Component:</label>
+            <select name="select-editcomponent" id="select-editcomponent" data-iconpos="left" onChange="SearchFaulte()" data-role="select">
+          
+            </select>
+                   <label for="select-editfault">Fault:</label>
+            <select name="select-editfault" id="select-editfault" data-iconpos="left" onChange="SearchPriorityh()"  data-role="select" >
+                
+            </select>
+            
+                <div id="Editdrawcustomfields">
+             
+            </div>
+
+     </div>   
     <fieldset>
-       <label for="select-editcomponent">Component:</label>
-    <select name="select-editcomponent" id="select-editcomponent" data-iconpos="left" onChange="SearchFaulte()" data-role="select">
-  
-    </select>
-           <label for="select-editfault">Fault:</label>
-    <select name="select-editfault" id="select-editfault" data-iconpos="left" onChange="SearchPriorityh()"  data-role="select" >
-        
-    </select>
-    
-        <div id="Editdrawcustomfields">
-     
-    </div>
+
     
                <label for="select-editpriority">Priority:</label>
     <select name="select-editpriority" id="select-editpriority" data-iconpos="left" data-role="select">
@@ -2457,13 +2465,54 @@
                                 </tbody>
                               </table>
                 </div>
+                <div data-role="popup" id="popupstartrisklist" data-history="false" data-overlay-theme="b" data-theme="b" data-dismissible="true" style="max-width:800px; min-width:700px;">
+                        <div data-role="header" data-theme="a">
+                        <h1 id="riskheaderlist">
+                        Add Issue</h1>
+                        </div>
+                        <div role="main" class="ui-content">
+                               <input type="hidden" id="idhiddenrisk" name="idhiddenrisk" value="0"/>
+                               <input type="hidden" id="iddeleterisk" name="iddeleterisk" value="0"/>
+                               <input type="hidden" id="isdeletemondal" name="isdeletemondal" value="0"/>
+                                <div class="ui-grid-a">
+                                        <div class="ui-block-a" style="width:20%;" style="text-align:right; vertical-align:bottom !important;"><div style="text-align:right; vertical-align:bottom !important; align-items:center; margin: 0 auto !important;"><strong>Issues:&nbsp;&nbsp;&nbsp;</strong></div></div>
+                                        <div class="ui-block-b" style="width:50%"><div><a href="javascript:OpenRiskMondal();" class="ui-btn ui-btn-inline ui-btn-a">Add New</a></div></div>
+                                    </div><!-- /grid-a -->   
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <table data-role="table" id="table-ListRisk" class="ui-body-a  ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a" style="width:100% !important;">
+                                        <thead>
+                                          <tr class="ui-bar-a">
+                                            <th style="text-align:center; font-size:18px;" data-priority="1"></th>
+                                            <th style="text-align:center; font-size:18px;" data-priority="2"></th>
+                                            <th style="text-align:center; font-size:18px;" data-priority="3"></th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="ListRiskDraw">
+                                  
+        
+                                        </tbody>
+                                      </table>                           
+                                <br>
+                                <br>
+                                <div class="ui-grid-a">
+                                     <div class="ui-block-a" style="width:48%"></div>
+                                    <div class="ui-block-b" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-transition="flow" onclick="CloseRiskMenu()">Close</a></div>
+                                </div>
+                            
+                              
+                        </div>
+                    </div>
                 <div data-role="popup" id="popupriskaudit" data-history="false" data-overlay-theme="b" data-theme="b" data-dismissible="true" style="max-width:800px; min-width:700px;">
                     <div data-role="header" data-theme="a">
                     <h1 id="riskheader">
-                    Add Details</h1>
+                    New Issue</h1>
                     </div>
                     <div role="main" class="ui-content">
-                            <label><Strong>Enter a description for the issue(s) found:</Strong></label>
+                            <input type="hidden" id="idissuehide" name="idissuehide" value="0"/>
+                            <input type="hidden" id="lentempid" name="lentempid" value="0"/>
+                            <label><Strong>Enter a description for the issue found:</Strong></label>
                             <textarea name="sabecomment"  id="sabecomment"></textarea>
                             <div class="ui-grid-a">
                                     <div class="ui-block-a" style="width:20%;" style="text-align:right; vertical-align:bottom !important;"><div style="text-align:right; vertical-align:bottom !important; align-items:center; margin: 0 auto !important;"><strong>Pictures:&nbsp;&nbsp;&nbsp;</strong></div></div>
@@ -2475,9 +2524,84 @@
                                 </div>                         
                             <br>
                             <br>
+                            <label><Strong>Enter a follow-up action for this issue:</Strong></label>
+                            <textarea name="followupactioncomment"  id="followupactioncomment"></textarea> 
+                            <table data-role="table">
+                                <thead><tr><th></th><th></th></tr></thead>
+                                <tbody>
+                                        <tr>
+                                                <td><strong>Assignee:</strong></td>
+                                                <td><select data-theme="a" name="selectAssignee" id="selectAssignee" data-mini="true"></select></td>
+                                            </tr>
+                                            <tr>
+                                              <td><strong>Priority:</strong></td><td>
+                                                    <select data-theme="a" name="selectRiskPriority" id="selectRiskPriority" data-mini="true">
+                                                            <option value="0"> Select a priority </option>
+                                                            <option value="low">Low</option>
+                                                            <option value="medium">Medium</option>
+                                                            <option value="high">High</option>
+                                                        </select>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td><strong>Due Date:</strong></td><td><input type="date" data-clear-btn="false" name="dateAuditRisk" id="dateAuditRisk" value=""></td>
+                                            </tr>
+
+                                </tbody>
+                                </table>
                             <div class="ui-grid-a">
                                  <div class="ui-block-a" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" onclick="CancelRisk()">Cancel</a></div>
-                                <div class="ui-block-b" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-transition="flow" onclick="SaveTempText()">OK</a></div>
+                                <div class="ui-block-b" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-transition="flow" onclick="SaveTempIssue()">OK</a></div>
+                            </div>
+                        
+                          
+                    </div>
+                </div>
+                <div data-role="popup" id="popupriskauditedit" data-history="false" data-overlay-theme="b" data-theme="b" data-dismissible="true" style="max-width:800px; min-width:700px;">
+                    <div data-role="header" data-theme="a">
+                    <h1 id="riskheaderedit">
+                    Edit Issue</h1>
+                    </div>
+                    <div role="main" class="ui-content">
+                            <label><Strong>Enter a description for the issue found:</Strong></label>
+                            <textarea name="sabecommentedit"  id="sabecommentedit"></textarea>
+                            <div class="ui-grid-a">
+                                    <div class="ui-block-a" style="width:20%;" style="text-align:right; vertical-align:bottom !important;"><div style="text-align:right; vertical-align:bottom !important; align-items:center; margin: 0 auto !important;"><strong>Pictures:&nbsp;&nbsp;&nbsp;</strong></div></div>
+                                    <div class="ui-block-b" style="width:50%"><div><a href="javascript:TakePhotoAudit();" class="ui-btn ui-btn-inline ui-btn-a">New Picture</a></div></div>
+                                </div><!-- /grid-a -->   
+                                <div class="ui-grid-solo">
+                                        <table data-role="table"  class="ui-body-a  ui-responsive" data-column-btn-theme="b"  data-column-popup-theme="a" id="solosemeamedit"><thead><tr><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody id="photosdrawauedit"></tbody></table>
+                                </div>                         
+                            <br>
+                            <br>
+                            <label><Strong>Enter a follow-up action for this issue:</Strong></label>
+                            <textarea name="followupactioncommentedit"  id="followupactioncommentedit"></textarea> 
+                            <table data-role="table">
+                                <thead><tr><th></th><th></th></tr></thead>
+                                <tbody>
+                                        <tr>
+                                                <td><strong>Assignee:</strong></td>
+                                                <td><select data-theme="a" name="selectAssigneeedit" id="selectAssigneeedit" data-mini="true"></select></td>
+                                            </tr>
+                                            <tr>
+                                              <td><strong>Priority:</strong></td><td>
+                                                    <select data-theme="a" name="selectRiskPriorityedit" id="selectRiskPriorityedit" data-mini="true">
+                                                            <option value="0"> Select a priority </option>
+                                                            <option value="low">Low</option>
+                                                            <option value="medium">Medium</option>
+                                                            <option value="high">High</option>
+                                                        </select>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td><strong>Due Date:</strong></td><td><input type="date" data-clear-btn="false" name="dateAuditRiskedit" id="dateAuditRiskedit" value=""></td>
+                                            </tr>
+
+                                </tbody>
+                                </table>
+                            <div class="ui-grid-a">
+                                 <div class="ui-block-a" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" onclick="CancelRisk()">Cancel</a></div>
+                                <div class="ui-block-b" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-transition="flow" onclick="SaveTempIssue()">OK</a></div>
                             </div>
                         
                           
@@ -2488,7 +2612,7 @@
                     <h1>Submit Audit</h1>
                     </div>
                     <div role="main" class="ui-content">
-                            <label id="AreaSA"></label>
+                            <label id="AreaSA"></label> 
                             <br>
                             <label id="AreaScore"></label>
                             <br>
@@ -2507,7 +2631,7 @@
                             </div>
                                 <div class="ui-grid-a">
                                      <div class="ui-block-a" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-rel="back">Cancel</a></div>
-                                    <div class="ui-block-b" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-transition="flow" onclick="SubmitAuditNow()">OK</a></div>
+                                    <div class="ui-block-b" style="width:48%"><a class="ui-shadow ui-btn ui-corner-all" data-transition="flow" onclick="NewSubmitAuditNow()">OK</a></div>
                                 </div>
                             </div>
                             </div>

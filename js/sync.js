@@ -495,6 +495,102 @@ function QuerytoinsertCerts(tx)
   //sendprocedures();	
 }
 
+function GetClientName()
+{
+	var ipserver=$("#ipsync").val();
+	var obj = {};
+
+	$("#progressheader").html(" ");
+	//progressheader
+	$("#progressheader").html("Downloading data...");
+		$("#progressMessage").html("Post To GetClient");
+		pbar.setValue(0);
+		//alert("listo para el post: "+ipserver+'//GetAudits');
+	                $.ajax({
+                    type: 'POST',
+				    url:ipserver+'//GetClient',
+					data: JSON.stringify(obj),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+						//alert(response.d);
+						InsertDatabaseClientName(response.d);
+                    },
+            error: function (xmlHttpRequest, textStatus, errorThrown) {
+							$("#progressheader").html("Can not connect to server");
+							$("#progressMessage").html("Error sending data:" +xmlHttpRequest.responseXML+" Status: "+textStatus+"==>"+xmlHttpRequest.statusText+" thrown: "+errorThrown);
+					IsSyncMessages=false;		
+					setTimeout( function(){ $("#generic-dialog").dialog("close"); }, 10000 );
+                    console.log(xmlHttpRequest.responseXML);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    alert("Error");
+                }
+                });
+
+}
+
+function InsertDatabaseClientName(newdatabase)
+{
+   // alert("lsito audits");
+	$("#progressMessage").html("Successful connection");
+		pbar.setValue(1);
+		newclientnametoinsert=newdatabase;
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      	db.transaction(QuerytoinsertClientName, errorCBPAudits);
+}
+
+function QuerytoinsertClientName(tx)
+{
+	$("#progressMessage").html("Deleting old records");
+		pbar.setValue(2);
+		tx.executeSql("DELETE FROM CLIENTNAME");
+	$("#progressMessage").html("Ready to insert new records");
+	var query;
+	var obj;
+	//alert("audits sync");
+	var itemcount=0;
+	 try
+	 {
+	obj=jQuery.parseJSON(newclientnametoinsert.ClientName);	 
+    $.each(obj, function (key, value) {
+		query='INSERT INTO CLIENTNAME (Name) VALUES ("'+value.ClientName+'")';
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	// alert("Audits: "+itemcount);
+	 
+	 	$("#progressMessage").html("Audits updated");
+	pbar.setValue(12);
+	 }
+	 catch(error)
+	 {
+		 if(error=="SyntaxError: Unexpected token E")
+		 {
+			 alert("CLIENTNAME ERROR: Web service invalid data");
+
+		 }
+		 else
+		 {
+			alert("CLIENTNAME "+error);
+
+		 }
+		 
+		 $("#progressMessage").html("Error updating ClientName"+error);
+			pbar.setValue(15);
+		 
+	 }
+	 	$("#progressMessage").html("ClientName completed updated");
+		pbar.setValue(100);
+
+		$("#progressMessage").html("");
+		pbar.setValue(100);
+		GetserviceCertifications();		
+		
+  //sendprocedures();	
+}
+
 function GetserviceAudits()
 {
 	var ipserver=$("#ipsync").val();
@@ -560,7 +656,16 @@ function QuerytoinsertAudits(tx)
 	 {
 	obj=jQuery.parseJSON(newauditsdatatoinsert.Audits);	 
     $.each(obj, function (key, value) {
-		query='INSERT INTO AUDITS (ID,Name) VALUES ("'+value.ID+'","'+escapeDoubleQuotes(value.Name)+'")';
+		var locacion="";
+		if(value.Location==null || value.Location=="null")
+		{
+			locacion="";
+		}
+		else
+		{
+			locacion=escapeDoubleQuotes(value.Location);
+		}
+		query='INSERT INTO AUDITS (ID,Name,Location) VALUES ("'+escapeDoubleQuotes(value.ID)+'","'+escapeDoubleQuotes(value.Name)+'","'+locacion+'")';
 		//alert(query);
 		tx.executeSql(query);
 		itemcount++;
@@ -635,6 +740,15 @@ function QuerytoinsertAudits(tx)
 			obj=jQuery.parseJSON(newauditsdatatoinsert.Groups2Audits);
 			$.each(obj, function (key, value) {
 				
+				var locacion="";
+				if(value.Location==null || value.Location=="null")
+				{
+					locacion="";
+				}
+				else
+				{
+					locacion=escapeDoubleQuotes(value.Location);
+				}
 				if(value.Ord=="null" || value.Ord==null)
 				{
 					ordgg="0";
@@ -644,7 +758,7 @@ function QuerytoinsertAudits(tx)
 					ordgg=value.Ord;
 
 				}
-				query='INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord) VALUES ("'+value.GroupID+'","'+value.ID+'","'+ordgg+'")';
+				query='INSERT INTO GROUPS2AUDITS (GroupID,ID,Ord,Location) VALUES ("'+escapeDoubleQuotes(value.GroupID)+'", "'+escapeDoubleQuotes(value.ID)+'", "'+ordgg+'","'+locacion+'")';
 				//alert(query);
 				tx.executeSql(query);
 				itemcount++;
@@ -753,7 +867,7 @@ function QuerytoinsertAudits(tx)
 
 		$("#progressMessage").html("");
 		pbar.setValue(100);
-		GetserviceCertifications();		
+		GetClientName();		
 		
   //sendprocedures();	
 }
@@ -1882,7 +1996,17 @@ function Querytoinsertusers(tx)
         obj=jQuery.parseJSON(newdatabasetoinsert.groups2procedures);
 		//alert("GROUPS2PROCEDURES:"+obj.length);
 	     $.each(obj, function (key, value) {
-		query='INSERT INTO GROUPS2PROCEDURES (GroupID,ID,Ord) VALUES ("'+value.GroupID+'","'+value.ID+'","'+value.Ord+'")';
+			var locacion="";
+			if(value.Location==null || value.Location=="null")
+			{
+				locacion="";
+			}
+			else
+			{
+				locacion=escapeDoubleQuotes(value.Location);
+			}
+		query='INSERT INTO GROUPS2PROCEDURES (GroupID,ID,Ord,Location) VALUES ("'+value.GroupID+'","'+value.ID+'","'+value.Ord+'","'+locacion+'")';
+		//alert(query);
 		tx.executeSql(query);
      });
 	 $("#progressMessage").html("Groups2procedures updated");
@@ -1901,7 +2025,16 @@ function Querytoinsertusers(tx)
            obj=jQuery.parseJSON(newdatabasetoinsert.procedures);
 		   //alert("PROCEDURES:"+obj.length);
 	     $.each(obj, function (key, value) {
-		query='INSERT INTO PROCEDURES (ProcID,Name,type,Freq) VALUES ("'+value.ProcID+'", "'+escapeDoubleQuotes(value.Name)+'", "'+value.Type+'", "'+value.Freq+'")';
+			var locacion="";
+			if(value.Location==null || value.Location=="null")
+			{
+				locacion="";
+			}
+			else
+			{
+				locacion=escapeDoubleQuotes(value.Location);
+			}
+		query='INSERT INTO PROCEDURES (ProcID,Name,type,Freq,Location) VALUES ("'+value.ProcID+'", "'+escapeDoubleQuotes(value.Name)+'", "'+value.Type+'", "'+value.Freq+'","'+locacion+'")';
 		//alert(query);
 		tx.executeSql(query);
      });
