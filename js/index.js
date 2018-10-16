@@ -10876,6 +10876,7 @@ function QueryAuditNowSuccess(tx,results,resultados)
 						DueDatex=resultados.rows.item(y).DueDate;
 						descri=resultados.rows.item(y).Description;
 						cantidad=resultados.rows.item(y).NumFiles;
+						comments=resultados.rows.item(y).Description;
 						ActionStatusx="To Do";
 						 var query="INSERT INTO SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,Date,UserID,Score,NumFiles,IssueID,AssignUserID,Priority,Action,DueDate,ActionStatus,Sync) VALUES ('"+submitID+"','"+idaut+"','"+results.rows.item(x).StepID+"','"+comments+"','"+descri+"','"+statuss+"','"+SubmitDate+"','"+idusera+"','"+scorecito+"','"+cantidad+"','"+IssueIDx+"','"+AssignUserIDx+"','"+Priorityx+"','"+Actionx+"','"+DueDatex+"','"+ActionStatusx+"','no')";
 						//alert(query);
@@ -11354,7 +11355,7 @@ function QueryfilesphotosauditTestSuccess(tx,results)
 	{
 		$("#comentario"+stepaudit).val(textoatras);
 		$("#popupriskaudit").popup("close");
-		$("#sabecomment").val('');
+		//$("#sabecomment").val('');
 
 	}
 	else
@@ -11442,7 +11443,7 @@ function QuerySaveTempTxt(tx)
 	}
 
 	$("#popupriskaudit").popup("close");
-	$("#sabecomment").val('');
+	//$("#sabecomment").val('');
 	//alert("guardado");	
 
 }
@@ -11469,7 +11470,7 @@ function QuerytxttempauditSuccess(tx,results)
 	//alert(len);
 	if(len==1)
 	{
-		$("#sabecomment").val(results.rows.item(0).Text);
+		//$("#sabecomment").val(results.rows.item(0).Text);
 
 	}
 
