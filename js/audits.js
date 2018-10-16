@@ -520,12 +520,12 @@ function FillPersonnelAudit()
 function QueryPersonnelAudit(tx)
 {
   
-	tx.executeSql("SELECT * FROM Users ORDER BY LastName,FirstName", [], QueryPersonnelAuditSuccess, errorCB);
+	tx.executeSql("SELECT * FROM Users WHERE LevelType <>'9 - Trainee' ORDER BY LastName,FirstName", [], QueryPersonnelAuditSuccess, errorCB);
 }
 function QueryPersonnelAuditSuccess(tx,results)
 {
 	var len = results.rows.length;
-	var selecthtml='<option value="0">Choose a user</option>';
+	var selecthtml='<option value="0">Choose a user</option>'; 
 	for (var i=0; i<len; i++){
 	      var nameuser=results.rows.item(i).Username;
 		  var fname=results.rows.item(i).FirstName;
