@@ -11151,6 +11151,7 @@ function QueryPhotoTempAudit(tx,photopath)
 	takepicturep=1;
 	//var sabecomment=$("#sabecomment").val();
 	var query='INSERT INTO TEMPAUDITPHOTO (IDStep,Path,IssueID) VALUES ("'+stepaudit+'","'+photopath+'","'+iduss+'")';
+	//alert(query);
 	tx.executeSql(query);
 	searchfilesphotosaudit();
 

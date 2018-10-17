@@ -2755,7 +2755,7 @@ function QuerytosendAuditMediaSuccess(tx,results)
 		var tosend=0;
 		for (var i=0; i<results.rows.length; i++){
 			tosend++;
-			uploadPhotoServerAudit(results.rows.item(i).Path,results.rows.item(i).SubmitID,results.rows.item(i).StepID);
+			uploadPhotoServerAudit(results.rows.item(i).Path,results.rows.item(i).SubmitID,results.rows.item(i).StepID,results.rows.item(i).IssueID);
 		}
 	}
 	else
@@ -2897,7 +2897,7 @@ function winftp(r) {
             alert("An error has occurred uploading file: Code = " + error.code);
 		}
 		
-		function uploadPhotoServerAudit(imageURI,SubmitID,StepID) {
+		function uploadPhotoServerAudit(imageURI,SubmitID,StepID,IssueID) {
 			//alert("akaimage"+imageURI+"---->"+SubmitID+"---->"+StepID);
 					var ipserver=$("#ipsync").val();
 					var dt = new Date();
@@ -2911,6 +2911,7 @@ function winftp(r) {
 					var params = new Object();
 					params.submitid = SubmitID;
 					params.stepid = StepID;
+					params.issueid=IssueID;
 					options.params = params;
 					var ft = new FileTransfer();
 				   ft.upload(imageURI, ipserver+"/UploadFileAudit", winftpAudit,failftpAudit,options);
