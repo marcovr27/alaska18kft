@@ -2,6 +2,7 @@
 ///////<<<<<<<<<<<<============================= GLOBAL VARIABLES =========================================>>>>>>>>>>>///////
 var newdatabasetoinsert;//Variable to get all tables from web service and insert on device db;
 var newtasksdatatoinsert;
+var newlpdata;
 var newtimetrackingtoinsert;
 var newgroupsdatatoinsert;
 var newcoursesdatatoinsert;
@@ -822,6 +823,8 @@ function QuerywritehtmltSuccess(tx,results,language)
 		 //New Tables febraury 2017
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS SUBMITTEDWPIS (SubmitID,EmpDate,Shift,UserID,Status,SupID,WPI1,WPI2,WPI3,WPI1Status,WPI2Status,WPI3Status,HI1,HI2,HI3,CAT1,CAT2,CAT3,SupQ1,SupQ2,SupQ3,SupQ4,SupQ5,Topics,Concerns,Actions,SupDate,SupComments,Sync,SyncTwo)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPRISKTEXT (IDStep,Text)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS LASTAUDIT (ID,SubmitDate,UserID)');
+		 tx.executeSql('CREATE TABLE IF NOT EXISTS LASTPROCEDURE (ProcID,SubmitDate,UserID)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPAUDITPHOTO (ID INTEGER PRIMARY KEY,IDStep,IssueID,Path)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TEMPSUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,NumFiles,Date DATETIME,UserID,Score,IssueID,AssignUserID,Priority,Action,DueDate,ActionStatus)');
 		 tx.executeSql('CREATE TABLE IF NOT EXISTS TIMETRACKING (UserID,ContentID,TotalTime,Date,ClassID)');
@@ -4519,12 +4522,12 @@ function QuerycheckdbproceduresSuccess(tx,results)
 	   var chk_preoperational=$("#checkbox-preoperational").is(':checked') ;
 	   var locacion=sessionStorage.location;
 	   //var newquery="SELECT * FROM PROCEDURES ";
-	    var newquery = "SELECT ( SELECT SUBMITTEDPROCS.UserID || ' - '  FROM  SUBMITTEDPROCS WHERE PROCEDURES.ProcID = SUBMITTEDPROCS.ProcID ORDER BY Time DESC LIMIT 1) AS lastp,SUBMITTEDPROCS.Time AS timec, PROCEDURES.Name, PROCEDURES.ProcID FROM PROCEDURES LEFT OUTER JOIN SUBMITTEDPROCS ON PROCEDURES.ProcID = SUBMITTEDPROCS.ProcID ";
+	    var newquery = "SELECT LASTPROCEDURE.UserID || ' - ' AS lastp,LASTPROCEDURE.SubmitDate AS timec, PROCEDURES.Name, PROCEDURES.ProcID FROM PROCEDURES LEFT OUTER JOIN LASTPROCEDURE ON PROCEDURES.ProcID = LASTPROCEDURE.ProcID ";
 				// var newquery="SELECT ( SELECT SUBMITTEDPROCS.UserID || ' - ' FROM  SUBMITTEDPROCS WHERE PROCEDURES.ProcID = SUBMITTEDPROCS.ProcID ORDER BY Time DESC LIMIT 1) AS lastp,SUBMITTEDPROCS.Time  AS timec, PROCEDURES.Name, PROCEDURES.ProcID FROM PROCEDURES LEFT OUTER JOIN  GROUPS2PROCEDURES ON PROCEDURES.ProcID = GROUPS2PROCEDURES.ID LEFT OUTER JOIN SUBMITTEDPROCS ON PROCEDURES.ProcID = SUBMITTEDPROCS.ProcID INNER JOIN PROCEDURES";
             if (grouptoshow != "0")
             {
 				numquery=2;
-			    var newquery = "SELECT ( SELECT SUBMITTEDPROCS.UserID || ' - ' FROM  SUBMITTEDPROCS WHERE PROCEDURES.ProcID = SUBMITTEDPROCS.ProcID ORDER BY Time DESC LIMIT 1) AS lastp,SUBMITTEDPROCS.Time  AS timec, PROCEDURES.Name, PROCEDURES.ProcID FROM PROCEDURES LEFT OUTER JOIN  GROUPS2PROCEDURES ON PROCEDURES.ProcID = GROUPS2PROCEDURES.ID LEFT OUTER JOIN SUBMITTEDPROCS ON PROCEDURES.ProcID = SUBMITTEDPROCS.ProcID ";	
+			    var newquery = "SELECT LASTPROCEDURE.UserID || ' - ' AS lastp,LASTPROCEDURE.SubmitDate  AS timec, PROCEDURES.Name, PROCEDURES.ProcID FROM PROCEDURES LEFT OUTER JOIN  GROUPS2PROCEDURES ON PROCEDURES.ProcID = GROUPS2PROCEDURES.ID LEFT OUTER JOIN LASTPROCEDURE ON PROCEDURES.ProcID = LASTPROCEDURE.ProcID ";	
         //  newquery = "SELECT DISTINCT(SELECT CONCAT_WS(' - ', submittedprocs.UserID, submittedprocs.SubmitDate) AS daten FROM  submittedprocs WHERE procedures.ProcID = submittedprocs.ProcID ORDER BY SubmitDate DESC LIMIT 1) AS lastp, procedures.Name, procedures.ProcID,(SELECT submittedprocs.Status FROM  submittedprocs WHERE procedures.ProcID = submittedprocs.ProcID ORDER BY SubmitDate DESC LIMIT 1) AS Status  FROM procedures LEFT OUTER JOIN groups2procedures ON procedures.ProcID = groups2procedures.ID LEFT OUTER JOIN submittedprocs ON procedures.ProcID = submittedprocs.ProcID WHERE (procedures.Name LIKE '%" + TextBox_searchsteps.Text + "%') AND (groups2procedures.GroupID = '" + DropDownList_group.SelectedValue + "')";
             }
         
@@ -5859,6 +5862,8 @@ function QuerytoGetProcedureNamebysubmitSuccess(tx, results)
 	  });
 	  //alert('INSERT INTO SUBMITTEDPROCS  (SubmitID,ProcID,Name,UserID,SubmitDate,Time,Comments,Status,Sync) VALUES ("'+SubmitID+'","'+ProcID+'","'+procedurename+'","'+UserID+'","'+SubmitDate+'","'+SubmitTime+'"," ","'+status_procedure+'","'+"no"+'")');
 	 tx.executeSql('INSERT INTO SUBMITTEDPROCS  (SubmitID,ProcID,Name,UserID,SubmitDate,Time,Comments,Status,Sync) VALUES ("'+SubmitID+'","'+ProcID+'","'+procedurename+'","'+UserID+'","'+SubmitDate+'","'+SubmitTime+'"," ","'+status_procedure+'","'+"no"+'")');
+	 var querydos="UPDATE LASTPROCEDURE SET SubmitDate='"+SubmitDate+"',UserID='"+UserID+"' WHERE ProcID='"+ProcID+"'";
+	 tx.executeSql(querydos);
 	 
 	   searchfortempmedia(SubmitID,StepID);
 	
@@ -10544,7 +10549,7 @@ function QueryFilltableaudits(tx,resultados)
 	var len=resultados.rows.length;
 	var locacion=sessionStorage.location;
 	var optionss=$("#select_groupAudit").val();
-	var newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as DATETIME FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY DATETIME(Date) DESC LIMIT 1) AS lastp, Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID ";
+	var newquery="SELECT ( SELECT LASTAUDIT.UserID || ' - ' || LASTAUDIT.SubmitDate as DATETIME  FROM  LASTAUDIT WHERE Groups2Audits.ID = LASTAUDIT.ID ORDER BY  DATETIME(SubmitDate) DESC LIMIT 1) AS lastp, Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID ";
 	//alert(len+" cantidad "+ " opcion="+optionss);
 	if(optionss=="0")
 	{
@@ -10575,7 +10580,7 @@ function QueryFilltableaudits(tx,resultados)
 	}
 	else
 	{
-		newquery="SELECT ( SELECT SUBMITTEDAUDITS.UserID || ' - ' || SUBMITTEDAUDITS.Date as DATETIME  FROM  SUBMITTEDAUDITS WHERE Groups2Audits.ID = SUBMITTEDAUDITS.AuditID ORDER BY  DATETIME(Date) DESC LIMIT 1) AS lastp,Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID WHERE GroupID='"+optionss+"' AND Audits.Location='"+locacion+"'";
+		newquery="SELECT ( SELECT LASTAUDIT.UserID || ' - ' || LASTAUDIT.SubmitDate as DATETIME  FROM  LASTAUDIT WHERE Groups2Audits.ID = LASTAUDIT.ID ORDER BY  DATETIME(SubmitDate) DESC LIMIT 1) AS lastp,Groups2Audits.ID,Groups2Audits.GroupID,Audits.Name FROM Groups2Audits INNER JOIN Audits ON Groups2Audits.ID=Audits.ID WHERE GroupID='"+optionss+"' AND Audits.Location='"+locacion+"'";
 	}
 	//alert(newquery);  
 	tx.executeSql(newquery, [],  function(tx,results){  QueryFilltableauditsSuccess(tx,results,resultados) },errorCBPAudits);
@@ -10881,6 +10886,9 @@ function QueryAuditNowSuccess(tx,results,resultados)
 						 var query="INSERT INTO SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,Date,UserID,Score,NumFiles,IssueID,AssignUserID,Priority,Action,DueDate,ActionStatus,Sync) VALUES ('"+submitID+"','"+idaut+"','"+results.rows.item(x).StepID+"','"+comments+"','"+descri+"','"+statuss+"','"+SubmitDate+"','"+idusera+"','"+scorecito+"','"+cantidad+"','"+IssueIDx+"','"+AssignUserIDx+"','"+Priorityx+"','"+Actionx+"','"+DueDatex+"','"+ActionStatusx+"','no')";
 						//alert(query);
 						tx.executeSql(query);
+						var querydos="UPDATE LASTAUDIT SET SubmitDate='"+SubmitDate+"',UserID='"+idusera+"' WHERE ID='"+idaut+"'";
+						tx.executeSql(querydos);
+
 					}
 				}
 
@@ -10891,6 +10899,8 @@ function QueryAuditNowSuccess(tx,results,resultados)
 				var query="INSERT INTO SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,Date,UserID,Score,NumFiles,Sync) VALUES ('"+submitID+"','"+idaut+"','"+results.rows.item(x).StepID+"','"+comments+"','"+descri+"','"+statuss+"','"+SubmitDate+"','"+idusera+"','"+scorecito+"','"+cantidad+"','no')";
 				//alert(query);
 				tx.executeSql(query);
+				var querydos="UPDATE LASTAUDIT SET SubmitDate='"+SubmitDate+"',UserID='"+idusera+"' WHERE ID='"+idaut+"'";
+				tx.executeSql(querydos);
 			}
 			else
 			{
@@ -10898,6 +10908,8 @@ function QueryAuditNowSuccess(tx,results,resultados)
 				var query="INSERT INTO SUBMITTEDAUDITS (SubmitID,AuditID,StepID,Comments,Description,Status,Date,UserID,Score,NumFiles,Sync) VALUES ('"+submitID+"','"+idaut+"','"+results.rows.item(x).StepID+"','"+comments+"','"+descri+"','"+statuss+"','"+SubmitDate+"','"+idusera+"','"+scorecito+"','"+cantidad+"','no')";
 				//alert(query);
 				tx.executeSql(query);
+				var querydos="UPDATE LASTAUDIT SET SubmitDate='"+SubmitDate+"',UserID='"+idusera+"' WHERE ID='"+idaut+"'";
+				tx.executeSql(querydos);
 			}
 
 			

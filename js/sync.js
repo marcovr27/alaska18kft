@@ -232,6 +232,137 @@ function QuerytoinsertMeas(tx)
 		SendMediaAudit();
 
 }
+
+function GetLastPerfomance()
+{
+	var ipserver=$("#ipsync").val();
+	var obj = {};
+    //alert("GetMeas");
+	$("#progressheader").html(" ");
+	//progressheader
+	$("#progressheader").html("Downloading data...");
+		$("#progressMessage").html("Post To GetLastPerfomance");
+		pbar.setValue(0);
+	                $.ajax({
+                    type: 'POST',
+				    url:ipserver+'//GetLastPerfomance',
+					data: JSON.stringify(obj),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+						InsertDatabaseLP(response.d);
+                    },
+            error: function (xmlHttpRequest, textStatus, errorThrown) {
+							$("#progressheader").html("Can not connect to server");
+							$("#progressMessage").html("Error sending data:" +xmlHttpRequest.responseXML+" Status: "+textStatus+"==>"+xmlHttpRequest.statusText+" thrown: "+errorThrown);
+					IsSyncMessages=false;		
+					setTimeout( function(){ $("#generic-dialog").dialog("close"); }, 10000 );
+                    console.log(xmlHttpRequest.responseXML);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                   // alert("Error");
+                }
+                });
+}
+
+function InsertDatabaseLP(newdatabase)
+{
+     //alert("MEas Success")
+	$("#progressMessage").html("Successful connection");
+		pbar.setValue(1);
+		newlpdata=newdatabase;
+		var db = window.openDatabase("Fieldtracker", "1.0", "Fieldtracker", 50000000);
+      	db.transaction(QuerytoinsertLP, errorCB);	
+}
+
+function QuerytoinsertLP(tx)
+{
+	//alert("deleteoldrecords");
+	//alert("Insert new data GetMessages");
+	$("#progressMessage").html("Deleting old records");
+		pbar.setValue(4);
+		//alert("Deleting "+idusera);
+		tx.executeSql("DELETE FROM LASTAUDIT");
+		tx.executeSql("DELETE FROM LASTPROCEDURE");
+	$("#progressMessage").html("Ready to insert new records");
+	var query;
+	var obj;
+	//alert("Items "+obj.length);
+	var itemcount=0;
+	 try
+	 {
+		obj = jQuery.parseJSON(newlpdata.Audits);
+    $.each(obj, function (key, value) {
+		var iduserxx=value.UserID;
+		if(value.UserID==null || value.UserID=="null")
+		{
+			iduserxx="";
+		}
+		var datazo=value.SubmitDate;
+		if(value.SubmitDate==null || value.SubmitDate=="null")
+		{
+			datazo="";
+		}
+		query='INSERT INTO LASTAUDIT (ID,SubmitDate,UserID) VALUES ("'+value.ID+'", "'+datazo+'", "'+iduserxx+'")';
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	 //alert("Certifications: "+itemcount);
+	 
+	 	$("#progressMessage").html("Last Perfomance updated");
+	pbar.setValue(10);
+	 }
+	 catch(error)
+	 {
+		 alert("Last Perfomance: "+error);
+		 $("#progressMessage").html("Error updating Last Perfomance "+error);
+			pbar.setValue(30);
+		 
+	 }
+	 itemcount=0;
+	 
+	 try
+	 {
+		obj=jQuery.parseJSON(newlpdata.Procedures);
+    $.each(obj, function (key, value) {
+		var iduserxxx=value.UserID;
+		if(value.UserID==null || value.UserID=="null")
+		{
+			iduserxxx="";
+		}
+		var datazox=value.SubmitDate;
+		if(value.SubmitDate==null || value.SubmitDate=="null")
+		{
+			datazox="";
+		}
+		query='INSERT INTO LASTPROCEDURE (ProcID,SubmitDate,UserID) VALUES ("'+value.ProcID+'", "'+datazox+'", "'+iduserxxx+'")';
+		//alert(query);
+		tx.executeSql(query);
+		itemcount++;
+     });
+	 //("USERS2CERTS: "+itemcount);
+	 
+	 	$("#progressMessage").html("Last Perfomance updated");
+	pbar.setValue(10);
+	 }
+	 catch(error)
+	 {
+		 alert("Last Perfomance "+error);
+		 $("#progressMessage").html("Error updating Last Perfomance "+error);
+			pbar.setValue(30);
+		 
+	 }
+
+		 
+	 $("#progressMessage").html("Last Perfomance updated");
+		pbar.setValue(100);
+
+	$("#progressMessage").html("");
+		pbar.setValue(100);
+		GetMeasurements();
+
+}
 function GetWpisx()
 {
 	//alert("GetWpisx");
@@ -351,7 +482,7 @@ function QuerytoinsertWpisx(tx)
 	$("#progressMessage").html("");
 		pbar.setValue(100);
 		//SendMediaAudit();
-	  GetMeasurements();	
+		GetLastPerfomance();	
 }
 
 function GetserviceCertifications()
