@@ -3208,7 +3208,7 @@ $(document).on( 'pagecreate', '#pageResult',function(){
 
 //ON CREATE Page Settings
 $(document).on( 'pagebeforeshow', '#pageSettings',function(){
-	$("#releasedatelbl").html('Build Date = ' + BuildInfo.buildDate);	
+	$("#releasedatelbl").html('Last build date: ' + BuildInfo.buildDate);	
 GetVersionProgram();
 tt=0;	
 showsettings();
